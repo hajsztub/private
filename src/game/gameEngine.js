@@ -90,12 +90,24 @@ export function selectGoalkeeper(state, playerId, gkInstanceId) {
   return updated
 }
 
+function dealStartingHand(deck) {
+  const types = ['defense', 'midfield', 'attack']
+  const hand = []
+  const remaining = [...deck]
+  for (const t of types) {
+    const idx = remaining.findIndex(c => c.type === t)
+    if (idx !== -1) {
+      hand.push(...remaining.splice(idx, 1))
+    }
+  }
+  return { hand, deck: remaining }
+}
+
 function dealHandsAndStart(state) {
   let s = state
   for (const pid of ['A', 'B']) {
     const player = s.players[pid]
-    const hand = player.deck.slice(0, HAND_SIZE)
-    const deck = player.deck.slice(HAND_SIZE)
+    const { hand, deck } = dealStartingHand(player.deck)
     s = {
       ...s,
       players: { ...s.players, [pid]: { ...player, hand, deck } },

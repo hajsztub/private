@@ -28,7 +28,7 @@ const PACKS = [
     label: 'Losowa Paczka',
     desc: '3 losowe karty • min. 1 Rzadka',
     icon: '🎲',
-    cost: 80,
+    cost: 250,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#1565c0,#283593)',
     itemBg: 'linear-gradient(120deg,#0d1b3e 0%,#1a2a5e 100%)',
@@ -39,7 +39,7 @@ const PACKS = [
     label: 'Paczka Ataku',
     desc: '3 karty napastników',
     icon: '⚔️',
-    cost: 100,
+    cost: 300,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#c62828,#7f0000)',
     itemBg: 'linear-gradient(120deg,#2a0a0a 0%,#4a1010 100%)',
@@ -50,7 +50,7 @@ const PACKS = [
     label: 'Paczka Obrony',
     desc: '3 karty obrońców',
     icon: '🛡️',
-    cost: 100,
+    cost: 300,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#0d47a1,#1a237e)',
     itemBg: 'linear-gradient(120deg,#071530 0%,#0d2560 100%)',
@@ -61,7 +61,7 @@ const PACKS = [
     label: 'Paczka Środka',
     desc: '3 karty pomocników',
     icon: '🔮',
-    cost: 100,
+    cost: 300,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#6a1b9a,#4a148c)',
     itemBg: 'linear-gradient(120deg,#1a0830 0%,#2e1060 100%)',
@@ -72,7 +72,7 @@ const PACKS = [
     label: 'Paczka Bramkarzy',
     desc: '3 karty bramkarzy',
     icon: '🧤',
-    cost: 120,
+    cost: 350,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#00695c,#004d40)',
     itemBg: 'linear-gradient(120deg,#021a16 0%,#063d30 100%)',
@@ -91,9 +91,9 @@ const PACKS = [
   },
 ]
 
-const PACK_REFUND = 30
+const PACK_REFUND = 60
 const AD_COOLDOWN_MS = 60 * 60 * 1000
-const FREE_PACK_COOLDOWN_MS = 30 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 60 * 60 * 1000
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

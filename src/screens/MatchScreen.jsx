@@ -2,22 +2,18 @@ import React, { useReducer, useEffect, useState, useCallback, useRef } from 'rea
 import { useRouter } from '../router/AppRouter'
 import { useProfile, useSettings } from '../App'
 import {
-  createMatchState,
-  gameReducer,
-  selectGoalkeeper,
-  endTurn,
-  canPlaceInSector,
-  MAX_SECTOR_SIZE,
+  createMatchState, gameReducer, selectGoalkeeper,
+  endTurn, canPlaceInSector, MAX_SECTOR_SIZE,
 } from '../game/gameEngine'
 import { runAITurn, pickAIGoalkeeper } from '../game/aiEngine'
 import { computeRewardCoins, computeRatingChange, determinePlayerOfMatch } from '../game/scoreEngine'
 import { createDeckFromOwned, CARD_DEFINITIONS, createDefaultDeck } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import { SFX } from '../game/soundEngine'
+import FieldCard, { GKCard } from '../components/FieldCard'
 import GoalAnimation from '../components/GoalAnimation'
 import CoinFlip from '../components/CoinFlip'
 import { SpecialCardModal } from '../components/SpecialCardModal'
-import PlayerCard from '../components/PlayerCard'
 import './MatchScreen.css'
 
 const ALL_CARD_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
@@ -28,58 +24,95 @@ function buildPlayerDeck(profile) {
   return createDeckFromOwned(deckCards, ALL_CARD_DEFS)
 }
 
-function buildAIDeck() {
-  return createDefaultDeck('B')
-}
+// ── Card Zoom Modal ────────────────────────────────────────────────────────
 
-// ── Card Detail Overlay ────────────────────────────────────────────────────
-
-function CardDetailOverlay({ card, onClose }) {
+function CardZoomModal({ card, onClose }) {
   if (!card) return null
   const isGK = card.type === 'goalkeeper'
   const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
-  const RARITY_LABEL = { common: 'Normalny', rare: 'Rzadki', legendary: 'Legendarny', starter: 'Starter' }
-  const TYPE_LABEL = { attack: 'Atak', midfield: 'Pomocnik', defense: 'Obrona', goalkeeper: 'Bramkarz' }
+  const TYPE_LABEL = { attack: 'Napastnik', midfield: 'Pomocnik', defense: 'Obrońca', goalkeeper: 'Bramkarz' }
+  const RARITY_LABEL = { common: 'Normalny', rare: 'Rzadki', legendary: 'Legendarny ★', starter: 'Starter' }
+  const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
+
   return (
-    <div className="card-detail-backdrop" onClick={onClose}>
-      <div className="card-detail-panel" onClick={e => e.stopPropagation()}>
-        <div className="card-detail-header" style={{ background: card.color || '#eee' }}>
-          <span className="card-detail-type">{card.typeLabel}</span>
-          <span className="card-detail-name">{card.name}</span>
-          <span className="card-detail-rarity">{RARITY_LABEL[card.rarity] || card.rarity}</span>
-        </div>
-        <div className="card-detail-stats">
-          <div className="card-detail-stat">
-            <span className="cds-label">ATK</span>
-            <span className="cds-val cds-val--atk">{atkVal}</span>
-          </div>
-          <div className="card-detail-stat">
-            <span className="cds-label">DEF</span>
-            <span className="cds-val cds-val--def">{defVal}</span>
-          </div>
-          <div className="card-detail-stat">
-            <span className="cds-label">POS</span>
-            <span className="cds-val">{TYPE_LABEL[card.type]}</span>
+    <div className="zoom-backdrop" onClick={onClose}>
+      <div className="zoom-panel" onClick={e => e.stopPropagation()}>
+        {/* Big avatar */}
+        <div className="zoom-avatar" style={{ background: `linear-gradient(160deg, ${card.color || '#eee'}, #fff)` }}>
+          <img
+            className="zoom-avatar-img"
+            src={`/avatars/${card.id}.png`}
+            alt=""
+            onError={e => { e.target.style.display = 'none' }}
+            draggable={false}
+          />
+          <div className="zoom-type-badge">{card.typeLabel} — {TYPE_LABEL[card.type] || card.type}</div>
+          <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
+            {RARITY_LABEL[card.rarity] || card.rarity}
           </div>
         </div>
-        <div className="card-detail-ability">
-          <div className="card-detail-ability-name">{card.abilityName}</div>
-          <div className="card-detail-ability-type">
-            {card.abilityType === 'passive' ? '🔵 PASYWNA' : card.abilityType === 'active_coin' ? '🟡 AKTYWNA (ŻETON)' : '🟢 AKTYWNA'}
+
+        {/* Name */}
+        <div className="zoom-name">{card.name}</div>
+
+        {/* Stats */}
+        <div className="zoom-stats-row">
+          <div className="zoom-stat">
+            <span className="zs-label">ATK</span>
+            <span className="zs-val zs-val--atk">{atkVal}</span>
           </div>
-          <div className="card-detail-ability-desc">{card.abilityDescription}</div>
-          {card.noActivationDescription && card.abilityType !== 'passive' && (
-            <div className="card-detail-noact">
-              <span className="card-detail-noact-label">BRAK AKT:</span> {card.noActivationDescription}
+          <div className="zoom-stat">
+            <span className="zs-label">DEF</span>
+            <span className="zs-val zs-val--def">{defVal}</span>
+          </div>
+          {card.upgradeLevel > 0 && (
+            <div className="zoom-stat">
+              <span className="zs-label">LVL</span>
+              <span className="zs-val" style={{ color: '#ffd54f' }}>+{card.upgradeLevel}</span>
             </div>
           )}
         </div>
-        {card.upgradeLevel > 0 && (
-          <div className="card-detail-upgrade">Ulepszenie: poziom {card.upgradeLevel}</div>
-        )}
-        <button className="card-detail-close" onClick={onClose}>✕ Zamknij</button>
+
+        {/* Ability */}
+        <div className="zoom-ability">
+          <div className="zoom-ability-name">{card.abilityName}</div>
+          <div className="zoom-ability-type">
+            {card.abilityType === 'passive' ? '🔵 PASYWNA'
+              : card.abilityType === 'active_coin' ? '🟡 AKTYWNA (rzut żetonem)'
+              : '🟢 AKTYWNA'}
+          </div>
+          <div className="zoom-ability-desc">{card.abilityDescription}</div>
+          {card.noActivationDescription && card.abilityType !== 'passive' && (
+            <div className="zoom-noact">
+              <span className="zoom-noact-lbl">Brak aktywacji: </span>
+              {card.noActivationDescription}
+            </div>
+          )}
+        </div>
+
+        <button className="zoom-close" onClick={onClose}>✕ Zamknij</button>
       </div>
+    </div>
+  )
+}
+
+// ── Goal Posts decoration ──────────────────────────────────────────────────
+
+function GoalPosts({ side }) {
+  return (
+    <div className={`goal-posts goal-posts--${side}`}>
+      <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+        <rect x="2" y="2" width="4" height="20" fill="white" rx="2" opacity="0.8" />
+        <rect x="194" y="2" width="4" height="20" fill="white" rx="2" opacity="0.8" />
+        <rect x="2" y="2" width="196" height="4" fill="white" rx="2" opacity="0.8" />
+        {[20,38,56,74,92,110,128,146,164,182].map(x => (
+          <line key={x} x1={x} y1="6" x2={x} y2="22" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        ))}
+        {[10, 16, 22].map(y => (
+          <line key={y} x1="6" y1={y} x2="194" y2={y} stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        ))}
+      </svg>
     </div>
   )
 }
@@ -94,49 +127,40 @@ export default function MatchScreen({ matchParams = {} }) {
   const matchType = matchParams.matchType || 'local'
   const opponentName = matchParams.opponentName || 'BOT'
 
-  const [matchState, dispatch] = useReducer(gameReducer, null, () => {
-    const playerDeck = buildPlayerDeck(profile)
-    const aiDeck = buildAIDeck()
-    return createMatchState(matchType, playerDeck, aiDeck)
-  })
+  const [matchState, dispatch] = useReducer(gameReducer, null, () =>
+    createMatchState(matchType, buildPlayerDeck(profile), createDefaultDeck('B'))
+  )
 
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
-  const [selectedCard, setSelectedCard] = useState(null)
-  const [fieldSelectedCard, setFieldSelectedCard] = useState(null) // card on field (for sub)
+  const [selectedCard, setSelectedCard] = useState(null)   // card in hand selected for placement
+  const [fieldAction, setFieldAction] = useState(null)     // { card, sector } field card tapped
+  const [zoomCard, setZoomCard] = useState(null)           // card zoom modal
   const [notification, setNotification] = useState(null)
-  const [detailCard, setDetailCard] = useState(null)
-  const longPressRef = useRef(null)
 
-  // ── Goalkeeper setup ──────────────────────────────────────────────────────
+  // ── Drag state ────────────────────────────────────────────────────────────
+  const dragRef = useRef(null)
+  const [dragPos, setDragPos] = useState(null)    // { x, y }
+  const [dragZone, setDragZone] = useState(null)  // 'offense' | 'defense' | null
+
+  // ── GK setup ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (matchState.phase !== 'goalkeeper_selection') return
-    const aiPlayer = matchState.players.B
-    if (!aiPlayer.activeGoalkeeper && matchState.players.A.activeGoalkeeper) {
-      const aiGK = pickAIGoalkeeper(aiPlayer.goalkeepers)
-      setTimeout(() => {
-        dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'B', gkInstanceId: aiGK.instanceId })
-      }, 500)
-    }
+    if (!matchState.players.A.activeGoalkeeper || matchState.players.B.activeGoalkeeper) return
+    const aiGK = pickAIGoalkeeper(matchState.players.B.goalkeepers)
+    setTimeout(() => dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'B', gkInstanceId: aiGK.instanceId }), 500)
   }, [matchState.phase, matchState.players.A.activeGoalkeeper, matchState.players.B.activeGoalkeeper])
 
-  // SFX on match start
+  // SFX match start
   useEffect(() => {
-    if (matchState.phase === 'playing' && matchState.round === 1) {
-      SFX.matchStart()
-    }
+    if (matchState.phase === 'playing' && matchState.round === 1) SFX.matchStart()
   }, [matchState.phase])
 
   // ── AI turn ───────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (matchState.phase !== 'playing') return
-    if (matchState.currentPlayer !== 'B') return
-    if (aiThinking) return
-
-    const timer = setTimeout(() => {
-      runAITurn(matchState, dispatch, setAiThinking)
-    }, 400)
-    return () => clearTimeout(timer)
+    if (matchState.phase !== 'playing' || matchState.currentPlayer !== 'B' || aiThinking) return
+    const t = setTimeout(() => runAITurn(matchState, dispatch, setAiThinking), 400)
+    return () => clearTimeout(t)
   }, [matchState.currentPlayer, matchState.phase, matchState.round])
 
   // ── Game end ──────────────────────────────────────────────────────────────
@@ -144,19 +168,13 @@ export default function MatchScreen({ matchParams = {} }) {
     if (matchState.phase !== 'ended') return
     const score = matchState.displayScore
     const result = score.player > score.ai ? 'win' : score.ai > score.player ? 'loss' : 'draw'
-    const scoreDiff = Math.abs(score.player - score.ai)
-    const coins = computeRewardCoins(result, matchType, scoreDiff)
+    const coins = computeRewardCoins(result, matchType, Math.abs(score.player - score.ai))
     const ratingChange = computeRatingChange(result)
-    const playerOfMatch = determinePlayerOfMatch(
-      matchState.goalEvents,
-      { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector },
-      {}
-    )
+    const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
+      { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
     addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange })
-    setTimeout(() => {
-      replace('post_match', { result, score, matchType, coinsEarned: coins, ratingChange, goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log })
-    }, 800)
+    setTimeout(() => replace('post_match', { result, score, matchType, coinsEarned: coins, ratingChange, goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log }), 800)
   }, [matchState.phase])
 
   // ── Goal detection ────────────────────────────────────────────────────────
@@ -164,131 +182,136 @@ export default function MatchScreen({ matchParams = {} }) {
   useEffect(() => {
     const prev = prevScoreRef.current
     const curr = matchState.displayScore
-    if (curr.player > prev.player) {
-      setGoalAnim({ scorer: 'player', score: curr })
-      SFX.goalPlayer()
-    } else if (curr.ai > prev.ai) {
-      setGoalAnim({ scorer: 'ai', score: curr })
-      SFX.goalAI()
-    }
+    if (curr.player > prev.player) { setGoalAnim({ scorer: 'player', score: curr }); SFX.goalPlayer() }
+    else if (curr.ai > prev.ai) { setGoalAnim({ scorer: 'ai', score: curr }); SFX.goalAI() }
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
+  // ── Placement helpers ─────────────────────────────────────────────────────
+  const placeCard = useCallback((sector) => {
+    const card = dragRef.current?.card || selectedCard
+    if (!card) return
+    if (!canPlaceInSector(card, sector)) { showNotif(`${card.name} nie pasuje!`); SFX.error(); return }
+    const actionKey = sector === 'offense' ? 'placedOffense' : 'placedDefense'
+    if (matchState.turnActionsUsed[actionKey]) { showNotif('Już wystawiłeś kartę w tym sektorze.'); SFX.error(); return }
+    const sectorCards = matchState.players.A[sector === 'offense' ? 'offenseSector' : 'defenseSector']
+    if (sectorCards.length >= MAX_SECTOR_SIZE) { showNotif('Sektor pełny!'); SFX.error(); return }
+    SFX.cardPlace()
+    dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector })
+    setSelectedCard(null)
+  }, [matchState, selectedCard])
+
   const handleEndTurn = useCallback(() => {
-    if (matchState.currentPlayer !== 'A') return
-    if (matchState.coinFlipState?.pending) return
+    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
     SFX.endTurn()
     dispatch({ type: 'END_TURN' })
+    setSelectedCard(null)
+    setFieldAction(null)
   }, [matchState])
 
-  const handleCardSelect = (card) => {
-    if (matchState.currentPlayer !== 'A') return
-    if (matchState.phase !== 'playing') return
-    setFieldSelectedCard(null)
-    if (selectedCard?.instanceId === card.instanceId) {
-      setSelectedCard(null)
-    } else {
-      SFX.cardSelect()
-      setSelectedCard(card)
-    }
-  }
-
-  const handleFieldCardTap = (card, sector) => {
-    if (matchState.currentPlayer !== 'A') return
-    if (matchState.phase !== 'playing') return
+  const handleFieldTap = (card, sector) => {
+    if (matchState.currentPlayer !== 'A' || matchState.phase !== 'playing') return
+    if (fieldAction?.card.instanceId === card.instanceId) { setFieldAction(null); return }
+    SFX.cardSelect()
     setSelectedCard(null)
-    if (fieldSelectedCard?.card?.instanceId === card.instanceId) {
-      setFieldSelectedCard(null)
-    } else {
-      SFX.cardSelect()
-      setFieldSelectedCard({ card, sector })
-    }
+    setFieldAction({ card, sector })
   }
 
   const handleSubstitute = () => {
-    if (!fieldSelectedCard) return
-    dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: fieldSelectedCard.card.instanceId, sector: fieldSelectedCard.sector })
+    if (!fieldAction) return
     SFX.substitution()
-    setFieldSelectedCard(null)
+    dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: fieldAction.card.instanceId, sector: fieldAction.sector })
+    setFieldAction(null)
   }
 
-  const handleActivateField = (instanceId) => {
-    if (matchState.turnActionsUsed.activatedAbility) {
-      showNotif('Już aktywowano umiejętność tej tury.')
-      return
-    }
+  const handleActivateField = () => {
+    if (!fieldAction) return
+    if (matchState.turnActionsUsed.activatedAbility) { showNotif('Już aktywowano umiejętność tej tury.'); return }
     SFX.activateAbility()
-    dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: instanceId })
-    setFieldSelectedCard(null)
-  }
-
-  const handlePlaceCard = (sector) => {
-    if (!selectedCard) return
-    if (!canPlaceInSector(selectedCard, sector)) {
-      showNotif(`${selectedCard.name} nie pasuje do ${sector === 'offense' ? 'ofensywy' : 'defensywy'}!`)
-      SFX.error()
-      return
-    }
-    const actionKey = sector === 'offense' ? 'placedOffense' : 'placedDefense'
-    if (matchState.turnActionsUsed[actionKey]) {
-      showNotif('Już wystawiłeś kartę w tym sektorze tej tury.')
-      SFX.error()
-      return
-    }
-    const sectorCards = matchState.players.A[sector === 'offense' ? 'offenseSector' : 'defenseSector']
-    if (sectorCards.length >= MAX_SECTOR_SIZE) {
-      showNotif('Sektor pełny! (max 3 zawodników)')
-      SFX.error()
-      return
-    }
-    SFX.cardPlace()
-    dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: selectedCard.instanceId, sector })
-    setSelectedCard(null)
+    dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: fieldAction.card.instanceId })
+    setFieldAction(null)
   }
 
   const showNotif = (msg) => {
     setNotification(msg)
-    setTimeout(() => setNotification(null), 2500)
+    setTimeout(() => setNotification(null), 2400)
   }
 
-  // Long press for card detail
-  const handleCardLongPress = (card) => {
-    setDetailCard(card)
+  // ── Touch drag from hand ──────────────────────────────────────────────────
+  const handleDragStart = (e, card) => {
+    if (!isPlayerTurn) return
+    const touch = e.touches?.[0]
+    if (!touch) return
+    dragRef.current = { card, moved: false, startX: touch.clientX, startY: touch.clientY }
   }
 
-  const makeLongPressHandlers = (card) => ({
-    onTouchStart: () => {
-      longPressRef.current = setTimeout(() => handleCardLongPress(card), 500)
-    },
-    onTouchEnd: () => {
-      if (longPressRef.current) clearTimeout(longPressRef.current)
-    },
-    onTouchMove: () => {
-      if (longPressRef.current) clearTimeout(longPressRef.current)
-    },
-  })
+  const handleDragMove = useCallback((e) => {
+    if (!dragRef.current) return
+    const touch = e.touches?.[0]
+    if (!touch) return
+    const dx = Math.abs(touch.clientX - dragRef.current.startX)
+    const dy = Math.abs(touch.clientY - dragRef.current.startY)
+    if (dx > 6 || dy > 6) {
+      dragRef.current.moved = true
+      setDragPos({ x: touch.clientX, y: touch.clientY })
+      setSelectedCard(dragRef.current.card)
+      // detect zone under finger
+      const els = document.elementsFromPoint(touch.clientX, touch.clientY)
+      const zoneEl = els.find(el => el.dataset?.zone)
+      setDragZone(zoneEl?.dataset.zone || null)
+    }
+  }, [])
 
+  const handleDragEnd = useCallback(() => {
+    if (!dragRef.current) return
+    if (dragRef.current.moved && dragZone) {
+      placeCard(dragZone)
+    }
+    dragRef.current = null
+    setDragPos(null)
+    setDragZone(null)
+  }, [dragZone, placeCard])
+
+  // Attach global touch handlers when dragging
+  useEffect(() => {
+    window.addEventListener('touchmove', handleDragMove, { passive: true })
+    window.addEventListener('touchend', handleDragEnd)
+    return () => {
+      window.removeEventListener('touchmove', handleDragMove)
+      window.removeEventListener('touchend', handleDragEnd)
+    }
+  }, [handleDragMove, handleDragEnd])
+
+  // ── Computed values ───────────────────────────────────────────────────────
   const { phase, round, currentPlayer, players, displayScore, turnActionsUsed, coinFlipState, specialCard } = matchState
   const playerA = players.A
   const playerB = players.B
   const isPlayerTurn = currentPlayer === 'A' && phase === 'playing'
   const canActivate = isPlayerTurn && !turnActionsUsed.activatedAbility && !coinFlipState
 
-  // ── Goalkeeper selection ──────────────────────────────────────────────────
+  const aiTotalAtk = [...playerB.offenseSector, ...playerB.defenseSector]
+    .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
+  const aiTotalDef = (playerB.activeGoalkeeper ? (playerB.activeGoalkeeper.currentDefenseStat ?? playerB.activeGoalkeeper.defenseStat ?? 0) : 0)
+    + [...playerB.defenseSector].reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+  const myTotalAtk = [...playerA.offenseSector, ...playerA.defenseSector]
+    .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
+  const myTotalDef = (playerA.activeGoalkeeper ? (playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat ?? 0) : 0)
+    + [...playerA.defenseSector].reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+
+  // ── GK Selection ──────────────────────────────────────────────────────────
   if (phase === 'goalkeeper_selection') {
     return (
-      <div className="match-gk-select">
-        <div className="match-gk-header">
+      <div className="ms-gk-select">
+        <div className="ms-gk-header">
           <h2>Wybierz Bramkarza</h2>
           <p>Drugi trafi do rezerwy</p>
         </div>
-        <div className="match-gk-cards">
+        <div className="ms-gk-cards">
           {playerA.goalkeepers.map(gk => (
-            <div key={gk.instanceId} className="match-gk-option">
-              <PlayerCard card={gk} size="normal" />
+            <div key={gk.instanceId} className="ms-gk-option">
+              <FieldCard card={gk} onTap={() => {}} />
               <button
-                className="match-gk-pick-btn"
+                className="ms-gk-pick-btn"
                 onClick={() => dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'A', gkInstanceId: gk.instanceId })}
               >
                 Wybierz
@@ -300,215 +323,215 @@ export default function MatchScreen({ matchParams = {} }) {
     )
   }
 
-  const offenseEmpty = !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
-  const defenseEmpty = !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
-
   return (
     <div className="match-screen">
+
       {/* ── Scoreboard ──────────────────────────────────────────────────── */}
-      <div className="match-scoreboard">
-        <div className="sb-team sb-team--left">
-          <span className={`sb-dot ${currentPlayer === 'B' ? 'sb-dot--active' : ''}`} />
-          <span className="sb-team-name">{opponentName}</span>
+      <div className="ms-scoreboard">
+        <div className="msb-side msb-side--left">
+          <span className={`msb-dot ${currentPlayer === 'B' ? 'msb-dot--on' : ''}`} />
+          <span className="msb-name">{opponentName}</span>
         </div>
-        <div className="sb-center">
-          <span className={`score-num ${displayScore.player > displayScore.ai ? 'score-num--winning' : ''}`}>
+        <div className="msb-score">
+          <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>
             {displayScore.player}
           </span>
-          <span className="score-sep">:</span>
-          <span className={`score-num ${displayScore.ai > displayScore.player ? 'score-num--winning' : ''}`}>
+          <span className="msb-sep">:</span>
+          <span className={`msb-num ${displayScore.ai > displayScore.player ? 'msb-num--win' : ''}`}>
             {displayScore.ai}
           </span>
-          <span className="score-round">R{round}/10</span>
+          <span className="msb-round">R{round}/10</span>
         </div>
-        <div className="sb-team sb-team--right">
-          <span className="sb-team-name">TY</span>
-          <span className={`sb-dot ${currentPlayer === 'A' ? 'sb-dot--active' : ''}`} />
+        <div className="msb-side msb-side--right">
+          <span className="msb-name">TY</span>
+          <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
         </div>
       </div>
 
-      {/* ── AI zone (TOP) ───────────────────────────────────────────────── */}
-      <div className="match-zone match-zone--ai">
-        {/* AI goalkeeper */}
-        <div className="match-gk-row match-gk-row--ai">
-          {playerB.activeGoalkeeper ? (
-            <div
-              className="match-gk-card"
-              style={{ background: playerB.activeGoalkeeper.color || '#cfd8dc' }}
-              onClick={() => setDetailCard(playerB.activeGoalkeeper)}
-            >
-              <span className="mgk-label">B</span>
-              <span className="mgk-name">{playerB.activeGoalkeeper.name}</span>
-              <span className="mgk-def">🛡 {playerB.activeGoalkeeper.currentDefenseStat ?? playerB.activeGoalkeeper.defenseStat}</span>
+      {/* ── Field ───────────────────────────────────────────────────────── */}
+      <div className="ms-field-wrap">
+
+        {/* === AI GOAL (top) === */}
+        <div className="ms-goal ms-goal--ai">
+          <GoalPosts side="ai" />
+          <div className="ms-goal-inner">
+            <div className="ms-stat-pill ms-stat-pill--atk">
+              <span className="msp-lbl">ATK</span>
+              <span className="msp-val">{aiTotalAtk}</span>
             </div>
-          ) : <div className="match-gk-empty">—</div>}
-          {aiThinking && <div className="ai-thinking">🤔</div>}
+            <GKCard
+              card={playerB.activeGoalkeeper}
+              side="ai"
+              onTap={() => playerB.activeGoalkeeper && setZoomCard(playerB.activeGoalkeeper)}
+            />
+            <div className="ms-stat-pill ms-stat-pill--def">
+              <span className="msp-lbl">DEF</span>
+              <span className="msp-val">{aiTotalDef}</span>
+            </div>
+          </div>
+          {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
         </div>
 
-        {/* AI sectors */}
-        <div className="match-sectors match-sectors--ai">
-          <FieldSector
-            label="⚔ OF"
+        {/* === AI FIELD === */}
+        <div className="ms-half ms-half--ai">
+          <Zone
+            label="⚔ ATAK"
             cards={playerB.offenseSector}
             side="ai"
-            onCardDetail={setDetailCard}
+            onCardTap={(c) => setZoomCard(c)}
           />
-          <div className="sector-divider" />
-          <FieldSector
-            label="🛡 DEF"
+          <div className="ms-zone-sep" />
+          <Zone
+            label="🛡 OBRONA"
             cards={playerB.defenseSector}
             side="ai"
-            onCardDetail={setDetailCard}
+            onCardTap={(c) => setZoomCard(c)}
           />
         </div>
-      </div>
 
-      {/* ── Midfield ────────────────────────────────────────────────────── */}
-      <div className="match-midfield">
-        <div className="midfield-line" />
-        <div className="midfield-ball">⚽</div>
-        <div className="midfield-line" />
-      </div>
+        {/* === MIDFIELD LINE === */}
+        <div className="ms-midfield">
+          <div className="ms-mid-line" />
+          <div className="ms-mid-ball">⚽</div>
+          <div className="ms-mid-line" />
+        </div>
 
-      {/* ── Player zone (BOTTOM) ────────────────────────────────────────── */}
-      <div className="match-zone match-zone--player">
-        {/* Player sectors */}
-        <div className="match-sectors match-sectors--player">
-          <FieldSector
-            label="🛡 DEF"
+        {/* === PLAYER FIELD === */}
+        <div className="ms-half ms-half--player">
+          <Zone
+            label="🛡 OBRONA"
             cards={playerA.defenseSector}
             side="player"
-            onCardClick={isPlayerTurn ? (card) => handleFieldCardTap(card, 'defense') : null}
-            onCardDetail={setDetailCard}
-            selectedInstanceId={fieldSelectedCard?.sector === 'defense' ? fieldSelectedCard?.card?.instanceId : null}
-            placingCard={selectedCard && canPlaceInSector(selectedCard, 'defense') && defenseEmpty}
-            onSectorDrop={selectedCard && canPlaceInSector(selectedCard, 'defense') && defenseEmpty
-              ? () => handlePlaceCard('defense')
-              : null}
-            makeLongPressHandlers={makeLongPressHandlers}
+            zone="defense"
+            onCardTap={(c) => handleFieldTap(c, 'defense')}
+            onCardLongPress={(c) => setZoomCard(c)}
+            selectedId={fieldAction?.sector === 'defense' ? fieldAction.card.instanceId : null}
+            isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE}
+            onDrop={() => placeCard('defense')}
+            dragZoneActive={dragZone === 'defense'}
           />
-          <div className="sector-divider" />
-          <FieldSector
-            label="⚔ OF"
+          <div className="ms-zone-sep" />
+          <Zone
+            label="⚔ ATAK"
             cards={playerA.offenseSector}
             side="player"
-            onCardClick={isPlayerTurn ? (card) => handleFieldCardTap(card, 'offense') : null}
-            onCardDetail={setDetailCard}
-            selectedInstanceId={fieldSelectedCard?.sector === 'offense' ? fieldSelectedCard?.card?.instanceId : null}
-            placingCard={selectedCard && canPlaceInSector(selectedCard, 'offense') && offenseEmpty}
-            onSectorDrop={selectedCard && canPlaceInSector(selectedCard, 'offense') && offenseEmpty
-              ? () => handlePlaceCard('offense')
-              : null}
-            makeLongPressHandlers={makeLongPressHandlers}
+            zone="offense"
+            onCardTap={(c) => handleFieldTap(c, 'offense')}
+            onCardLongPress={(c) => setZoomCard(c)}
+            selectedId={fieldAction?.sector === 'offense' ? fieldAction.card.instanceId : null}
+            isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE}
+            onDrop={() => placeCard('offense')}
+            dragZoneActive={dragZone === 'offense'}
           />
         </div>
 
-        {/* Player goalkeeper */}
-        <div className="match-gk-row match-gk-row--player">
-          {playerA.activeGoalkeeper ? (
-            <div
-              className="match-gk-card"
-              style={{ background: playerA.activeGoalkeeper.color || '#cfd8dc' }}
-              onClick={() => setDetailCard(playerA.activeGoalkeeper)}
-            >
-              <span className="mgk-label">B</span>
-              <span className="mgk-name">{playerA.activeGoalkeeper.name}</span>
-              <span className="mgk-def">🛡 {playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat}</span>
+        {/* === PLAYER GOAL (bottom) === */}
+        <div className="ms-goal ms-goal--player">
+          <div className="ms-goal-inner">
+            <div className="ms-stat-pill ms-stat-pill--atk">
+              <span className="msp-lbl">ATK</span>
+              <span className="msp-val">{myTotalAtk}</span>
             </div>
-          ) : <div className="match-gk-empty">—</div>}
-          <div className="match-deck-count">
-            🃏 {playerA.deck.length}
+            <GKCard
+              card={playerA.activeGoalkeeper}
+              side="player"
+              onTap={() => playerA.activeGoalkeeper && setZoomCard(playerA.activeGoalkeeper)}
+            />
+            <div className="ms-stat-pill ms-stat-pill--def">
+              <span className="msp-lbl">DEF</span>
+              <span className="msp-val">{myTotalDef}</span>
+            </div>
           </div>
+          <GoalPosts side="player" />
         </div>
-      </div>
 
-      {/* ── Field card action popup (sub / activate) ─────────────────────── */}
-      {fieldSelectedCard && isPlayerTurn && (
-        <div className="field-action-bar">
-          <span className="field-action-name">{fieldSelectedCard.card.name}</span>
-          <div className="field-action-buttons">
-            {!fieldSelectedCard.card.isLocked && !fieldSelectedCard.card.justPlaced
-              && fieldSelectedCard.card.abilityType !== 'passive' && canActivate && (
-              <button className="fab fab--activate" onClick={() => handleActivateField(fieldSelectedCard.card.instanceId)}>
-                ⚡ Aktywuj
-              </button>
+      </div>{/* end ms-field-wrap */}
+
+      {/* ── Field card action popup ──────────────────────────────────────── */}
+      {fieldAction && isPlayerTurn && (
+        <div className="ms-field-popup">
+          <span className="msfp-name">{fieldAction.card.name}</span>
+          <div className="msfp-btns">
+            {!fieldAction.card.isLocked && !fieldAction.card.justPlaced
+              && fieldAction.card.abilityType !== 'passive' && canActivate && (
+              <button className="msfp-btn msfp-btn--activate" onClick={handleActivateField}>⚡ Aktywuj</button>
             )}
-            <button className="fab fab--sub" onClick={handleSubstitute}>
-              🔄 Zmiana
-            </button>
-            <button className="fab fab--info" onClick={() => setDetailCard(fieldSelectedCard.card)}>
-              ℹ️
-            </button>
-            <button className="fab fab--cancel" onClick={() => setFieldSelectedCard(null)}>
-              ✕
-            </button>
+            <button className="msfp-btn msfp-btn--sub" onClick={handleSubstitute}>🔄 Zmiana</button>
+            <button className="msfp-btn msfp-btn--info" onClick={() => setZoomCard(fieldAction.card)}>ℹ️</button>
+            <button className="msfp-btn msfp-btn--cancel" onClick={() => setFieldAction(null)}>✕</button>
           </div>
         </div>
       )}
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      <div className="match-hand-area">
-        {/* Placement hint */}
-        {selectedCard && isPlayerTurn && (
-          <div className="placement-hint">
-            <span className="ph-name">{selectedCard.name} →</span>
-            {canPlaceInSector(selectedCard, 'offense') && offenseEmpty && (
-              <button className="ph-btn ph-btn--off" onClick={() => handlePlaceCard('offense')}>⚔ OF</button>
+      <div className="ms-hand-area">
+        {/* Placement hint when card selected */}
+        {selectedCard && isPlayerTurn && !dragPos && (
+          <div className="ms-place-hint">
+            <span className="mph-name">{selectedCard.name}</span>
+            {canPlaceInSector(selectedCard, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE && (
+              <button className="mph-btn mph-btn--off" onClick={() => placeCard('offense')}>⚔ Atak</button>
             )}
-            {canPlaceInSector(selectedCard, 'defense') && defenseEmpty && (
-              <button className="ph-btn ph-btn--def" onClick={() => handlePlaceCard('defense')}>🛡 DEF</button>
+            {canPlaceInSector(selectedCard, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE && (
+              <button className="mph-btn mph-btn--def" onClick={() => placeCard('defense')}>🛡 Obrona</button>
             )}
-            <button className="ph-btn ph-btn--cancel" onClick={() => setSelectedCard(null)}>✕</button>
+            <button className="mph-btn mph-btn--x" onClick={() => setSelectedCard(null)}>✕</button>
           </div>
         )}
 
-        <div className="hand-scroll">
+        <div className="ms-hand-scroll">
           {playerA.hand.map(card => (
-            <div
+            <FieldCard
               key={card.instanceId}
-              className={`hand-card-wrap ${selectedCard?.instanceId === card.instanceId ? 'hand-card-wrap--selected' : ''}`}
-              onClick={() => handleCardSelect(card)}
-              {...makeLongPressHandlers(card)}
-            >
-              <PlayerCard
-                card={card}
-                size="small"
-                selected={selectedCard?.instanceId === card.instanceId}
-              />
-            </div>
+              card={card}
+              selected={selectedCard?.instanceId === card.instanceId}
+              dimmed={!!fieldAction}
+              onTap={() => {
+                if (!isPlayerTurn) return
+                setFieldAction(null)
+                setSelectedCard(prev => prev?.instanceId === card.instanceId ? null : (SFX.cardSelect(), card))
+              }}
+              onLongPress={() => setZoomCard(card)}
+              onDragStart={handleDragStart}
+            />
           ))}
-          {playerA.hand.length === 0 && (
-            <div className="hand-empty">Brak kart w ręce</div>
-          )}
+          {playerA.hand.length === 0 && <div className="ms-hand-empty">Brak kart</div>}
+          <div className="ms-deck-badge">🃏 {playerA.deck.length}</div>
         </div>
       </div>
 
-      {/* ── Action bar ───────────────────────────────────────────────────── */}
-      <div className="match-action-bar">
-        <div className="action-chips">
-          {turnActionsUsed.placedOffense && <span className="chip chip--done">✓ OF</span>}
-          {turnActionsUsed.placedDefense && <span className="chip chip--done">✓ DEF</span>}
-          {turnActionsUsed.activatedAbility && <span className="chip chip--done">✓ Skill</span>}
-          {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="chip chip--todo">OF</span>}
-          {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="chip chip--todo">DEF</span>}
+      {/* ── Action bar ──────────────────────────────────────────────────── */}
+      <div className="ms-action-bar">
+        <div className="ms-action-chips">
+          {turnActionsUsed.placedOffense  && <span className="mac done">✓ ATK</span>}
+          {turnActionsUsed.placedDefense  && <span className="mac done">✓ DEF</span>}
+          {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
+          {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="mac todo">ATK</span>}
+          {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
         </div>
         <button
-          className={`end-turn-btn ${!isPlayerTurn ? 'end-turn-btn--wait' : ''}`}
+          className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
           onClick={handleEndTurn}
           disabled={!isPlayerTurn || !!coinFlipState?.pending}
         >
-          {!isPlayerTurn
-            ? (aiThinking ? '🤔 Bot...' : '⏳ Tura bota')
-            : '→ Zakończ turę'}
+          {!isPlayerTurn ? (aiThinking ? '🤔 Bot...' : '⏳ Tura bota') : '→ Zakończ turę'}
         </button>
       </div>
 
-      {/* ── Notification ─────────────────────────────────────────────────── */}
-      {notification && (
-        <div className="match-notif">{notification}</div>
+      {/* ── Drag ghost ──────────────────────────────────────────────────── */}
+      {dragPos && selectedCard && (
+        <div
+          className="ms-drag-ghost"
+          style={{ left: dragPos.x - 40, top: dragPos.y - 55 }}
+        >
+          <FieldCard card={selectedCard} />
+        </div>
       )}
 
-      {/* ── Overlays ─────────────────────────────────────────────────────── */}
+      {/* ── Notifications ───────────────────────────────────────────────── */}
+      {notification && <div className="ms-notif">{notification}</div>}
+
+      {/* ── Overlays ────────────────────────────────────────────────────── */}
       {coinFlipState && (
         <CoinFlip
           coinFlipState={coinFlipState}
@@ -516,76 +539,51 @@ export default function MatchScreen({ matchParams = {} }) {
           onDismiss={() => dispatch({ type: 'DISMISS_COIN' })}
         />
       )}
-
       {phase === 'special_card' && specialCard && (
-        <SpecialCardModal
-          card={specialCard}
-          onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })}
-        />
+        <SpecialCardModal card={specialCard} onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })} />
       )}
-
       {goalAnim && settings.visualEffects !== false && (
-        <GoalAnimation
-          scorer={goalAnim.scorer}
-          score={goalAnim.score}
-          onDone={() => setGoalAnim(null)}
-        />
+        <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} onDone={() => setGoalAnim(null)} />
       )}
-
-      {detailCard && (
-        <CardDetailOverlay card={detailCard} onClose={() => setDetailCard(null)} />
-      )}
+      {zoomCard && <CardZoomModal card={zoomCard} onClose={() => setZoomCard(null)} />}
     </div>
   )
 }
 
-// ── FieldSector ───────────────────────────────────────────────────────────
+// ── Zone sub-component ─────────────────────────────────────────────────────
 
-function FieldSector({ label, cards, side, onCardClick, onSectorDrop, placingCard, selectedInstanceId, onCardDetail, makeLongPressHandlers }) {
+function Zone({ label, cards, side, zone, onCardTap, onCardLongPress, selectedId, isDropTarget, onDrop, dragZoneActive }) {
   return (
     <div
       className={[
-        'field-sector',
-        `field-sector--${side}`,
-        placingCard ? 'field-sector--drop' : '',
+        'ms-zone',
+        `ms-zone--${side}`,
+        isDropTarget ? 'ms-zone--droptarget' : '',
+        dragZoneActive ? 'ms-zone--dragover' : '',
       ].filter(Boolean).join(' ')}
-      onClick={!onCardClick && onSectorDrop ? onSectorDrop : undefined}
+      data-zone={zone}
+      onClick={isDropTarget && !dragZoneActive ? onDrop : undefined}
     >
-      <div className="fs-label">{label}</div>
-      <div className="fs-cards">
+      <span className="msz-label">{label}</span>
+      <div className="msz-cards">
         {cards.map(card => (
-          <div
+          <FieldCard
             key={card.instanceId}
-            className={[
-              'fs-card-wrap',
-              selectedInstanceId === card.instanceId ? 'fs-card-wrap--selected' : '',
-              card.isLocked ? 'fs-card-wrap--locked' : '',
-            ].filter(Boolean).join(' ')}
-            onClick={() => onCardClick ? onCardClick(card) : (onSectorDrop ? onSectorDrop() : null)}
-            {...(makeLongPressHandlers ? makeLongPressHandlers(card) : {})}
-          >
-            {side === 'ai' && card.faceDown ? (
-              <div className="fs-card-back">⚽</div>
-            ) : (
-              <div className="fs-card-mini" style={{ background: card.color || '#eee' }}>
-                <span className="fs-card-type">{card.typeLabel}</span>
-                <span className="fs-card-name">{card.name}</span>
-                <div className="fs-card-stats">
-                  <span className="fs-stat fs-stat--atk">{card.currentAttackStat ?? card.attackStat}</span>
-                  <span className="fs-stat-sep">/</span>
-                  <span className="fs-stat fs-stat--def">{card.currentDefenseStat ?? card.defenseStat}</span>
-                </div>
-                {card.isLocked && <div className="fs-locked">🔒</div>}
-                {card.justPlaced && <div className="fs-new">NEW</div>}
-              </div>
-            )}
-          </div>
+            card={card}
+            selected={selectedId === card.instanceId}
+            faceDown={side === 'ai' && card.faceDown}
+            isNew={card.justPlaced}
+            onTap={() => onCardTap?.(card)}
+            onLongPress={() => onCardLongPress?.(card)}
+          />
         ))}
-        {cards.length < MAX_SECTOR_SIZE && placingCard && (
-          <div className="fs-drop-slot" onClick={onSectorDrop}>+</div>
+        {cards.length === 0 && !isDropTarget && (
+          <div className="msz-empty">—</div>
         )}
-        {cards.length === 0 && !placingCard && (
-          <div className="fs-empty">—</div>
+        {isDropTarget && cards.length < MAX_SECTOR_SIZE && (
+          <div className="msz-drop-slot" data-zone={zone} onClick={e => { e.stopPropagation(); onDrop?.() }}>
+            ＋
+          </div>
         )}
       </div>
     </div>

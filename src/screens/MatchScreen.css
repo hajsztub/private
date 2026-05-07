@@ -236,10 +236,15 @@
   flex-direction: column;
   align-items: center;
   padding: 4px 4px 2px;
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
   position: relative;
   transition: background 0.2s;
+  min-width: 0;
 }
+
+.ms-zone::-webkit-scrollbar { display: none; }
 
 .ms-zone--droptarget {
   background: rgba(105,240,174,0.1);
@@ -274,10 +279,9 @@
   flex-wrap: nowrap;
   gap: 4px;
   align-items: flex-start;
-  overflow-x: auto;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   justify-content: center;
-  scrollbar-width: none;
 }
 
 .msz-cards::-webkit-scrollbar { display: none; }

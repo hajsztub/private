@@ -58,9 +58,9 @@
 }
 
 .mm-logo-img {
-  max-width: 300px;
-  max-height: 160px;
-  width: 90%;
+  max-width: 360px;
+  max-height: 192px;
+  width: 92%;
   object-fit: contain;
   filter: drop-shadow(0 4px 24px rgba(0,0,0,0.6));
 }
@@ -141,21 +141,6 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
-}
-
-.mm-level-badge {
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #f9a825;
-  color: #1a0900;
-  font-size: 9px;
-  font-weight: 900;
-  padding: 1px 6px;
-  border-radius: 8px;
-  white-space: nowrap;
-  line-height: 1.4;
 }
 
 .mm-profile-info {

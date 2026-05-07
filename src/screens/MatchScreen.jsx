@@ -512,10 +512,10 @@ export default function MatchScreen({ matchParams = {} }) {
                 } else {
                   // Single tap → zoom stats
                   SFX.cardSelect()
-                  setZoomCard({ card, isPlayerField: false })
+                  setZoomCard({ card, isPlayerField: false, fromHand: true })
                 }
               }}
-              onLongPress={() => setZoomCard({ card, isPlayerField: false })}
+              onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
               onDragStart={handleDragStart}
             />
           ))}
@@ -596,7 +596,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {zoomCard && (() => {
         const zc = zoomCard.card
         const placements = []
-        if (!zoomCard.isPlayerField && !zoomCard.sector && isPlayerTurn) {
+        if (zoomCard.fromHand && isPlayerTurn) {
           if (canPlaceInSector(zc, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE)
             placements.push({ label: '⚔ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
           if (canPlaceInSector(zc, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE)

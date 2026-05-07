@@ -4,6 +4,7 @@ import { useProfile } from '../App'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import CurrencyBar from '../components/CurrencyBar'
+import FieldCard from '../components/FieldCard'
 import './MarketScreen.css'
 
 const ALL_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
@@ -18,7 +19,7 @@ const PACKS = [
     icon: '🎲',
     cost: 80,
     currency: 'coins',
-    gradient: 'linear-gradient(135deg,#1565c0,#283593)',
+    iconBg: 'linear-gradient(135deg,#1565c0,#283593)',
     filter: d => d.marketPrice > 0,
   },
   {
@@ -28,7 +29,7 @@ const PACKS = [
     icon: '⚔️',
     cost: 100,
     currency: 'coins',
-    gradient: 'linear-gradient(135deg,#b71c1c,#7f0000)',
+    iconBg: 'linear-gradient(135deg,#c62828,#7f0000)',
     filter: d => d.type === 'attack' && d.marketPrice > 0,
   },
   {
@@ -38,7 +39,7 @@ const PACKS = [
     icon: '🛡️',
     cost: 100,
     currency: 'coins',
-    gradient: 'linear-gradient(135deg,#0d47a1,#1a237e)',
+    iconBg: 'linear-gradient(135deg,#0d47a1,#1a237e)',
     filter: d => d.type === 'defense' && d.marketPrice > 0,
   },
   {
@@ -48,7 +49,7 @@ const PACKS = [
     icon: '🔮',
     cost: 100,
     currency: 'coins',
-    gradient: 'linear-gradient(135deg,#4a148c,#1a0053)',
+    iconBg: 'linear-gradient(135deg,#6a1b9a,#4a148c)',
     filter: d => d.type === 'midfield' && d.marketPrice > 0,
   },
   {
@@ -58,7 +59,7 @@ const PACKS = [
     icon: '🧤',
     cost: 120,
     currency: 'coins',
-    gradient: 'linear-gradient(135deg,#006064,#002f34)',
+    iconBg: 'linear-gradient(135deg,#00695c,#004d40)',
     filter: d => d.type === 'goalkeeper' && d.marketPrice > 0,
   },
   {
@@ -68,12 +69,12 @@ const PACKS = [
     icon: '💎',
     cost: 5,
     currency: 'gems',
-    gradient: 'linear-gradient(135deg,#880e4f,#4a0072)',
+    iconBg: 'linear-gradient(135deg,#880e4f,#4a0072)',
     filter: d => d.rarity === 'legendary' || d.rarity === 'rare',
   },
 ]
 
-const PACK_REFUND = 30 // coins you get if you decline the card
+const PACK_REFUND = 30
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -87,40 +88,27 @@ function drawCards(pack, count = 3) {
   return drawn
 }
 
-function CardChip({ def, onClick, picked }) {
-  const TYPE_C = { attack: '#b71c1c', midfield: '#6a1b9a', defense: '#0d47a1', goalkeeper: '#37474f' }
-  const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
-  return (
-    <div
-      className={`pack-card-chip ${picked ? 'pack-card-chip--picked' : ''}`}
-      style={{ background: def.color || '#eee', borderColor: RARITY_C[def.rarity] || '#ccc' }}
-      onClick={onClick}
-    >
-      <div className="pcc-top">
-        <span className="pcc-type" style={{ background: TYPE_C[def.type] || '#555' }}>{def.typeLabel}</span>
-        <span className="pcc-rarity" style={{ color: RARITY_C[def.rarity] }}>{def.rarity === 'legendary' ? '★★★' : def.rarity === 'rare' ? '★★' : '★'}</span>
-      </div>
-      <div className="pcc-name">{def.name}</div>
-      <div className="pcc-stats">
-        <span className="pcc-atk">{def.attackStat} ATK</span>
-        <span className="pcc-def">{def.defenseStat} DEF</span>
-      </div>
-      <div className="pcc-ability">{def.abilityName}</div>
-      {picked && <div className="pcc-check">✓</div>}
-    </div>
-  )
+// Convert card definition to a card object usable by FieldCard
+function defToCard(def) {
+  return {
+    ...def,
+    instanceId: `preview_${def.id}_${Math.random()}`,
+    currentAttackStat: def.attackStat,
+    currentDefenseStat: def.defenseStat,
+    upgradeLevel: 0,
+  }
 }
 
 // ── Pack Opening Overlay ───────────────────────────────────────────────────
 
-function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins, onClose }) {
+function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   const [revealed, setRevealed] = useState(0)
   const [picked, setPicked] = useState(null)
   const [done, setDone] = useState(false)
 
   useEffect(() => {
     if (revealed < drawnCards.length) {
-      const t = setTimeout(() => setRevealed(r => r + 1), 450)
+      const t = setTimeout(() => setRevealed(r => r + 1), 480)
       return () => clearTimeout(t)
     }
   }, [revealed, drawnCards.length])
@@ -141,34 +129,44 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins, onClose }) {
   return (
     <div className="pack-overlay">
       <div className="pack-overlay-panel">
-        <div className="pack-overlay-title" style={{ background: pack.gradient }}>
-          {pack.icon} {pack.label}
+        {/* Title */}
+        <div className="pack-overlay-header" style={{ background: pack.iconBg }}>
+          <span className="poh-icon">{pack.icon}</span>
+          <span className="poh-title">{pack.label}</span>
+          <span className="poh-desc">{pack.desc}</span>
         </div>
 
+        {/* Cards */}
         <div className="pack-cards-row">
-          {drawnCards.map((def, i) => (
-            <div
-              key={i}
-              className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'}`}
-              style={{ transitionDelay: `${i * 0.05}s` }}
-            >
-              {i < revealed ? (
-                <CardChip def={def} onClick={() => handlePick(def)} picked={picked === def} />
-              ) : (
-                <div className="pack-card-back">
-                  <span>⚽</span>
-                  <span className="pcb-sub">FC</span>
-                </div>
-              )}
-            </div>
-          ))}
+          {drawnCards.map((def, i) => {
+            const card = defToCard(def)
+            const isSelected = picked === def
+            return (
+              <div
+                key={i}
+                className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'} ${isSelected ? 'pack-card-slot--picked' : ''}`}
+                style={{ transitionDelay: `${i * 0.06}s` }}
+                onClick={() => i < revealed && handlePick(def)}
+              >
+                {i < revealed ? (
+                  <FieldCard card={card} fieldSize />
+                ) : (
+                  <div className="pack-card-back">
+                    <span className="pcb-ball">⚽</span>
+                    <span className="pcb-sub">FC</span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
 
+        {/* Actions */}
         {revealed >= drawnCards.length && !done && (
           <div className="pack-actions">
-            <p className="pack-prompt">Wybierz kartę lub weź monety</p>
+            <p className="pack-prompt">Wybierz kartę aby dodać do kolekcji</p>
             <button className="pack-coins-btn" onClick={handleCoins}>
-              🪙 +{PACK_REFUND} monet zamiast karty
+              🪙 +{PACK_REFUND} MONET ZAMIAST KARTY
             </button>
           </div>
         )}
@@ -197,7 +195,6 @@ function SellTab({ profile, sellCard, showNotif }) {
     })
     .filter(Boolean)
 
-  const TYPE_LABEL = { attack: 'ATK', midfield: 'MID', defense: 'DEF', goalkeeper: 'GK' }
   const TYPE_C = { attack: '#b71c1c', midfield: '#6a1b9a', defense: '#0d47a1', goalkeeper: '#37474f' }
 
   return (
@@ -216,14 +213,12 @@ function SellTab({ profile, sellCard, showNotif }) {
               <div
                 key={owned.instanceId}
                 className={`sell-item ${isSelected ? 'sell-item--selected' : ''}`}
-                style={{ background: def.color || '#eee' }}
+                style={{ background: def.color || '#1a2a1a' }}
                 onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
               >
                 <div className="si-top">
                   <span className="si-type" style={{ background: TYPE_C[def.type] }}>{def.typeLabel}</span>
-                  {(owned.upgradeLevel || 0) > 0 && (
-                    <span className="si-lvl">+{owned.upgradeLevel}</span>
-                  )}
+                  {(owned.upgradeLevel || 0) > 0 && <span className="si-lvl">+{owned.upgradeLevel}</span>}
                 </div>
                 <div className="si-name">{def.name}</div>
                 <div className="si-stats">{def.attackStat}/{def.defenseStat}</div>
@@ -254,9 +249,9 @@ function SellTab({ profile, sellCard, showNotif }) {
 
 export default function MarketScreen() {
   const { goBack } = useRouter()
-  const { profile, sellCard, addCoins, spendCoins, claimPackCard } = useProfile()
+  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update } = useProfile()
   const [tab, setTab] = useState('packs')
-  const [openingPack, setOpeningPack] = useState(null) // { pack, cards }
+  const [openingPack, setOpeningPack] = useState(null)
   const [notification, setNotification] = useState(null)
   const gems = profile.gems ?? 0
 
@@ -264,8 +259,6 @@ export default function MarketScreen() {
     setNotification({ msg, ok })
     setTimeout(() => setNotification(null), 2800)
   }
-
-  const { update } = useProfile()
 
   const handleBuyPack = (pack) => {
     if (pack.currency === 'coins') {
@@ -309,26 +302,26 @@ export default function MarketScreen() {
     <div className="market-screen">
       <div className="market-header">
         <button className="back-btn" onClick={goBack}>←</button>
-        <h1 className="market-title">Market</h1>
+        <h1 className="market-title">MARKET</h1>
         <CurrencyBar onGemsClick={handleWatchAd} />
       </div>
 
       <div className="market-tabs">
         <button className={`market-tab ${tab === 'packs' ? 'market-tab--active' : ''}`} onClick={() => setTab('packs')}>
-          📦 Paczki
+          📦 PACZKI
         </button>
         <button className={`market-tab ${tab === 'sell' ? 'market-tab--active' : ''}`} onClick={() => setTab('sell')}>
-          📤 Sprzedaj
+          🔒 SPRZEDAJ
         </button>
       </div>
 
       {tab === 'packs' ? (
         <div className="packs-list">
-          {/* Earn gems banner */}
+          {/* Earn banner */}
           <div className="earn-gems-banner" onClick={handleWatchAd}>
-            <span className="egb-icon">📺</span>
+            <div className="egb-icon-wrap">📺</div>
             <div className="egb-text">
-              <span className="egb-title">Obejrzyj reklamę</span>
+              <span className="egb-title">OBEJRZYJ REKLAMĘ</span>
               <span className="egb-desc">Zdobądź 50 monet lub 💎 klejnoty</span>
             </div>
             <span className="egb-cta">OBEJRZYJ →</span>
@@ -342,20 +335,19 @@ export default function MarketScreen() {
               <div
                 key={pack.id}
                 className={`pack-item ${!canAfford ? 'pack-item--locked' : ''}`}
-                style={{ background: pack.gradient }}
+                onClick={() => canAfford && handleBuyPack(pack)}
               >
-                <div className="pi-icon">{pack.icon}</div>
+                <div className="pi-icon-wrap" style={{ background: pack.iconBg }}>
+                  <span className="pi-icon">{pack.icon}</span>
+                </div>
                 <div className="pi-info">
                   <div className="pi-name">{pack.label}</div>
                   <div className="pi-desc">{pack.desc}</div>
                 </div>
-                <button
-                  className={`pi-buy-btn ${!canAfford ? 'pi-buy-btn--disabled' : ''}`}
-                  onClick={() => canAfford && handleBuyPack(pack)}
-                  disabled={!canAfford}
-                >
-                  {pack.currency === 'coins' ? '🪙' : '💎'} {pack.cost}
-                </button>
+                <div className={`pi-buy-btn ${!canAfford ? 'pi-buy-btn--disabled' : ''}`}>
+                  <span className="pi-buy-cur">{pack.currency === 'coins' ? '🪙' : '💎'}</span>
+                  <span className="pi-buy-val">{pack.cost}</span>
+                </div>
               </div>
             )
           })}
@@ -370,7 +362,6 @@ export default function MarketScreen() {
           drawnCards={openingPack.cards}
           onPick={handlePickCard}
           onTakeCoins={handleTakeCoins}
-          onClose={() => setOpeningPack(null)}
         />
       )}
 

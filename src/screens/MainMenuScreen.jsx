@@ -56,7 +56,6 @@ export default function MainMenuScreen() {
 
   const tier = getTier(profile.rating)
   const gems = profile.gems ?? 0
-  const level = Math.max(1, Math.floor(profile.rating / 40))
 
   return (
     <div className="main-menu">
@@ -69,7 +68,6 @@ export default function MainMenuScreen() {
         <div className="mm-profile-left">
           <div className="mm-avatar-wrap">
             <ProfileAvatar name={profile.name} />
-            <div className="mm-level-badge">Lv {level}</div>
           </div>
           <div className="mm-profile-info">
             <div className="mm-profile-name">{profile.name || 'Gracz'}</div>

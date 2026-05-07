@@ -1,8 +1,29 @@
 import React from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
-import PlayerCard from '../components/PlayerCard'
+import FieldCard from '../components/FieldCard'
 import './PostMatchScreen.css'
+
+function PostMatchLogo() {
+  const [failed, React_useState] = React.useState(false)
+  if (!failed) {
+    return (
+      <img
+        src="/logo.png"
+        alt="GOAL TCG"
+        className="pm-logo-img"
+        onError={() => React_useState(true)}
+        draggable={false}
+      />
+    )
+  }
+  return (
+    <div className="pm-logo-fallback">
+      <span className="pm-logo-ball">⚽</span>
+      <span className="pm-logo-text">GOAL <span className="pm-logo-tcg">TCG</span></span>
+    </div>
+  )
+}
 
 export default function PostMatchScreen({ result = {} }) {
   const { navigate } = useRouter()
@@ -14,121 +35,117 @@ export default function PostMatchScreen({ result = {} }) {
     matchType = 'local',
     coinsEarned = 0,
     ratingChange = 0,
-    goalEvents = [],
     playerOfMatch = null,
     log = [],
   } = result
 
   const resultLabels = {
-    win: { text: 'WYGRAŁEŚ!', emoji: '🏆', color: '#4caf50' },
+    win:  { text: 'WYGRAŁEŚ!', emoji: '🏆', color: '#4caf50' },
     loss: { text: 'PRZEGRANA', emoji: '😞', color: '#ef5350' },
-    draw: { text: 'REMIS', emoji: '🤝', color: '#ff9800' },
+    draw: { text: 'REMIS',     emoji: '🤝', color: '#ff9800' },
   }
 
   const res = resultLabels[matchResult] || resultLabels.draw
-  const playerGoals = goalEvents.filter(e => e.scorer === 'player')
-  const aiGoals = goalEvents.filter(e => e.scorer === 'ai')
+  const isWin = matchResult === 'win'
+  const isLoss = matchResult === 'loss'
 
   return (
-    <div className="postmatch-screen">
-      {/* Result banner */}
-      <div className="postmatch-banner" style={{ borderColor: res.color }}>
-        <div className="postmatch-emoji">{res.emoji}</div>
-        <div className="postmatch-result" style={{ color: res.color }}>{res.text}</div>
-        <div className="postmatch-score">
-          <span className="ps-score-num">{score.player}</span>
-          <span className="ps-score-sep">:</span>
-          <span className="ps-score-num">{score.ai}</span>
+    <div className="pm-screen">
+      <div className="pm-bg-accents" />
+
+      {/* Logo */}
+      <div className="pm-logo-wrap">
+        <PostMatchLogo />
+      </div>
+
+      {/* Result */}
+      <div className="pm-result-block">
+        <div className="pm-result-text" style={{ color: res.color }}>{res.text}</div>
+        <div className="pm-result-emoji">{res.emoji}</div>
+        <div className="pm-score">
+          <span className={`pm-score-num ${isLoss ? 'pm-score-num--lose' : ''}`}>{score.player}</span>
+          <span className="pm-score-sep">:</span>
+          <span className={`pm-score-num ${isWin ? 'pm-score-num--win' : ''}`}>{score.ai}</span>
         </div>
       </div>
 
       {/* Rewards */}
-      <div className="postmatch-rewards">
-        <div className="reward-item">
-          <span className="reward-icon">🪙</span>
-          <span className="reward-val">+{coinsEarned}</span>
-          <span className="reward-label">Monety</span>
+      <div className="pm-rewards">
+        <div className="pm-reward-item">
+          <span className="pm-reward-icon">🪙</span>
+          <span className="pm-reward-val">+{coinsEarned}</span>
+          <span className="pm-reward-label">Monety</span>
         </div>
         {matchType === 'league' && (
-          <div className="reward-item">
-            <span className="reward-icon">⭐</span>
-            <span className="reward-val" style={{ color: ratingChange >= 0 ? '#81c784' : '#ef9a9a' }}>
+          <div className="pm-reward-item">
+            <span className="pm-reward-icon">⭐</span>
+            <span className="pm-reward-val" style={{ color: ratingChange >= 0 ? '#81c784' : '#ef9a9a' }}>
               {ratingChange >= 0 ? '+' : ''}{ratingChange}
             </span>
-            <span className="reward-label">Rating ({profile.rating})</span>
+            <span className="pm-reward-label">Rating ({profile.rating})</span>
           </div>
         )}
-        <div className="reward-item">
-          <span className="reward-icon">📊</span>
-          <span className="reward-val">{profile.wins}W-{profile.draws}R-{profile.losses}P</span>
-          <span className="reward-label">Bilans</span>
+        <div className="pm-reward-item">
+          <span className="pm-reward-icon">📊</span>
+          <span className="pm-reward-val pm-reward-val--small">{profile.wins}W-{profile.draws}R-{profile.losses}P</span>
+          <span className="pm-reward-label">Bilans</span>
         </div>
       </div>
 
-      {/* Player of the match */}
+      {/* MVP */}
       {playerOfMatch && (
-        <div className="postmatch-section">
-          <div className="section-title">🌟 Zawodnik Meczu</div>
-          <div className="postmatch-potm">
-            <PlayerCard card={playerOfMatch} size="normal" />
-            <div className="potm-info">
-              <div className="potm-name">{playerOfMatch.name}</div>
-              <div className="potm-stats">
-                <span>⚔️ {playerOfMatch.currentAttackStat ?? playerOfMatch.attackStat}</span>
-                <span>🛡️ {playerOfMatch.currentDefenseStat ?? playerOfMatch.defenseStat}</span>
+        <div className="pm-mvp-section">
+          <div className="pm-section-title">🌟 ZAWODNIK MECZU</div>
+          <div className="pm-mvp-row">
+            <FieldCard card={playerOfMatch} fieldSize />
+            <div className="pm-mvp-info">
+              <div className="pm-mvp-name">{playerOfMatch.name}</div>
+              <div className="pm-mvp-stats">
+                <span className="pm-mvp-stat pm-mvp-stat--atk">
+                  ⚔ {playerOfMatch.currentAttackStat ?? playerOfMatch.attackStat}
+                </span>
+                <span className="pm-mvp-stat pm-mvp-stat--def">
+                  🛡 {playerOfMatch.currentDefenseStat ?? playerOfMatch.defenseStat}
+                </span>
               </div>
+              {playerOfMatch.abilityName && (
+                <div className="pm-mvp-ability">{playerOfMatch.abilityName}</div>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Goal events */}
-      {goalEvents.length > 0 && (
-        <div className="postmatch-section">
-          <div className="section-title">⚽ Bramki</div>
-          <div className="goal-events-list">
-            {goalEvents.map((ev, i) => (
-              <div key={i} className={`goal-event goal-event--${ev.scorer}`}>
-                <span className="goal-event-icon">⚽</span>
-                <span className="goal-event-info">
-                  Runda {ev.round} — {ev.scorer === 'player' ? `Ty (${ev.cardName || '?'})` : `Bot (${ev.cardName || '?'})`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Match log snippet */}
-      {log.length > 0 && (
-        <div className="postmatch-section">
-          <div className="section-title">📋 Kluczowe momenty</div>
-          <div className="postmatch-log">
-            {log.slice(0, 8).map((entry, i) => (
-              <div key={i} className={`pm-log-entry pm-log-entry--${entry.type}`}>
-                {entry.round > 0 && <span className="pm-log-round">R{entry.round}</span>}
-                <span>{entry.message}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Action buttons */}
-      <div className="postmatch-actions">
+      <div className="pm-actions">
         <button
           className="pm-btn pm-btn--rematch"
           onClick={() => navigate('match', { matchType, matchId: Date.now() })}
         >
-          ⚽ Zagraj kolejny mecz
+          ⚽ ZAGRAJ KOLEJNY MECZ
         </button>
         <button
           className="pm-btn pm-btn--menu"
           onClick={() => navigate('main_menu')}
         >
-          ← Główne Menu
+          ← GŁÓWNE MENU
         </button>
       </div>
+
+      {/* Key moments — at the bottom */}
+      {log.length > 0 && (
+        <div className="pm-log-section">
+          <div className="pm-section-title">📋 KLUCZOWE MOMENTY</div>
+          <div className="pm-log-list">
+            {log.slice(0, 10).map((entry, i) => (
+              <div key={i} className={`pm-log-entry pm-log-entry--${entry.type}`}>
+                {entry.round > 0 && <span className="pm-log-round">R{entry.round}</span>}
+                <span className="pm-log-msg">{entry.message}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

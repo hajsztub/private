@@ -1,7 +1,9 @@
+/* ── MarketScreen ─────────────────────────────────────────────────────────── */
+
 .market-screen {
   width: 100%;
   height: 100dvh;
-  background: linear-gradient(170deg, #0a0a1a, #0d1a2d);
+  background: #0b0e1a;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -17,14 +19,14 @@
   gap: 12px;
   padding: 14px 16px 10px;
   padding-top: max(14px, env(safe-area-inset-top));
-  background: rgba(0,0,0,0.4);
+  background: #0d1117;
   border-bottom: 1px solid rgba(255,255,255,0.07);
   flex-shrink: 0;
 }
 
 .back-btn {
   background: rgba(255,255,255,0.08);
-  border: none;
+  border: 1px solid rgba(255,255,255,0.1);
   color: white;
   font-size: 20px;
   width: 36px;
@@ -41,48 +43,39 @@
   flex: 1;
   font-family: 'Bangers', cursive;
   font-size: 26px;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   margin: 0;
+  color: white;
 }
 
-.market-currencies {
-  display: flex;
-  gap: 8px;
-}
-
-.mkt-coin, .mkt-gem {
-  font-size: 12px;
-  font-weight: 800;
-  background: rgba(255,255,255,0.08);
-  padding: 4px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
 
 .market-tabs {
   display: flex;
   flex-shrink: 0;
-  background: rgba(0,0,0,0.3);
+  background: #0d1117;
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
 .market-tab {
   flex: 1;
-  padding: 12px;
+  padding: 13px;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.4);
   font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 1px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   transition: color 0.2s, border-color 0.2s;
+  text-transform: uppercase;
 }
 
 .market-tab--active {
   color: white;
-  border-bottom-color: #ff9800;
+  border-bottom-color: #00e676;
 }
 
 /* ── Packs list ──────────────────────────────────────────────────────────── */
@@ -99,125 +92,159 @@
 
 .packs-list::-webkit-scrollbar { display: none; }
 
+/* Earn banner */
 .earn-gems-banner {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,235,59,0.25);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,235,59,0.2);
   border-radius: 14px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.egb-icon { font-size: 24px; flex-shrink: 0; }
+.egb-icon-wrap { font-size: 24px; flex-shrink: 0; }
 
 .egb-text {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .egb-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #ffee58;
-}
-
-.egb-desc {
-  font-size: 11px;
-  color: rgba(255,255,255,0.45);
-}
-
-.egb-cta {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   color: #ffee58;
   letter-spacing: 0.5px;
 }
 
+.egb-desc {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+}
+
+.egb-cta {
+  font-size: 11px;
+  font-weight: 900;
+  color: #00e676;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+/* Pack items */
 .pack-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
+  padding: 12px 14px;
+  background: #161b2e;
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.pack-item--locked { opacity: 0.65; }
+.pack-item:active { transform: scale(0.98); }
+.pack-item--locked { opacity: 0.55; cursor: not-allowed; }
 
-.pi-icon { font-size: 28px; flex-shrink: 0; }
+.pi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
-.pi-info { flex: 1; }
+.pi-icon { font-size: 24px; }
+
+.pi-info { flex: 1; min-width: 0; }
 
 .pi-name {
   font-family: 'Bangers', cursive;
   font-size: 18px;
   letter-spacing: 1px;
   color: white;
+  line-height: 1.1;
 }
 
 .pi-desc {
   font-size: 11px;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.45);
   margin-top: 2px;
 }
 
 .pi-buy-btn {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: 12px;
-  padding: 9px 16px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 900;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
+  padding: 8px 14px;
   flex-shrink: 0;
 }
 
-.pi-buy-btn--disabled { opacity: 0.4; cursor: not-allowed; }
+.pi-buy-btn--disabled { opacity: 0.4; }
+.pi-buy-cur { font-size: 15px; }
+.pi-buy-val { font-size: 15px; font-weight: 900; color: white; }
 
 /* ── Pack opening overlay ────────────────────────────────────────────────── */
 
 .pack-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.88);
   z-index: 300;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
+  backdrop-filter: blur(4px);
 }
 
 .pack-overlay-panel {
-  background: #111;
-  border-radius: 20px;
+  background: #161b2e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
   width: 100%;
   max-width: 400px;
   overflow: hidden;
-  animation: panel-pop 0.22s ease;
+  animation: panel-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes panel-pop {
-  from { transform: scale(0.93); opacity: 0; }
+  from { transform: scale(0.88); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }
 }
 
-.pack-overlay-title {
+.pack-overlay-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 16px 20px 14px;
+}
+
+.poh-icon { font-size: 28px; line-height: 1; }
+.poh-title {
   font-family: 'Bangers', cursive;
   font-size: 22px;
   letter-spacing: 2px;
   color: white;
-  padding: 16px 20px;
-  text-align: center;
+}
+.poh-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
 }
 
+/* Cards row */
 .pack-cards-row {
   display: flex;
   gap: 10px;
@@ -229,11 +256,13 @@
   flex: 1;
   max-width: 110px;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
 }
 
 .pack-card-slot--hidden {
   opacity: 0;
   transform: scale(0.5) rotateY(90deg);
+  pointer-events: none;
 }
 
 .pack-card-slot--shown {
@@ -241,102 +270,29 @@
   transform: scale(1) rotateY(0);
 }
 
-.pack-card-chip {
-  border-radius: 12px;
-  padding: 10px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  position: relative;
-  transition: transform 0.15s, box-shadow 0.15s;
-  min-height: 120px;
-}
-
-.pack-card-chip:active { transform: scale(0.96); }
-
-.pack-card-chip--picked {
-  box-shadow: 0 0 0 3px #fff, 0 0 24px rgba(255,255,255,0.4);
-}
-
-.pcc-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pcc-type {
-  font-size: 9px;
-  font-weight: 900;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 4px;
-}
-
-.pcc-rarity { font-size: 9px; }
-
-.pcc-name {
-  font-family: 'Bangers', cursive;
-  font-size: 16px;
-  letter-spacing: 1px;
-  color: #111;
-  text-align: center;
-}
-
-.pcc-stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  font-weight: 900;
-}
-
-.pcc-atk { color: #c62828; }
-.pcc-def { color: #1565c0; }
-
-.pcc-ability {
-  font-size: 8px;
-  color: rgba(0,0,0,0.5);
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pcc-check {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 22px;
-  height: 22px;
-  background: #66bb6a;
-  border-radius: 50%;
-  color: white;
-  font-size: 12px;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.pack-card-slot--picked {
+  transform: scale(1.06) translateY(-6px);
+  filter: drop-shadow(0 8px 20px rgba(255,255,255,0.25));
 }
 
 .pack-card-back {
   border-radius: 12px;
-  background: linear-gradient(135deg, #1a3a1a, #2d5a2d);
-  min-height: 120px;
+  background: linear-gradient(135deg, #0d2e14, #1a4a25);
+  height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-size: 24px;
-  border: 2px solid rgba(255,255,255,0.1);
+  border: 2px solid rgba(0,230,118,0.2);
 }
 
+.pcb-ball { font-size: 28px; }
 .pcb-sub {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 900;
-  color: rgba(255,255,255,0.35);
-  letter-spacing: 1px;
+  color: rgba(0,230,118,0.4);
+  letter-spacing: 2px;
 }
 
 .pack-actions {
@@ -344,31 +300,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .pack-prompt {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.4);
   margin: 0;
   text-align: center;
 }
 
 .pack-coins-btn {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.6);
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.65);
   border-radius: 12px;
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-family: 'Nunito', sans-serif;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 13px;
+  letter-spacing: 0.5px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pack-done {
-  padding: 16px;
+  padding: 20px 16px;
   text-align: center;
   font-size: 15px;
   font-weight: 800;
@@ -423,30 +382,18 @@
   border-radius: 4px;
 }
 
-.si-lvl {
-  font-size: 9px;
-  font-weight: 900;
-  color: #ffd54f;
-}
+.si-lvl { font-size: 9px; font-weight: 900; color: #ffd54f; }
 
 .si-name {
   font-family: 'Bangers', cursive;
   font-size: 14px;
   letter-spacing: 1px;
-  color: #111;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
-.si-stats {
-  font-size: 10px;
-  font-weight: 800;
-  color: rgba(0,0,0,0.5);
-}
-
-.si-price {
-  font-size: 11px;
-  font-weight: 800;
-  color: #1565c0;
-}
+.si-stats { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.5); }
+.si-price { font-size: 11px; font-weight: 800; color: #90caf9; }
 
 .si-sell-btn {
   position: absolute;
@@ -477,7 +424,7 @@
 
 .market-empty-icon { font-size: 48px; }
 
-/* ── Notification ────────────────────────────────────────────────────────── */
+/* ── Notification ─────────────────────────────────────────────────────────── */
 
 .market-notif {
   position: fixed;

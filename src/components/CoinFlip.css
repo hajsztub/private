@@ -10,15 +10,15 @@
 }
 
 .coin-flip-modal {
-  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  background: linear-gradient(135deg, #0d1b2a, #1a2a3a);
   border-radius: 24px;
-  padding: 40px 48px;
+  padding: 32px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  border: 3px solid rgba(255,255,255,0.8);
+  gap: 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  border: 2px solid rgba(255,255,255,0.12);
   min-width: 280px;
 }
 
@@ -26,7 +26,7 @@
   font-family: 'Bangers', cursive;
   font-size: 32px;
   letter-spacing: 3px;
-  color: #e65100;
+  color: #ffd54f;
   margin: 0;
 }
 
@@ -73,25 +73,56 @@
   color: rgba(255,255,255,0.9);
 }
 
+.coin-card-name {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+}
+
+.coin-outcomes {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.coin-outcome {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.co-icon { font-size: 18px; flex-shrink: 0; }
+.co-text { display: flex; flex-direction: column; gap: 1px; }
+.co-label { font-size: 11px; font-weight: 900; color: white; }
+.co-desc { font-size: 9px; color: rgba(255,255,255,0.5); }
+
 .coin-result {
   font-family: 'Bangers', cursive;
-  font-size: 30px;
+  font-size: 26px;
   letter-spacing: 2px;
   padding: 8px 20px;
   border-radius: 12px;
   animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
 }
 
 .coin-result--ball {
-  background: #e8f5e9;
-  color: #1b5e20;
-  border: 2px solid #43a047;
+  background: rgba(67,160,71,0.2);
+  color: #a5d6a7;
+  border: 2px solid rgba(67,160,71,0.5);
 }
 
 .coin-result--glove {
-  background: #fce4ec;
-  color: #880e4f;
-  border: 2px solid #e91e63;
+  background: rgba(233,30,99,0.2);
+  color: #f48fb1;
+  border: 2px solid rgba(233,30,99,0.4);
 }
 
 @keyframes popIn {
@@ -122,13 +153,15 @@
 }
 
 .coin-btn--flip {
-  background: #e65100;
-  color: white;
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  color: #1a0900;
   font-size: 18px;
   padding: 14px 36px;
+  box-shadow: 0 4px 16px rgba(249,168,37,0.4);
 }
 
 .coin-btn--ok {
-  background: #2e7d32;
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
   color: white;
+  box-shadow: 0 4px 12px rgba(46,125,50,0.4);
 }

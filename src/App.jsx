@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import AppRouter, { useRouter } from './router/AppRouter'
 import { usePersistentStore } from './store/usePersistentStore'
 import { useSettingsStore } from './store/useSettingsStore'
@@ -10,6 +10,7 @@ import MarketScreen from './screens/MarketScreen'
 import LeagueScreen from './screens/LeagueScreen'
 import PlayersScreen from './screens/PlayersScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import SplashScreen from './screens/SplashScreen'
 
 export const ProfileContext = createContext(null)
 export const SettingsContext = createContext(null)
@@ -36,6 +37,9 @@ function ScreenRouter() {
 export default function App() {
   const persistentStore = usePersistentStore()
   const settingsStore = useSettingsStore()
+  const [splash, setSplash] = useState(true)
+
+  if (splash) return <SplashScreen onDone={() => setSplash(false)} />
 
   return (
     <ProfileContext.Provider value={persistentStore}>

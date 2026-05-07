@@ -45,6 +45,9 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
             onError={e => { e.target.style.display = 'none' }}
             draggable={false}
           />
+        </div>
+
+        <div className="zoom-meta-row">
           <div className="zoom-type-badge">{card.typeLabel} — {TYPE_LABEL[card.type] || card.type}</div>
           <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
             {RARITY_LABEL[card.rarity] || card.rarity}

@@ -34,10 +34,11 @@
 }
 
 .mm-logo-img {
-  max-width: 240px;
-  max-height: 120px;
+  max-width: 320px;
+  max-height: 180px;
+  width: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px rgba(0,230,118,0.35));
+  filter: drop-shadow(0 0 24px rgba(0,230,118,0.45));
 }
 
 .mm-logo-ball {

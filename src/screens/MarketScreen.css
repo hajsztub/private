@@ -190,17 +190,23 @@
   background: rgba(0,0,0,0.85);
   z-index: 300;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  padding: 16px;
 }
 
 .pack-overlay-panel {
   background: #111;
-  border-radius: 24px 24px 0 0;
+  border-radius: 20px;
   width: 100%;
-  max-width: 480px;
-  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  max-width: 400px;
   overflow: hidden;
+  animation: panel-pop 0.22s ease;
+}
+
+@keyframes panel-pop {
+  from { transform: scale(0.93); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
 
 .pack-overlay-title {

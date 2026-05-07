@@ -476,10 +476,10 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* === PLAYER GOAL (bottom) === */}
         <div className="ms-goal ms-goal--player">
           <div className="ms-goal-inner">
-            <div className="ms-stat-box ms-stat-box--atk">
-              <span className="msb-lbl">ATK</span>
-              <span className="msb-num">{myTotalAtk}</span>
-              <span className="msb-icon">⚔️</span>
+            <div className="ms-stat-box ms-stat-box--def">
+              <span className="msb-lbl">DEF</span>
+              <span className="msb-num">{myTotalDef}</span>
+              <span className="msb-icon">🛡️</span>
             </div>
             <div className="ms-gk-wrap">
               <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
@@ -490,10 +490,10 @@ export default function MatchScreen({ matchParams = {} }) {
               />
               <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
             </div>
-            <div className="ms-stat-box ms-stat-box--def">
-              <span className="msb-lbl">DEF</span>
-              <span className="msb-num">{myTotalDef}</span>
-              <span className="msb-icon">🛡️</span>
+            <div className="ms-stat-box ms-stat-box--atk">
+              <span className="msb-lbl">ATK</span>
+              <span className="msb-num">{myTotalAtk}</span>
+              <span className="msb-icon">⚔️</span>
             </div>
           </div>
           <GoalPosts side="player" />

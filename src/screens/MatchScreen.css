@@ -416,7 +416,8 @@
   overflow-y: visible;
   scrollbar-width: none;
   position: relative;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
 .ms-hand-scroll::-webkit-scrollbar { display: none; }

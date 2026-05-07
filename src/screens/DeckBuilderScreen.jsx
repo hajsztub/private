@@ -241,23 +241,45 @@ export default function DeckBuilderScreen() {
   }
 
   const autoFill = () => {
-    const usedIds = new Set(Object.values(assignments).filter(Boolean))
-    const next = { ...assignments }
+    // Score a card for a given slot type — higher = better fit
+    const scoreFor = (card, slotType) => {
+      const atk = card.currentAttackStat ?? card.attackStat ?? 0
+      const def = card.currentDefenseStat ?? card.defenseStat ?? 0
+      switch (slotType) {
+        case 'goalkeeper': return def * 3
+        case 'defense':    return def * 2 + atk
+        case 'midfield':   return atk + def
+        case 'attack':     return atk * 2 + def
+        default:           return atk + def   // reserve
+      }
+    }
 
-    const tryFill = (slots) => {
+    // Build full card objects (with upgrade bonuses) for scoring
+    const cardMap = new Map(allCards.map(({ owned, card }) => [owned.instanceId, card]))
+
+    const next = {}
+    FORMATION.forEach(s => { next[s.id] = null })
+    const usedIds = new Set()
+
+    const fillSlots = (slots) => {
       for (const slot of slots) {
-        if (next[slot.id]) continue
         const accepts = SLOT_ACCEPTS[slot.type]
-        const pick = allCards.find(({ owned, card }) => {
-          if (usedIds.has(owned.instanceId)) return false
-          if (!accepts.includes(card.type)) return false
-          const alreadyUsed = Object.values(next).some(id => {
-            if (!id) return false
-            const entry = allCards.find(e => e.owned.instanceId === id)
-            return entry?.card?.id === card.id
+        // Collect candidates: right type, not yet used, no duplicate card id
+        const candidates = allCards
+          .filter(({ owned, card }) => {
+            if (usedIds.has(owned.instanceId)) return false
+            if (!accepts.includes(card.type)) return false
+            // Disallow same card id already placed in another slot
+            const alreadyPlaced = Object.values(next).some(id => {
+              if (!id) return false
+              const c = cardMap.get(id)
+              return c?.id === card.id
+            })
+            return !alreadyPlaced
           })
-          return !alreadyUsed
-        })
+          .sort((a, b) => scoreFor(b.card, slot.type) - scoreFor(a.card, slot.type))
+
+        const pick = candidates[0]
         if (pick) {
           next[slot.id] = pick.owned.instanceId
           usedIds.add(pick.owned.instanceId)
@@ -265,8 +287,16 @@ export default function DeckBuilderScreen() {
       }
     }
 
-    tryFill(MAIN_SLOTS)
-    tryFill(RESERVE_SLOTS)
+    // Fill main slots first (priority order: GK → DEF → MID → ATK), then reserve
+    const ordered = [
+      ...MAIN_SLOTS.filter(s => s.type === 'goalkeeper'),
+      ...MAIN_SLOTS.filter(s => s.type === 'defense'),
+      ...MAIN_SLOTS.filter(s => s.type === 'midfield'),
+      ...MAIN_SLOTS.filter(s => s.type === 'attack'),
+    ]
+    fillSlots(ordered)
+    fillSlots(RESERVE_SLOTS)
+
     setAssignments(next)
     const totalFilled = FORMATION.filter(s => next[s.id]).length
     showNotif(`Skład uzupełniony (${totalFilled}/14)`, true)

@@ -68,6 +68,7 @@ export default function FieldCard({
   draggable,
   onDragStart,
   goalCount = 0,
+  fieldSize = false,
 }) {
   const longRef = useRef(null)
   const typeColor = TYPE_COLOR[card.type] || TYPE_COLOR.attack
@@ -113,6 +114,7 @@ export default function FieldCard({
         card.isLocked ? 'fc--locked' : '',
         isNew ? 'fc--new' : '',
         `fc--${rarity}`,
+        fieldSize ? 'fc--field' : '',
       ].filter(Boolean).join(' ')}
       style={{
         '--type-c': typeColor,
@@ -141,7 +143,7 @@ export default function FieldCard({
         <div className="fc-bottom">
           <div className="fc-name">{card.name}</div>
           <div className="fc-stats-row">
-            <span className="fc-mini-stat fc-mini-stat--atk">⚔{atkVal}</span>
+            <span className="fc-mini-stat fc-mini-stat--atk">×{atkVal}</span>
             <span className="fc-mini-stat fc-mini-stat--def">🛡{defVal}</span>
           </div>
           {goalCount > 0 && (

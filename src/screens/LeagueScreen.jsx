@@ -42,6 +42,7 @@ export default function LeagueScreen() {
   const tierPlayers = board.filter(r => r.isPlayer || r.isBot)
 
   const handleStartMatch = () => {
+    if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
     navigate('match', {
       matchType: 'league',
       matchId: Date.now(),

@@ -368,27 +368,28 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Scoreboard ──────────────────────────────────────────────────── */}
       <div className="ms-scoreboard">
         <div className="msb-side msb-side--left">
+          <div className="msb-team-icon msb-team-icon--ai">⚡</div>
           <span className={`msb-dot ${currentPlayer === 'B' ? 'msb-dot--on' : ''}`} />
           <span className="msb-name">{opponentName}</span>
         </div>
-        <div className="msb-score">
-          <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>
-            {displayScore.player}
-          </span>
-          <span className="msb-sep">:</span>
-          <span className={`msb-num ${displayScore.ai > displayScore.player ? 'msb-num--win' : ''}`}>
-            {displayScore.ai}
-          </span>
+        <div className="msb-score-wrap">
+          <div className="msb-score">
+            <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
+            <span className="msb-sep">:</span>
+            <span className={`msb-num ${displayScore.ai > displayScore.player ? 'msb-num--win' : ''}`}>{displayScore.ai}</span>
+          </div>
           <span className="msb-round">R{round}/10</span>
         </div>
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
           <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
+          <div className="msb-team-icon msb-team-icon--player">🛡</div>
         </div>
       </div>
 
       {/* ── Field ───────────────────────────────────────────────────────── */}
       <div className="ms-field-wrap">
+        <div className="ms-field-markings" aria-hidden="true" />
 
         {/* === AI GOAL (top) === */}
         <div className="ms-goal ms-goal--ai">
@@ -418,6 +419,7 @@ export default function MatchScreen({ matchParams = {} }) {
             cards={playerB.offenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
+            fieldSize={true}
           />
           <div className="ms-zone-sep" />
           <Zone
@@ -425,6 +427,7 @@ export default function MatchScreen({ matchParams = {} }) {
             cards={playerB.defenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
+            fieldSize={true}
           />
         </div>
 
@@ -447,6 +450,7 @@ export default function MatchScreen({ matchParams = {} }) {
             isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE}
             onDrop={() => placeCard('defense')}
             dragZoneActive={dragZone === 'defense'}
+            fieldSize={true}
           />
           <div className="ms-zone-sep" />
           <Zone
@@ -459,6 +463,7 @@ export default function MatchScreen({ matchParams = {} }) {
             isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE}
             onDrop={() => placeCard('offense')}
             dragZoneActive={dragZone === 'offense'}
+            fieldSize={true}
           />
         </div>
 
@@ -694,7 +699,7 @@ function TutorialOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize }) {
   return (
     <div
       className={[
@@ -716,6 +721,7 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
             isNew={card.justPlaced}
             goalCount={goalCounts?.[card.instanceId] || 0}
             onTap={() => onCardTap?.(card)}
+            fieldSize={fieldSize}
           />
         ))}
         {cards.length === 0 && !isDropTarget && (

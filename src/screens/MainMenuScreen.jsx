@@ -93,7 +93,10 @@ export default function MainMenuScreen() {
           <span className="mm-btn-arrow">›</span>
         </button>
 
-        <button className="mm-btn mm-btn--training" onClick={() => navigate('match', { matchType: 'local', matchId: Date.now() })}>
+        <button className="mm-btn mm-btn--training" onClick={() => {
+          if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
+          navigate('match', { matchType: 'local', matchId: Date.now() })
+        }}>
           <span className="mm-btn-icon">⚽</span>
           <div className="mm-btn-body">
             <span className="mm-btn-title">Trening</span>

@@ -131,6 +131,17 @@ export default function DeckBuilderScreen() {
     if (!entry) return
     const { card } = entry
 
+    // Prevent duplicate cardId in deck
+    const alreadyInDeck = Object.values(assignments).some(id => {
+      if (!id || id === instanceId) return false
+      const entry2 = allCards.find(({ owned }) => owned.instanceId === id)
+      return entry2?.card?.id === card.id
+    })
+    if (alreadyInDeck) {
+      showNotif(`${card.name} już jest w składzie!`, false)
+      return
+    }
+
     if (selectedSlot) {
       const slot = FORMATION.find(s => s.id === selectedSlot)
       if (!SLOT_ACCEPTS[slot.type].includes(card.type)) {
@@ -254,6 +265,7 @@ export default function DeckBuilderScreen() {
               card={card}
               assigned={isAssigned}
               slotLabel={slotLabel}
+              hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
               onClick={() => handleCardPick(owned.instanceId)}
             />
           )
@@ -316,14 +328,14 @@ function FormationSlot({ slot, card, selected, onClick }) {
 
 // ── Card picker row ────────────────────────────────────────────────────────
 
-function CardPickerRow({ card, assigned, slotLabel, onClick }) {
+function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, onClick }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card.currentAttackStat ?? card.attackStat ?? 0
   const def = card.currentDefenseStat ?? card.defenseStat ?? 0
   const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
 
   return (
-    <div className={`cp-row ${assigned ? 'cp-row--assigned' : ''}`} onClick={onClick}>
+    <div className={`cp-row ${assigned ? 'cp-row--assigned' : ''} ${hasDuplicate ? 'cp-row--duplicate' : ''}`} onClick={onClick}>
       <div className="cp-avatar">
         {!imgFailed ? (
           <img
@@ -353,6 +365,7 @@ function CardPickerRow({ card, assigned, slotLabel, onClick }) {
           <span className="cp-rarity" style={{ color: RARITY_C[card.rarity] }}>
             {card.rarity === 'legendary' ? '★★★' : card.rarity === 'rare' ? '★★' : '★'}
           </span>
+          {hasDuplicate && <span className="cp-dup-badge" title="Masz duplikat - możliwy upgrade">🔄</span>}
         </div>
       </div>
       <div className={`cp-badge ${assigned ? 'cp-badge--on' : ''}`}>

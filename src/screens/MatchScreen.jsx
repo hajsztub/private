@@ -26,9 +26,8 @@ function buildPlayerDeck(profile) {
 
 // ── Card Zoom Modal ────────────────────────────────────────────────────────
 
-function CardZoomModal({ card, onClose }) {
+function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstitute, onClose }) {
   if (!card) return null
-  const isGK = card.type === 'goalkeeper'
   const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
   const TYPE_LABEL = { attack: 'Napastnik', midfield: 'Pomocnik', defense: 'Obrońca', goalkeeper: 'Bramkarz' }
@@ -38,8 +37,7 @@ function CardZoomModal({ card, onClose }) {
   return (
     <div className="zoom-backdrop" onClick={onClose}>
       <div className="zoom-panel" onClick={e => e.stopPropagation()}>
-        {/* Big avatar */}
-        <div className="zoom-avatar" style={{ background: `linear-gradient(160deg, ${card.color || '#eee'}, #fff)` }}>
+        <div className="zoom-avatar" style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #07090e)` }}>
           <img
             className="zoom-avatar-img"
             src={`/avatars/${card.id}.png`}
@@ -53,10 +51,8 @@ function CardZoomModal({ card, onClose }) {
           </div>
         </div>
 
-        {/* Name */}
         <div className="zoom-name">{card.name}</div>
 
-        {/* Stats */}
         <div className="zoom-stats-row">
           <div className="zoom-stat">
             <span className="zs-label">ATK</span>
@@ -74,7 +70,6 @@ function CardZoomModal({ card, onClose }) {
           )}
         </div>
 
-        {/* Ability */}
         <div className="zoom-ability">
           <div className="zoom-ability-name">{card.abilityName}</div>
           <div className="zoom-ability-type">
@@ -83,6 +78,12 @@ function CardZoomModal({ card, onClose }) {
               : '🟢 AKTYWNA'}
           </div>
           <div className="zoom-ability-desc">{card.abilityDescription}</div>
+          {card.abilityType === 'active_coin' && (
+            <div className="zoom-coin-outcomes">
+              <div className="zoom-coin-ball">⚽ <b>Piłka:</b> {card.activationEffect?.ball?.message || '—'}</div>
+              <div className="zoom-coin-glove">🧤 <b>Rękawica:</b> {card.activationEffect?.glove?.message || '—'}</div>
+            </div>
+          )}
           {card.noActivationDescription && card.abilityType !== 'passive' && (
             <div className="zoom-noact">
               <span className="zoom-noact-lbl">Brak aktywacji: </span>
@@ -90,6 +91,21 @@ function CardZoomModal({ card, onClose }) {
             </div>
           )}
         </div>
+
+        {isPlayerField && (
+          <div className="zoom-field-actions">
+            {canActivate && card.abilityType !== 'passive' && !card.isLocked && !card.justPlaced && (
+              <button className="zoom-act-btn zoom-act-btn--activate" onClick={onActivate}>
+                ⚡ Aktywuj umiejętność
+              </button>
+            )}
+            {onSubstitute && (
+              <button className="zoom-act-btn zoom-act-btn--sub" onClick={onSubstitute}>
+                🔄 Zmiana (wróć na ławkę)
+              </button>
+            )}
+          </div>
+        )}
 
         <button className="zoom-close" onClick={onClose}>✕ Zamknij</button>
       </div>
@@ -136,18 +152,18 @@ export default function MatchScreen({ matchParams = {} }) {
   })
 
   const [showTutorial, setShowTutorial] = useState(!profile.hasSeenTutorial)
-
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
-  const [selectedCard, setSelectedCard] = useState(null)   // card in hand selected for placement
-  const [fieldAction, setFieldAction] = useState(null)     // { card, sector } field card tapped
-  const [zoomCard, setZoomCard] = useState(null)           // card zoom modal
+  const [selectedCard, setSelectedCard] = useState(null)   // only for drag ghost
+  const [zoomCard, setZoomCard] = useState(null)           // { card, isPlayerField, sector }
   const [notification, setNotification] = useState(null)
+  const [showForfeit, setShowForfeit] = useState(false)
 
-  // ── Drag state ────────────────────────────────────────────────────────────
+  // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
-  const [dragPos, setDragPos] = useState(null)    // { x, y }
-  const [dragZone, setDragZone] = useState(null)  // 'offense' | 'defense' | null
+  const lastTapRef = useRef({})
+  const [dragPos, setDragPos] = useState(null)
+  const [dragZone, setDragZone] = useState(null)
 
   // ── GK setup ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -157,7 +173,6 @@ export default function MatchScreen({ matchParams = {} }) {
     setTimeout(() => dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'B', gkInstanceId: aiGK.instanceId }), 500)
   }, [matchState.phase, matchState.players.A.activeGoalkeeper, matchState.players.B.activeGoalkeeper])
 
-  // SFX match start
   useEffect(() => {
     if (matchState.phase === 'playing' && matchState.round === 1) SFX.matchStart()
   }, [matchState.phase])
@@ -180,7 +195,10 @@ export default function MatchScreen({ matchParams = {} }) {
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
     addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange })
-    setTimeout(() => replace('post_match', { result, score, matchType, coinsEarned: coins, ratingChange, goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log }), 800)
+    setTimeout(() => replace('post_match', {
+      result, score, matchType, coinsEarned: coins, ratingChange,
+      goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
+    }), 800)
   }, [matchState.phase])
 
   // ── Goal detection ────────────────────────────────────────────────────────
@@ -193,7 +211,7 @@ export default function MatchScreen({ matchParams = {} }) {
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
-  // ── Placement helpers ─────────────────────────────────────────────────────
+  // ── Placement helper ──────────────────────────────────────────────────────
   const placeCard = useCallback((sector) => {
     const card = dragRef.current?.card || selectedCard
     if (!card) return
@@ -212,30 +230,25 @@ export default function MatchScreen({ matchParams = {} }) {
     SFX.endTurn()
     dispatch({ type: 'END_TURN' })
     setSelectedCard(null)
-    setFieldAction(null)
   }, [matchState])
 
+  // ── Field card: single tap → zoom, double tap → pull to hand ──────────────
   const handleFieldTap = (card, sector) => {
-    if (matchState.currentPlayer !== 'A' || matchState.phase !== 'playing') return
-    if (fieldAction?.card.instanceId === card.instanceId) { setFieldAction(null); return }
-    SFX.cardSelect()
-    setSelectedCard(null)
-    setFieldAction({ card, sector })
-  }
+    if (matchState.phase !== 'playing') return
+    const now = Date.now()
+    const last = lastTapRef.current[card.instanceId] || 0
+    lastTapRef.current[card.instanceId] = now
 
-  const handleSubstitute = () => {
-    if (!fieldAction) return
-    SFX.substitution()
-    dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: fieldAction.card.instanceId, sector: fieldAction.sector })
-    setFieldAction(null)
-  }
-
-  const handleActivateField = () => {
-    if (!fieldAction) return
-    if (matchState.turnActionsUsed.activatedAbility) { showNotif('Już aktywowano umiejętność tej tury.'); return }
-    SFX.activateAbility()
-    dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: fieldAction.card.instanceId })
-    setFieldAction(null)
+    if (isPlayerTurn && now - last < 360) {
+      // Double tap → pull back to hand
+      SFX.substitution()
+      dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector })
+      setZoomCard(null)
+    } else {
+      // Single tap → zoom with actions
+      SFX.cardSelect()
+      setZoomCard({ card, isPlayerField: isPlayerTurn, sector })
+    }
   }
 
   const showNotif = (msg) => {
@@ -261,7 +274,6 @@ export default function MatchScreen({ matchParams = {} }) {
       dragRef.current.moved = true
       setDragPos({ x: touch.clientX, y: touch.clientY })
       setSelectedCard(dragRef.current.card)
-      // detect zone under finger
       const els = document.elementsFromPoint(touch.clientX, touch.clientY)
       const zoneEl = els.find(el => el.dataset?.zone)
       setDragZone(zoneEl?.dataset.zone || null)
@@ -270,15 +282,12 @@ export default function MatchScreen({ matchParams = {} }) {
 
   const handleDragEnd = useCallback(() => {
     if (!dragRef.current) return
-    if (dragRef.current.moved && dragZone) {
-      placeCard(dragZone)
-    }
+    if (dragRef.current.moved && dragZone) placeCard(dragZone)
     dragRef.current = null
     setDragPos(null)
     setDragZone(null)
   }, [dragZone, placeCard])
 
-  // Attach global touch handlers when dragging
   useEffect(() => {
     window.addEventListener('touchmove', handleDragMove, { passive: true })
     window.addEventListener('touchend', handleDragEnd)
@@ -295,16 +304,25 @@ export default function MatchScreen({ matchParams = {} }) {
   const isPlayerTurn = currentPlayer === 'A' && phase === 'playing'
   const canActivate = isPlayerTurn && !turnActionsUsed.activatedAbility && !coinFlipState
 
-  const aiTotalAtk = playerB.offenseSector
-    .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
+  const aiTotalAtk = playerB.offenseSector.reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
   const aiTotalDef = (playerB.activeGoalkeeper
     ? (playerB.activeGoalkeeper.currentDefenseStat ?? playerB.activeGoalkeeper.defenseStat ?? 0) : 0)
     + playerB.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
-  const myTotalAtk = playerA.offenseSector
-    .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
+  const myTotalAtk = playerA.offenseSector.reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
   const myTotalDef = (playerA.activeGoalkeeper
     ? (playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat ?? 0) : 0)
     + playerA.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+
+  // Goal scorer counts (player only — shown on field cards)
+  const goalScorerCounts = matchState.goalEvents
+    .filter(ev => ev.scorer === 'player' && ev.cardId)
+    .reduce((acc, ev) => { acc[ev.cardId] = (acc[ev.cardId] || 0) + 1; return acc }, {})
+
+  // Active coin flip card
+  const coinFlipCard = coinFlipState
+    ? [...playerA.offenseSector, ...playerA.defenseSector]
+        .find(c => c.instanceId === coinFlipState.cardInstanceId)
+    : null
 
   // ── GK Selection ──────────────────────────────────────────────────────────
   if (phase === 'goalkeeper_selection') {
@@ -364,14 +382,16 @@ export default function MatchScreen({ matchParams = {} }) {
           <GoalPosts side="ai" />
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--atk">
+              <span className="msb-lbl">ATK</span>
               <span className="msb-num">{aiTotalAtk}</span>
             </div>
             <GKCard
               card={playerB.activeGoalkeeper}
               side="ai"
-              onTap={() => playerB.activeGoalkeeper && setZoomCard(playerB.activeGoalkeeper)}
+              onTap={() => playerB.activeGoalkeeper && setZoomCard({ card: playerB.activeGoalkeeper, isPlayerField: false })}
             />
             <div className="ms-stat-box ms-stat-box--def">
+              <span className="msb-lbl">DEF</span>
               <span className="msb-num">{aiTotalDef}</span>
             </div>
           </div>
@@ -384,14 +404,14 @@ export default function MatchScreen({ matchParams = {} }) {
             label="⚔ ATAK"
             cards={playerB.offenseSector}
             side="ai"
-            onCardTap={(c) => setZoomCard(c)}
+            onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
           />
           <div className="ms-zone-sep" />
           <Zone
             label="🛡 OBRONA"
             cards={playerB.defenseSector}
             side="ai"
-            onCardTap={(c) => setZoomCard(c)}
+            onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
           />
         </div>
 
@@ -410,8 +430,7 @@ export default function MatchScreen({ matchParams = {} }) {
             side="player"
             zone="defense"
             onCardTap={(c) => handleFieldTap(c, 'defense')}
-            onCardLongPress={(c) => setZoomCard(c)}
-            selectedId={fieldAction?.sector === 'defense' ? fieldAction.card.instanceId : null}
+            goalCounts={goalScorerCounts}
             isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE}
             onDrop={() => placeCard('defense')}
             dragZoneActive={dragZone === 'defense'}
@@ -423,8 +442,7 @@ export default function MatchScreen({ matchParams = {} }) {
             side="player"
             zone="offense"
             onCardTap={(c) => handleFieldTap(c, 'offense')}
-            onCardLongPress={(c) => setZoomCard(c)}
-            selectedId={fieldAction?.sector === 'offense' ? fieldAction.card.instanceId : null}
+            goalCounts={goalScorerCounts}
             isDropTarget={selectedCard && canPlaceInSector(selectedCard, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE}
             onDrop={() => placeCard('offense')}
             dragZoneActive={dragZone === 'offense'}
@@ -435,16 +453,16 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-goal ms-goal--player">
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--atk">
-              <span className="msb-lbl">ATAK</span>
+              <span className="msb-lbl">ATK</span>
               <span className="msb-num">{myTotalAtk}</span>
             </div>
             <GKCard
               card={playerA.activeGoalkeeper}
               side="player"
-              onTap={() => playerA.activeGoalkeeper && setZoomCard(playerA.activeGoalkeeper)}
+              onTap={() => playerA.activeGoalkeeper && setZoomCard({ card: playerA.activeGoalkeeper, isPlayerField: false })}
             />
             <div className="ms-stat-box ms-stat-box--def">
-              <span className="msb-lbl">OBRONA</span>
+              <span className="msb-lbl">DEF</span>
               <span className="msb-num">{myTotalDef}</span>
             </div>
           </div>
@@ -453,51 +471,33 @@ export default function MatchScreen({ matchParams = {} }) {
 
       </div>{/* end ms-field-wrap */}
 
-      {/* ── Field card action popup ──────────────────────────────────────── */}
-      {fieldAction && isPlayerTurn && (
-        <div className="ms-field-popup">
-          <span className="msfp-name">{fieldAction.card.name}</span>
-          <div className="msfp-btns">
-            {!fieldAction.card.isLocked && !fieldAction.card.justPlaced
-              && fieldAction.card.abilityType !== 'passive' && canActivate && (
-              <button className="msfp-btn msfp-btn--activate" onClick={handleActivateField}>⚡ Aktywuj</button>
-            )}
-            <button className="msfp-btn msfp-btn--sub" onClick={handleSubstitute}>🔄 Zmiana</button>
-            <button className="msfp-btn msfp-btn--info" onClick={() => setZoomCard(fieldAction.card)}>ℹ️</button>
-            <button className="msfp-btn msfp-btn--cancel" onClick={() => setFieldAction(null)}>✕</button>
-          </div>
-        </div>
-      )}
-
       {/* ── Hand ────────────────────────────────────────────────────────── */}
       <div className="ms-hand-area">
-        {/* Placement hint when card selected */}
-        {selectedCard && isPlayerTurn && !dragPos && (
-          <div className="ms-place-hint">
-            <span className="mph-name">{selectedCard.name}</span>
-            {canPlaceInSector(selectedCard, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE && (
-              <button className="mph-btn mph-btn--off" onClick={() => placeCard('offense')}>⚔ Atak</button>
-            )}
-            {canPlaceInSector(selectedCard, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE && (
-              <button className="mph-btn mph-btn--def" onClick={() => placeCard('defense')}>🛡 Obrona</button>
-            )}
-            <button className="mph-btn mph-btn--x" onClick={() => setSelectedCard(null)}>✕</button>
-          </div>
-        )}
-
         <div className="ms-hand-scroll">
           {playerA.hand.map(card => (
             <FieldCard
               key={card.instanceId}
               card={card}
               selected={selectedCard?.instanceId === card.instanceId}
-              dimmed={!!fieldAction}
               onTap={() => {
-                if (!isPlayerTurn) return
-                setFieldAction(null)
-                setSelectedCard(prev => prev?.instanceId === card.instanceId ? null : (SFX.cardSelect(), card))
+                const now = Date.now()
+                const last = lastTapRef.current[`h_${card.instanceId}`] || 0
+                lastTapRef.current[`h_${card.instanceId}`] = now
+                if (isPlayerTurn && now - last < 360) {
+                  // Double tap → auto-place
+                  const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
+                  const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
+                  if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
+                  else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
+                  else showNotif('Brak wolnego miejsca!')
+                  setSelectedCard(null)
+                } else {
+                  // Single tap → zoom stats
+                  SFX.cardSelect()
+                  setZoomCard({ card, isPlayerField: false })
+                }
               }}
-              onLongPress={() => setZoomCard(card)}
+              onLongPress={() => setZoomCard({ card, isPlayerField: false })}
               onDragStart={handleDragStart}
             />
           ))}
@@ -514,6 +514,9 @@ export default function MatchScreen({ matchParams = {} }) {
           {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
           {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="mac todo">ATK</span>}
           {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
+          {isPlayerTurn && (
+            <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
+          )}
         </div>
         <button
           className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
@@ -524,12 +527,27 @@ export default function MatchScreen({ matchParams = {} }) {
         </button>
       </div>
 
+      {/* ── Forfeit confirm ──────────────────────────────────────────────── */}
+      {showForfeit && (
+        <div className="ms-forfeit-confirm">
+          <div className="ms-forfeit-panel">
+            <div className="ms-forfeit-title">🏳 Poddać mecz?</div>
+            <div className="ms-forfeit-sub">Wynik zostanie zapisany jako 0:3</div>
+            <div className="ms-forfeit-btns">
+              <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'FORFEIT' }); setShowForfeit(false) }}>
+                Tak, poddaj
+              </button>
+              <button className="ms-forfeit-no" onClick={() => setShowForfeit(false)}>
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Drag ghost ──────────────────────────────────────────────────── */}
       {dragPos && selectedCard && (
-        <div
-          className="ms-drag-ghost"
-          style={{ left: dragPos.x - 40, top: dragPos.y - 55 }}
-        >
+        <div className="ms-drag-ghost" style={{ left: dragPos.x - 40, top: dragPos.y - 55 }}>
           <FieldCard card={selectedCard} />
         </div>
       )}
@@ -541,6 +559,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {coinFlipState && (
         <CoinFlip
           coinFlipState={coinFlipState}
+          card={coinFlipCard}
           onFlip={() => { SFX.coinFlip(); dispatch({ type: 'FLIP_COIN' }) }}
           onDismiss={() => dispatch({ type: 'DISMISS_COIN' })}
         />
@@ -551,7 +570,25 @@ export default function MatchScreen({ matchParams = {} }) {
       {goalAnim && settings.visualEffects !== false && (
         <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} onDone={() => setGoalAnim(null)} />
       )}
-      {zoomCard && <CardZoomModal card={zoomCard} onClose={() => setZoomCard(null)} />}
+      {zoomCard && (
+        <CardZoomModal
+          card={zoomCard.card}
+          isPlayerField={zoomCard.isPlayerField}
+          canActivate={canActivate}
+          onActivate={() => {
+            if (matchState.turnActionsUsed.activatedAbility) { showNotif('Już aktywowano umiejętność tej tury.'); return }
+            SFX.activateAbility()
+            dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: zoomCard.card.instanceId })
+            setZoomCard(null)
+          }}
+          onSubstitute={zoomCard.isPlayerField && zoomCard.sector ? () => {
+            SFX.substitution()
+            dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: zoomCard.card.instanceId, sector: zoomCard.sector })
+            setZoomCard(null)
+          } : null}
+          onClose={() => setZoomCard(null)}
+        />
+      )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {showTutorial && (
@@ -572,32 +609,32 @@ const TUTORIAL_STEPS = [
   {
     emoji: '⚽',
     title: 'Witaj w GOAL TCG!',
-    text: 'Grasz kartami piłkarzy, by strzelać gole przeciwnikowi. Każda tura to walka ataku z obroną.',
+    text: 'Grasz kartami piłkarzy, by strzelać gole. Mecz trwa 10 rund — każda runda to Twoja tura i tura bota.',
   },
   {
     emoji: '🃏',
-    title: 'Twoja ręka',
-    text: 'Na dole ekranu są Twoje karty. Tapnij kartę, żeby ją wybrać — albo przeciągnij ją prosto na boisko.',
+    title: 'Karty w ręce',
+    text: 'Zaczynasz z 4 kartami. Nowe karty dostajesz co 2 rundy (przed rundami 3, 5, 7, 9). Zarządzaj nimi mądrze!',
   },
   {
     emoji: '⚔',
-    title: 'Strefa Ataku',
-    text: 'Napastnicy i pomocnicy idą na ATAK. Im wyższy łączny ATK, tym większa szansa na gola!',
+    title: 'Wystawianie kart',
+    text: 'Dotknij kartę → zobaczysz statystyki i umiejętność. Dotknij dwa razy szybko → karta trafia automatycznie na boisko.',
   },
   {
-    emoji: '🛡',
-    title: 'Strefa Obrony',
-    text: 'Obrońcy i pomocnicy idą na OBRONĘ. Twój DEF chroni Cię przed atakiem przeciwnika.',
+    emoji: '🔄',
+    title: 'Zmiana zawodnika',
+    text: 'Dwa szybkie tapnięcia w wystawionego zawodnika → wraca na ławkę. Możesz wystawić innego w tej samej turze!',
   },
   {
-    emoji: '📊',
-    title: 'Pasek statystyk',
-    text: 'Pod tablicą wyników widać live porównanie: Twój ATK vs DEF bota i odwrotnie. Zielony = przewaga!',
+    emoji: '⚡',
+    title: 'Umiejętności',
+    text: 'Tapnij wystawionego zawodnika i naciśnij "Aktywuj". Każda tura możesz aktywować 1 umiejętność — używaj ich strategicznie!',
   },
   {
     emoji: '→',
     title: 'Zakończ turę',
-    text: 'Naciśnij "Zakończ turę". Bot zagra swoją turę, potem system wyliczy gole. Powodzenia!',
+    text: 'Po wystawieniu kart naciśnij "Zakończ turę". Gole obliczane są po każdej pełnej rundzie. Przycisk 🏳 to poddanie meczu.',
   },
 ]
 
@@ -614,16 +651,10 @@ function TutorialOverlay({ onDone }) {
         <div className="tut-text">{s.text}</div>
         <div className="tut-dots">
           {TUTORIAL_STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`tut-dot ${i === step ? 'tut-dot--active' : i < step ? 'tut-dot--done' : ''}`}
-            />
+            <div key={i} className={`tut-dot ${i === step ? 'tut-dot--active' : i < step ? 'tut-dot--done' : ''}`} />
           ))}
         </div>
-        <button
-          className="tut-next"
-          onClick={() => isLast ? onDone() : setStep(s => s + 1)}
-        >
+        <button className="tut-next" onClick={() => isLast ? onDone() : setStep(s => s + 1)}>
           {isLast ? '⚽ Zaczynamy!' : 'Dalej →'}
         </button>
         <button className="tut-skip" onClick={onDone}>Pomiń samouczek</button>
@@ -634,7 +665,7 @@ function TutorialOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, onCardLongPress, selectedId, isDropTarget, onDrop, dragZoneActive }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive }) {
   return (
     <div
       className={[
@@ -652,11 +683,10 @@ function Zone({ label, cards, side, zone, onCardTap, onCardLongPress, selectedId
           <FieldCard
             key={card.instanceId}
             card={card}
-            selected={selectedId === card.instanceId}
             faceDown={side === 'ai' && card.faceDown}
             isNew={card.justPlaced}
+            goalCount={goalCounts?.[card.instanceId] || 0}
             onTap={() => onCardTap?.(card)}
-            onLongPress={() => onCardLongPress?.(card)}
           />
         ))}
         {cards.length === 0 && !isDropTarget && (

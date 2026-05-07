@@ -433,3 +433,6 @@
   70% { opacity: 1; }
   100%{ opacity: 0; }
 }
+
+.cp-row--duplicate { border-color: rgba(255, 215, 0, 0.4); }
+.cp-dup-badge { font-size: 10px; cursor: help; }

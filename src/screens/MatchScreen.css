@@ -849,3 +849,144 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ── Zoom modal: coin-flip outcomes ─────────────────────────────────────── */
+
+.zoom-coin-outcomes {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.zoom-coin-ball,
+.zoom-coin-glove {
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  padding: 6px 10px;
+  line-height: 1.45;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+}
+
+.zoom-coin-ball { border-left: 3px solid #ff9800; }
+.zoom-coin-glove { border-left: 3px solid #82b1ff; }
+
+/* ── Zoom modal: player field action buttons ────────────────────────────── */
+
+.zoom-field-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 16px 0;
+}
+
+.zoom-act-btn {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.zoom-act-btn--activate {
+  background: linear-gradient(135deg, #f57f17, #e65100);
+  color: white;
+}
+
+.zoom-act-btn--sub {
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.75);
+}
+
+/* ── Forfeit button in action bar ───────────────────────────────────────── */
+
+.ms-forfeit-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  border-radius: 10px;
+  padding: 4px 9px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.4;
+}
+
+/* ── Forfeit confirm dialog ─────────────────────────────────────────────── */
+
+.ms-forfeit-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.15s ease;
+}
+
+.ms-forfeit-panel {
+  width: min(300px, 90%);
+  background: #131d13;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 24px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  animation: panel-up 0.2s ease;
+}
+
+.ms-forfeit-title {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.ms-forfeit-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.ms-forfeit-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ms-forfeit-yes,
+.ms-forfeit-no {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 11px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-forfeit-yes {
+  background: #b71c1c;
+  color: white;
+}
+
+.ms-forfeit-no {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.75);
+}

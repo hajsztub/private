@@ -67,6 +67,7 @@ export default function FieldCard({
   onLongPress,
   draggable,
   onDragStart,
+  goalCount = 0,
 }) {
   const longRef = useRef(null)
   const typeColor = TYPE_COLOR[card.type] || TYPE_COLOR.attack
@@ -143,6 +144,11 @@ export default function FieldCard({
             <span className="fc-mini-stat fc-mini-stat--atk">⚔{atkVal}</span>
             <span className="fc-mini-stat fc-mini-stat--def">🛡{defVal}</span>
           </div>
+          {goalCount > 0 && (
+            <div className="fc-goals">
+              ⚽{goalCount > 1 ? <span className="fc-goals-num">{goalCount}</span> : null}
+            </div>
+          )}
         </div>
 
         {/* Upgrade pips */}

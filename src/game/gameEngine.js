@@ -362,8 +362,12 @@ export function endTurn(state) {
     }
   }
 
-  // Draw a card for the current player
-  newState = drawCard(newState, state.currentPlayer)
+  // Draw at start of rounds 3, 5, 7, 9 (both players simultaneously)
+  if (state.currentPlayer === 'B' && [2, 4, 6, 8].includes(state.round)) {
+    newState = drawCard(newState, 'A')
+    newState = drawCard(newState, 'B')
+    newState = addLog(newState, `📤 Dobieracie po 1 karcie!`, 'info')
+  }
 
   // Clear justPlaced and tick locks
   newState = clearJustPlaced(newState)
@@ -459,6 +463,18 @@ function applyPassiveEffects(state) {
     if (hasMarcroInSector(player.offenseSector)) updated.offenseSector = buffSector(player.offenseSector)
     if (hasMarcroInSector(player.defenseSector)) updated.defenseSector = buffSector(player.defenseSector)
     newState = { ...newState, players: { ...newState.players, [pid]: updated } }
+  }
+  // per_round_self_stat passives (LIAM +1 atk, NIKLAS +1 def, etc.)
+  for (const pid of ['A', 'B']) {
+    const pl = newState.players[pid]
+    const allPCards = [...pl.offenseSector, ...pl.defenseSector]
+    for (const card of allPCards) {
+      if (card.justPlaced) continue
+      if (card.passiveEffect?.type === 'per_round_self_stat') {
+        const pef = card.passiveEffect
+        newState = updateCardStat(newState, pid, card.instanceId, pef.stat, pef.amount)
+      }
+    }
   }
   return newState
 }
@@ -647,6 +663,15 @@ export function gameReducer(state, action) {
     }
     case 'DISMISS_SPECIAL_CARD':
       return dismissSpecialCard(state)
+    case 'FORFEIT': {
+      const s = {
+        ...state,
+        displayScore: { player: 0, ai: 3 },
+        phase: 'ended',
+        winner: 'ai',
+      }
+      return addLog(s, 'Mecz poddany. Przegrana 0:3.', 'warning')
+    }
     default:
       return state
   }

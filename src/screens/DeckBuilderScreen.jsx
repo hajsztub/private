@@ -135,6 +135,7 @@ export default function DeckBuilderScreen() {
     () => RESERVE_SLOTS.filter(s => assignments[s.id]).length,
     [assignments]
   )
+  const totalFilledCount = mainFilledCount + reserveFilledCount
   const filledCount = assignedIds.size
 
   const showNotif = (msg, ok) => {
@@ -267,9 +268,8 @@ export default function DeckBuilderScreen() {
     tryFill(MAIN_SLOTS)
     tryFill(RESERVE_SLOTS)
     setAssignments(next)
-    const mainFilled = MAIN_SLOTS.filter(s => next[s.id]).length
-    const resFilled = RESERVE_SLOTS.filter(s => next[s.id]).length
-    showNotif(`Skład uzupełniony (${mainFilled}/11${resFilled ? ` +${resFilled}R` : ''})`, true)
+    const totalFilled = FORMATION.filter(s => next[s.id]).length
+    showNotif(`Skład uzupełniony (${totalFilled}/14)`, true)
   }
 
   const formationRows = ROWS.map(r => FORMATION.filter(s => s.row === r))
@@ -281,9 +281,8 @@ export default function DeckBuilderScreen() {
       <div className="db-header">
         <button className="back-btn" onClick={goBack}>←</button>
         <h1 className="db-title">Ustaw Skład</h1>
-        <div className={`db-count ${mainFilledCount === 11 ? 'db-count--full' : ''}`}>
-          {mainFilledCount}<span className="db-count-total">/11</span>
-          {reserveFilledCount > 0 && <span className="db-count-res"> +{reserveFilledCount}</span>}
+        <div className={`db-count ${totalFilledCount === 14 ? 'db-count--full' : ''}`}>
+          {totalFilledCount}<span className="db-count-total">/14</span>
         </div>
       </div>
 
@@ -390,7 +389,7 @@ export default function DeckBuilderScreen() {
           </button>
         </div>
         <button className="db-save-btn" onClick={saveDeck}>
-          Zapisz Skład ({mainFilledCount}/11{reserveFilledCount > 0 ? ` +${reserveFilledCount}` : ''})
+          Zapisz Skład ({totalFilledCount}/14)
         </button>
       </div>
 

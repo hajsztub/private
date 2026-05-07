@@ -3,7 +3,7 @@ import { resolveRoundGoals, computeMatchStats } from './scoreEngine.js'
 
 export const MAX_ROUNDS = 10
 export const MAX_SECTOR_SIZE = 3
-export const HAND_SIZE = 14
+export const HAND_SIZE = 4
 
 export function createMatchState(matchType = 'local', playerDeckCards = null, aiDeckCards = null) {
   const playerDeckRaw = playerDeckCards || createDefaultDeck('A')

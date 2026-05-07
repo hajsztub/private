@@ -250,21 +250,24 @@ function SellTab({ profile, sellCard, showNotif }) {
 const AD_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
 
 function useAdCooldown(lastAdWatchedAt) {
-  const [secsLeft, setSecsLeft] = useState(() => {
+  const compute = () => {
     const elapsed = Date.now() - (lastAdWatchedAt || 0)
     return Math.max(0, Math.ceil((AD_COOLDOWN_MS - elapsed) / 1000))
-  })
+  }
+
+  const [secsLeft, setSecsLeft] = useState(compute)
 
   useEffect(() => {
-    if (secsLeft <= 0) return
+    const initial = compute()
+    setSecsLeft(initial)
+    if (initial <= 0) return
     const id = setInterval(() => {
-      const elapsed = Date.now() - (lastAdWatchedAt || 0)
-      const left = Math.max(0, Math.ceil((AD_COOLDOWN_MS - elapsed) / 1000))
+      const left = compute()
       setSecsLeft(left)
       if (left <= 0) clearInterval(id)
     }, 1000)
     return () => clearInterval(id)
-  }, [lastAdWatchedAt, secsLeft > 0])
+  }, [lastAdWatchedAt])
 
   return secsLeft
 }

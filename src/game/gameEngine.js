@@ -17,6 +17,9 @@ export function createMatchState(matchType = 'local', playerDeckCards = null, ai
     round: 0,
     currentPlayer: 'A',
     matchType,
+    maxRounds: MAX_ROUNDS,
+    endGameOnRound: null,
+    skipTurn: null,
     turnActionsUsed: { placedOffense: false, placedDefense: false, activatedAbility: false },
     players: {
       A: {
@@ -141,7 +144,186 @@ export function placeCard(state, playerId, cardInstanceId, sector) {
     },
   }
   newState = addLog(newState, `${playerId === 'A' ? 'Ty' : 'Przeciwnik'} wystawia ${card.name} (${sector === 'offense' ? 'ofensywa' : 'defensywa'}).`, 'action')
+  newState = applyOnPlacementPassive(newState, playerId, placedCard, sector)
   return { state: newState, error: null }
+}
+
+// ── On-placement passive effects (fire once when card hits the board) ────────
+
+function applyOnPlacementPassive(state, playerId, card, sector) {
+  const pef = card.passiveEffect
+  if (!pef || pef.type === 'none') return state
+  const opp = playerId === 'A' ? 'B' : 'A'
+  const oppPlayer = state.players[opp]
+  const ownPlayer = state.players[playerId]
+  let newState = state
+
+  const statKey = (s) => s === 'attackStat' ? 'currentAttackStat' : 'currentDefenseStat'
+
+  switch (pef.type) {
+    case 'self_stat_change': {
+      newState = updateCardStat(newState, playerId, card.instanceId, statKey(pef.stat), pef.amount)
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      break
+    }
+    case 'opponent_stat_change': {
+      // Debuff one random opponent card
+      const allOpp = [...oppPlayer.offenseSector, ...oppPlayer.defenseSector]
+      if (allOpp.length) {
+        const target = allOpp[Math.floor(Math.random() * allOpp.length)]
+        newState = updateCardStat(newState, opp, target.instanceId, statKey(pef.stat), pef.amount)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
+      }
+      break
+    }
+    case 'opponent_all_debuff': {
+      const allOpp = [...oppPlayer.offenseSector, ...oppPlayer.defenseSector]
+      for (const c of allOpp) {
+        newState = updateCardStat(newState, opp, c.instanceId, statKey(pef.stat), pef.amount)
+      }
+      if (allOpp.length) newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
+      break
+    }
+    case 'remove_random_opponent': {
+      const allOpp = [...oppPlayer.offenseSector, ...oppPlayer.defenseSector]
+      if (allOpp.length) {
+        const target = allOpp[Math.floor(Math.random() * allOpp.length)]
+        newState = removeCardFromBoard(newState, opp, target.instanceId)
+        newState = addLog(newState, `${card.name}: ${pef.message} (${target.name})`, 'warning')
+      }
+      break
+    }
+    case 'block_opponent_turn': {
+      newState = { ...newState, skipTurn: opp }
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
+      break
+    }
+    case 'self_lock': {
+      newState = lockCard(newState, playerId, card.instanceId, pef.rounds)
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'info')
+      break
+    }
+    case 'lock_opponent_sector': {
+      const oppOff = newState.players[opp].offenseSector
+      const oppDef = newState.players[opp].defenseSector
+      for (const c of [...oppOff, ...oppDef]) {
+        newState = lockCard(newState, opp, c.instanceId, pef.rounds)
+      }
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
+      break
+    }
+    case 'end_game_next_turn': {
+      newState = { ...newState, endGameOnRound: state.round + 1 }
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'special')
+      break
+    }
+    case 'set_max_rounds': {
+      newState = { ...newState, maxRounds: pef.rounds }
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'special')
+      break
+    }
+    case 'conditional_double_attack': {
+      // Double ATK if this card is the only one in its sector at placement
+      const sectorArr = newState.players[playerId][sector === 'offense' ? 'offenseSector' : 'defenseSector']
+      const nonSelf = sectorArr.filter(c => c.instanceId !== card.instanceId)
+      if (nonSelf.length === 0) {
+        const current = card.currentAttackStat ?? 0
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentAttackStat', current)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'sector_ally_count_buff': {
+      // +amount ATK for each ally defender currently on field
+      const defenders = ownPlayer.defenseSector.length
+      if (defenders > 0) {
+        newState = updateCardStat(newState, playerId, card.instanceId, statKey(pef.stat), pef.amount * defenders)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'sector_enemy_count_buff': {
+      // +amount DEF for each opponent currently on field
+      const enemies = oppPlayer.offenseSector.length + oppPlayer.defenseSector.length
+      if (enemies > 0) {
+        newState = updateCardStat(newState, playerId, card.instanceId, statKey(pef.stat), pef.amount * enemies)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'count_ally_defenders_buff': {
+      const defCount = ownPlayer.defenseSector.filter(c => c.type === 'defense').length
+      if (defCount > 0) {
+        newState = updateCardStat(newState, playerId, card.instanceId, statKey(pef.stat), pef.amount * defCount)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'count_team_midfield_buff': {
+      const mfCount = [...ownPlayer.offenseSector, ...ownPlayer.defenseSector].filter(c => c.type === 'midfield').length
+      if (mfCount > 0) {
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentAttackStat', pef.amount * mfCount)
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentDefenseStat', pef.amount * mfCount)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'absorb_sector_cards': {
+      // Gain sum of ATK/DEF of other cards in same sector
+      const sArr = newState.players[playerId][sector === 'offense' ? 'offenseSector' : 'defenseSector']
+      const others = sArr.filter(c => c.instanceId !== card.instanceId)
+      if (others.length) {
+        const sumAtk = others.reduce((s, c) => s + (c.currentAttackStat ?? 0), 0)
+        const sumDef = others.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0)
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentAttackStat', sumAtk)
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentDefenseStat', sumDef)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'absorb_opposite_card': {
+      // Gain stats from first opponent card in opposing sector
+      const oppSector = sector === 'offense' ? oppPlayer.defenseSector : oppPlayer.offenseSector
+      if (oppSector.length) {
+        const src = oppSector[0]
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentAttackStat', src.currentAttackStat ?? 0)
+        newState = updateCardStat(newState, playerId, card.instanceId, 'currentDefenseStat', src.currentDefenseStat ?? 0)
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      }
+      break
+    }
+    case 'swap_sector_attack_defense': {
+      // Swap ATK and DEF for all cards in same sector
+      const sKey = sector === 'offense' ? 'offenseSector' : 'defenseSector'
+      const swapped = newState.players[playerId][sKey].map(c => ({
+        ...c,
+        currentAttackStat: c.currentDefenseStat ?? 0,
+        currentDefenseStat: c.currentAttackStat ?? 0,
+      }))
+      newState = {
+        ...newState,
+        players: { ...newState.players, [playerId]: { ...newState.players[playerId], [sKey]: swapped } },
+      }
+      newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      break
+    }
+    case 'team_type_buff': {
+      // One-time buff to all own cards of targetType
+      const all = [...newState.players[playerId].offenseSector, ...newState.players[playerId].defenseSector]
+      for (const c of all) {
+        if (c.type === pef.targetType && c.instanceId !== card.instanceId) {
+          newState = updateCardStat(newState, playerId, c.instanceId, 'currentAttackStat', pef.atkAmount ?? 0)
+          newState = updateCardStat(newState, playerId, c.instanceId, 'currentDefenseStat', pef.defAmount ?? 0)
+        }
+      }
+      if (all.some(c => c.type === pef.targetType))
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+      break
+    }
+    default:
+      break
+  }
+  return newState
 }
 
 // ── Ability activation ─────────────────────────────────────────────────────
@@ -325,7 +507,10 @@ function findCardOnBoard(player, instanceId) {
 export function endTurn(state) {
   if (state.phase !== 'playing') return { state, error: 'Gra nie jest w toku.' }
 
-  let newState = state
+  // Clear skipTurn flag for the player whose turn is now ending
+  let newState = state.skipTurn === state.currentPlayer
+    ? { ...state, skipTurn: null }
+    : state
 
   // Apply no-activation effects for current player's unactivated cards
   newState = applyNoActivationEffects(newState, state.currentPlayer)
@@ -395,7 +580,9 @@ export function endTurn(state) {
     newState = addLog(newState, `🃏 Karta specjalna: ${drawn.name}! ${drawn.description}`, 'special')
   }
 
-  if (nextRound > MAX_ROUNDS) {
+  const effectiveMax = newState.maxRounds ?? MAX_ROUNDS
+  const silasCut = newState.endGameOnRound != null && nextRound > newState.endGameOnRound
+  if (nextRound > effectiveMax || silasCut) {
     return { state: endGame(newState), error: null, goalResult }
   }
 
@@ -463,26 +650,73 @@ function lockCard(state, playerId, instanceId, rounds) {
 
 function applyPassiveEffects(state) {
   let newState = state
+  const statKey = (s) => s === 'attackStat' ? 'currentAttackStat' : 'currentDefenseStat'
+
   for (const pid of ['A', 'B']) {
-    const player = newState.players[pid]
-    const hasMarcroInSector = (sector) => sector.some(c => c.id === 'marco')
-    const buffSector = (sector) => sector.map(c =>
-      c.id !== 'marco' ? { ...c, currentDefenseStat: clampStat(c, 'currentDefenseStat', (c.currentDefenseStat ?? 0) + 1) } : c
-    )
-    let updated = { ...player }
-    if (hasMarcroInSector(player.offenseSector)) updated.offenseSector = buffSector(player.offenseSector)
-    if (hasMarcroInSector(player.defenseSector)) updated.defenseSector = buffSector(player.defenseSector)
-    newState = { ...newState, players: { ...newState.players, [pid]: updated } }
-  }
-  // per_round_self_stat passives (LIAM +1 atk, NIKLAS +1 def, etc.)
-  for (const pid of ['A', 'B']) {
-    const pl = newState.players[pid]
-    const allPCards = [...pl.offenseSector, ...pl.defenseSector]
-    for (const card of allPCards) {
+    const opp = pid === 'A' ? 'B' : 'A'
+    // Snapshot cards at start of this player's pass (use fresh newState each card)
+    const allCards = () => [
+      ...newState.players[pid].offenseSector,
+      ...newState.players[pid].defenseSector,
+    ]
+
+    for (const card of allCards()) {
       if (card.justPlaced) continue
-      if (card.passiveEffect?.type === 'per_round_self_stat') {
-        const pef = card.passiveEffect
-        newState = updateCardStat(newState, pid, card.instanceId, pef.stat, pef.amount)
+      const pef = card.passiveEffect
+      if (!pef) continue
+
+      const inOffense = newState.players[pid].offenseSector.some(c => c.instanceId === card.instanceId)
+      const sectorKey = inOffense ? 'offenseSector' : 'defenseSector'
+
+      switch (pef.type) {
+        case 'sector_buff': {
+          // Buff every other card in same sector each round
+          const sectorCards = newState.players[pid][sectorKey]
+          for (const ally of sectorCards) {
+            if (ally.instanceId === card.instanceId) continue
+            newState = updateCardStat(newState, pid, ally.instanceId, statKey(pef.stat), pef.amount)
+          }
+          break
+        }
+        case 'per_round_self_stat':
+          newState = updateCardStat(newState, pid, card.instanceId, statKey(pef.stat), pef.amount)
+          break
+        case 'per_round_self_buff':
+          newState = updateCardStat(newState, pid, card.instanceId, 'currentAttackStat', pef.amount)
+          newState = updateCardStat(newState, pid, card.instanceId, 'currentDefenseStat', pef.amount)
+          break
+        case 'curse_trade_atk_def': {
+          // Owner's attackers -1 atk, defenders +1 def each round
+          for (const ally of allCards()) {
+            if (ally.type === 'attack')
+              newState = updateCardStat(newState, pid, ally.instanceId, 'currentAttackStat', -1)
+            if (ally.type === 'defense')
+              newState = updateCardStat(newState, pid, ally.instanceId, 'currentDefenseStat', 1)
+          }
+          break
+        }
+        case 'opponent_type_debuff': {
+          const allOpp = [...newState.players[opp].offenseSector, ...newState.players[opp].defenseSector]
+          for (const c of allOpp) {
+            if (c.type === pef.targetType)
+              newState = updateCardStat(newState, opp, c.instanceId, statKey(pef.stat), pef.amount)
+          }
+          break
+        }
+        case 'every2rounds_remove_opponent': {
+          const rounds = card.roundsOnField || 0
+          if (rounds > 0 && rounds % 2 === 0) {
+            const allOpp = [...newState.players[opp].offenseSector, ...newState.players[opp].defenseSector]
+            if (allOpp.length) {
+              const target = allOpp[Math.floor(Math.random() * allOpp.length)]
+              newState = removeCardFromBoard(newState, opp, target.instanceId)
+              newState = addLog(newState, `${card.name}: ${pef.message} (${target.name})`, 'warning')
+            }
+          }
+          break
+        }
+        default:
+          break
       }
     }
   }

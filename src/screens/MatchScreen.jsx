@@ -190,9 +190,18 @@ export default function MatchScreen({ matchParams = {} }) {
     if (matchState.phase === 'playing' && matchState.round === 1) SFX.matchStart()
   }, [matchState.phase])
 
+  // ── Blocked turn (block_opponent_turn passive) ────────────────────────────
+  useEffect(() => {
+    if (matchState.phase !== 'playing') return
+    if (matchState.skipTurn !== matchState.currentPlayer) return
+    const t = setTimeout(() => dispatch({ type: 'END_TURN' }), 800)
+    return () => clearTimeout(t)
+  }, [matchState.skipTurn, matchState.currentPlayer, matchState.phase])
+
   // ── AI turn ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (matchState.phase !== 'playing' || matchState.currentPlayer !== 'B' || aiThinking) return
+    if (matchState.skipTurn === 'B') return // handled by blocked-turn effect
     const t = setTimeout(() => runAITurn(matchState, dispatch, setAiThinking), 400)
     return () => clearTimeout(t)
   }, [matchState.currentPlayer, matchState.phase, matchState.round])

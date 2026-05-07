@@ -2,28 +2,35 @@ import React from 'react'
 import './PlayerCard.css'
 
 const TYPE_COLORS = {
-  attack: '#4caf50',
-  midfield: '#9c27b0',
-  defense: '#2196f3',
-  goalkeeper: '#607d8b',
+  attack: '#c62828',
+  midfield: '#6a1b9a',
+  defense: '#1565c0',
+  goalkeeper: '#37474f',
+  starter: '#546e7a',
 }
 
 const TYPE_BG = {
-  attack: 'linear-gradient(135deg, #e8f5e9, #c8e6c9)',
-  midfield: 'linear-gradient(135deg, #f3e5f5, #e1bee7)',
-  defense: 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
-  goalkeeper: 'linear-gradient(135deg, #eceff1, #cfd8dc)',
+  attack: 'linear-gradient(160deg, #ffebee, #ffcdd2)',
+  midfield: 'linear-gradient(160deg, #f3e5f5, #e1bee7)',
+  defense: 'linear-gradient(160deg, #e3f2fd, #bbdefb)',
+  goalkeeper: 'linear-gradient(160deg, #eceff1, #cfd8dc)',
+  starter: 'linear-gradient(160deg, #eceff1, #b0bec5)',
 }
 
-const PLAYER_ILLUSTRATIONS = {
-  hugo: HugoIllustration,
-  harry: HarryIllustration,
-  rushy: RushyIllustration,
-  wilko: WilkoIllustration,
-  freddie: FreddieIllustration,
-  marco: MarcoIllustration,
-  aaron: AaronIllustration,
-  titan: TitanIllustration,
+// Map card id to illustration component
+const ILLUSTRATIONS = {
+  hugo: HugoSVG,
+  harry: HarrySVG,
+  rushy: RushySVG,
+  wilko: WilkoSVG,
+  freddie: FreddieSVG,
+  marco: MarcoSVG,
+  aaron: AaronSVG,
+  titan: TitanSVG,
+}
+
+function getIllustration(cardId) {
+  return ILLUSTRATIONS[cardId] || DefaultSVG
 }
 
 export default function PlayerCard({
@@ -32,324 +39,265 @@ export default function PlayerCard({
   selected,
   dimmed,
   showBack,
-  compact,
+  size = 'normal', // 'normal' | 'small' | 'mini'
   onActivate,
   canActivate,
   isCurrentPlayer,
+  showActivateBtn,
 }) {
   if (showBack) {
     return (
-      <div className={`player-card player-card--back ${compact ? 'player-card--compact' : ''}`}>
-        <div className="card-back-pattern">
-          <span className="card-back-logo">⚽</span>
-          <span className="card-back-text">football<br />cards</span>
+      <div className={`pc pc--back pc--${size} ${onClick ? 'pc--clickable' : ''}`} onClick={onClick}>
+        <div className="pc-back-inner">
+          <span className="pc-back-icon">⚽</span>
+          <span className="pc-back-text">FOOTBALL<br/>CARDS</span>
         </div>
       </div>
     )
   }
 
-  const Illustration = PLAYER_ILLUSTRATIONS[card.id] || DefaultIllustration
-  const typeBg = TYPE_BG[card.type] || TYPE_BG.attack
+  const Illus = getIllustration(card.id)
   const typeColor = TYPE_COLORS[card.type] || TYPE_COLORS.attack
+  const typeBg = TYPE_BG[card.type] || TYPE_BG.attack
+  const isGK = card.type === 'goalkeeper'
 
-  const isGoalkeeper = card.type === 'goalkeeper'
+  const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
+  const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
+  const primaryVal = isGK ? defVal : atkVal
+  const secondaryVal = isGK ? null : defVal
+
+  const canActivateThis = showActivateBtn && canActivate && isCurrentPlayer
+    && !card.isLocked && !card.justPlaced && card.abilityType !== 'passive'
 
   return (
     <div
       className={[
-        'player-card',
-        selected ? 'player-card--selected' : '',
-        dimmed ? 'player-card--dimmed' : '',
-        compact ? 'player-card--compact' : '',
-        card.isLocked ? 'player-card--locked' : '',
-        card.justPlaced ? 'player-card--just-placed' : '',
-        onClick ? 'player-card--clickable' : '',
-      ].join(' ')}
+        'pc',
+        `pc--${size}`,
+        selected ? 'pc--selected' : '',
+        dimmed ? 'pc--dimmed' : '',
+        card.isLocked ? 'pc--locked' : '',
+        card.justPlaced ? 'pc--new' : '',
+        onClick ? 'pc--clickable' : '',
+      ].filter(Boolean).join(' ')}
       style={{ background: typeBg }}
       onClick={onClick}
     >
       {/* Type badge */}
-      <div className="card-type-badge" style={{ background: typeColor }}>
+      <div className="pc-type" style={{ background: typeColor }}>
         {card.typeLabel}
       </div>
 
-      {/* Illustration area */}
-      <div className="card-illustration">
-        <Illustration />
+      {/* Illustration */}
+      <div className="pc-illus">
+        <Illus />
       </div>
 
-      {/* Name bar */}
-      <div className="card-name-bar">
-        <span className="card-name">{card.name}</span>
-      </div>
+      {/* Name */}
+      <div className="pc-name">{card.name}</div>
 
-      {/* Ability section */}
-      {!compact && (
-        <div className="card-ability">
-          <div className="ability-name">{card.abilityName}</div>
-          {card.abilityType === 'passive' ? (
-            <p className="ability-desc">
-              <span className="ability-label ability-label--passive">PASYWNA:</span>{' '}
-              {card.abilityDescription}
-            </p>
-          ) : (
-            <>
-              <p className="ability-desc">
-                <span className="ability-label ability-label--active">AKTYWACJA:</span>{' '}
-                {card.abilityDescription}
-              </p>
-              {card.noActivationDescription && (
-                <p className="ability-desc">
-                  <span className="ability-label ability-label--no-activation">BRAK AKTYWACJI:</span>{' '}
-                  {card.noActivationDescription}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {/* Ability */}
+      <div className="pc-ability">
+        <div className="pc-ability-name">{card.abilityName}</div>
+        {size !== 'mini' && (
+          <div className="pc-ability-text">
+            {card.abilityType === 'passive'
+              ? <><span className="pc-label pc-label--passive">PASYWNA</span> {card.abilityDescription}</>
+              : <><span className="pc-label pc-label--active">AKTYWACJA</span> {card.abilityDescription}</>
+            }
+          </div>
+        )}
+        {size !== 'mini' && card.noActivationDescription && card.abilityType !== 'passive' && (
+          <div className="pc-ability-text">
+            <span className="pc-label pc-label--noa">BRAK AKT.</span> {card.noActivationDescription}
+          </div>
+        )}
+      </div>
 
       {/* Stats bar */}
-      <div className="card-stats">
-        <div className="stat stat--attack">
-          <span>{isGoalkeeper ? card.currentDefenseStat ?? card.defenseStat : card.currentAttackStat ?? card.attackStat}</span>
-        </div>
-        <div className="stat-spacer">
-          <span className="card-name-small">{card.name}</span>
-        </div>
-        <div className="stat stat--defense">
-          <span>{isGoalkeeper ? '' : card.currentDefenseStat ?? card.defenseStat}</span>
-        </div>
+      <div className="pc-stats">
+        <div className="pc-stat pc-stat--atk">{isGK ? defVal : atkVal}</div>
+        <div className="pc-stat-name">{card.name}</div>
+        {!isGK && <div className="pc-stat pc-stat--def">{defVal}</div>}
+        {isGK && <div className="pc-stat pc-stat--gk-def">{defVal}</div>}
       </div>
 
       {/* Activate button */}
-      {canActivate && isCurrentPlayer && !card.isLocked && !card.justPlaced && card.abilityType !== 'passive' && (
+      {canActivateThis && (
         <button
-          className="card-activate-btn"
-          onClick={(e) => { e.stopPropagation(); onActivate?.(card.instanceId) }}
+          className="pc-activate"
+          onClick={e => { e.stopPropagation(); onActivate?.(card.instanceId) }}
         >
-          Aktywuj
+          ⚡ Aktywuj
         </button>
       )}
 
-      {card.isLocked && <div className="card-locked-overlay">🔒 {card.lockedRounds}R</div>}
+      {/* Locked overlay */}
+      {card.isLocked && (
+        <div className="pc-locked-overlay">🔒 {card.lockedRounds}</div>
+      )}
     </div>
   )
 }
 
 // ── SVG Illustrations ──────────────────────────────────────────────────────
 
-function HugoIllustration() {
+function HugoSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body */}
-      <ellipse cx="50" cy="95" rx="28" ry="20" fill="#4a7c4e" />
-      {/* Neck */}
-      <rect x="44" y="72" width="12" height="15" rx="4" fill="#c68642" />
-      {/* Head */}
-      <ellipse cx="50" cy="62" rx="24" ry="26" fill="#c68642" />
-      {/* Hair - curly */}
-      <circle cx="30" cy="48" r="10" fill="#2c1a0e" />
-      <circle cx="38" cy="40" r="10" fill="#2c1a0e" />
-      <circle cx="50" cy="37" r="10" fill="#2c1a0e" />
-      <circle cx="62" cy="40" r="10" fill="#2c1a0e" />
-      <circle cx="70" cy="48" r="10" fill="#2c1a0e" />
-      {/* Eyes */}
-      <ellipse cx="42" cy="63" rx="5" ry="6" fill="white" />
-      <ellipse cx="58" cy="63" rx="5" ry="6" fill="white" />
-      <circle cx="43" cy="64" r="3" fill="#3d2b1f" />
-      <circle cx="59" cy="64" r="3" fill="#3d2b1f" />
-      {/* Big smile */}
-      <path d="M38 74 Q50 86 62 74" stroke="#a0522d" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      {/* Teeth */}
-      <path d="M40 76 Q50 84 60 76" fill="white" />
-      {/* Ball */}
-      <circle cx="50" cy="108" r="10" fill="white" stroke="#333" strokeWidth="1" />
-      <path d="M44 104 L50 98 L56 104 L54 112 L46 112 Z" fill="#333" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="72" rx="22" ry="16" fill="#4a7c4e" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#c68642" />
+      <ellipse cx="40" cy="48" rx="20" ry="22" fill="#c68642" />
+      <circle cx="24" cy="36" r="9" fill="#2c1a0e" />
+      <circle cx="31" cy="29" r="9" fill="#2c1a0e" />
+      <circle cx="40" cy="27" r="9" fill="#2c1a0e" />
+      <circle cx="49" cy="29" r="9" fill="#2c1a0e" />
+      <circle cx="56" cy="36" r="9" fill="#2c1a0e" />
+      <ellipse cx="33" cy="49" rx="5" ry="5.5" fill="white" />
+      <ellipse cx="47" cy="49" rx="5" ry="5.5" fill="white" />
+      <circle cx="34" cy="50" r="2.5" fill="#2c1a0e" />
+      <circle cx="48" cy="50" r="2.5" fill="#2c1a0e" />
+      <path d="M31 59 Q40 67 49 59" stroke="#a0522d" strokeWidth="2" fill="white" />
+      <circle cx="40" cy="80" r="7" fill="white" stroke="#333" strokeWidth="1" />
+      <path d="M35 77 L40 72 L45 77 L43 83 L37 83 Z" fill="#333" />
     </svg>
   )
 }
 
-function HarryIllustration() {
+function HarrySVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body - jersey */}
-      <ellipse cx="50" cy="98" rx="26" ry="18" fill="#6c757d" />
-      <text x="50" y="102" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">110</text>
-      {/* Neck */}
-      <rect x="44" y="73" width="12" height="14" rx="3" fill="#d4a373" />
-      {/* Bald head */}
-      <ellipse cx="50" cy="60" rx="25" ry="27" fill="#d4a373" />
-      {/* Grumpy eyebrows */}
-      <path d="M32 50 L44 54" stroke="#8b6347" strokeWidth="3" strokeLinecap="round" />
-      <path d="M56 54 L68 50" stroke="#8b6347" strokeWidth="3" strokeLinecap="round" />
-      {/* Eyes - narrow/grumpy */}
-      <ellipse cx="41" cy="58" rx="6" ry="4" fill="white" />
-      <ellipse cx="59" cy="58" rx="6" ry="4" fill="white" />
-      <circle cx="42" cy="58" r="2.5" fill="#3d2b1f" />
-      <circle cx="60" cy="58" r="2.5" fill="#3d2b1f" />
-      {/* Frown */}
-      <path d="M40 72 Q50 68 60 72" stroke="#8b6347" strokeWidth="2" fill="none" />
-      {/* Ear */}
-      <ellipse cx="25" cy="60" rx="5" ry="7" fill="#c4915c" />
-      <ellipse cx="75" cy="60" rx="5" ry="7" fill="#c4915c" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="22" ry="15" fill="#5a6268" />
+      <text x="40" y="78" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold">110</text>
+      <rect x="35" y="56" width="10" height="13" rx="3" fill="#d4a373" />
+      <ellipse cx="40" cy="46" rx="20" ry="22" fill="#d4a373" />
+      <path d="M24 37 L35 41" stroke="#8b6347" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M45 41 L56 37" stroke="#8b6347" strokeWidth="2.5" strokeLinecap="round" />
+      <ellipse cx="32" cy="46" rx="5.5" ry="4" fill="white" />
+      <ellipse cx="48" cy="46" rx="5.5" ry="4" fill="white" />
+      <circle cx="33" cy="46" r="2.5" fill="#2c1a0e" />
+      <circle cx="49" cy="46" r="2.5" fill="#2c1a0e" />
+      <path d="M32 57 Q40 54 48 57" stroke="#8b6347" strokeWidth="2" fill="none" />
+      <ellipse cx="20" cy="47" rx="4" ry="5.5" fill="#c4915c" />
+      <ellipse cx="60" cy="47" rx="4" ry="5.5" fill="#c4915c" />
     </svg>
   )
 }
 
-function RushyIllustration() {
+function RushySVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body - running pose */}
-      <ellipse cx="52" cy="96" rx="24" ry="18" fill="#e65100" />
-      {/* Neck */}
-      <rect x="44" y="72" width="12" height="14" rx="3" fill="#ffb347" />
-      {/* Head - tilted forward */}
-      <ellipse cx="52" cy="60" rx="22" ry="24" fill="#ffb347" />
-      {/* Short spiky hair */}
-      <ellipse cx="52" cy="40" rx="20" ry="10" fill="#8B4513" />
-      <rect x="38" y="34" width="5" height="12" rx="2" fill="#8B4513" transform="rotate(-10,40,40)" />
-      <rect x="48" y="30" width="5" height="14" rx="2" fill="#8B4513" />
-      <rect x="58" y="33" width="5" height="12" rx="2" fill="#8B4513" transform="rotate(10,60,39)" />
-      {/* Eyes - excited */}
-      <ellipse cx="44" cy="60" rx="6" ry="7" fill="white" />
-      <ellipse cx="60" cy="60" rx="6" ry="7" fill="white" />
-      <circle cx="45" cy="61" r="3.5" fill="#1a1a1a" />
-      <circle cx="61" cy="61" r="3.5" fill="#1a1a1a" />
-      <circle cx="46" cy="60" r="1" fill="white" />
-      <circle cx="62" cy="60" r="1" fill="white" />
-      {/* Grin */}
-      <path d="M40 72 Q52 82 64 72" stroke="#c0392b" strokeWidth="2" fill="white" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="42" cy="74" rx="20" ry="14" fill="#e65100" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#ffb347" />
+      <ellipse cx="42" cy="47" rx="19" ry="21" fill="#ffb347" />
+      <ellipse cx="42" cy="30" rx="17" ry="9" fill="#8B4513" />
+      <rect x="30" y="25" width="4" height="10" rx="2" fill="#8B4513" transform="rotate(-10,32,30)" />
+      <rect x="39" y="22" width="4" height="12" rx="2" fill="#8B4513" />
+      <rect x="48" y="25" width="4" height="10" rx="2" fill="#8B4513" transform="rotate(10,50,30)" />
+      <ellipse cx="34" cy="47" rx="5.5" ry="6" fill="white" />
+      <ellipse cx="50" cy="47" rx="5.5" ry="6" fill="white" />
+      <circle cx="35" cy="48" r="3" fill="#1a1a1a" />
+      <circle cx="51" cy="48" r="3" fill="#1a1a1a" />
+      <circle cx="36" cy="47" r="1" fill="white" />
+      <circle cx="52" cy="47" r="1" fill="white" />
+      <path d="M32 58 Q42 66 52 58" stroke="#c0392b" strokeWidth="2" fill="white" />
     </svg>
   )
 }
 
-function WilkoIllustration() {
+function WilkoSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body */}
-      <ellipse cx="50" cy="96" rx="26" ry="18" fill="#1565c0" />
-      {/* Neck */}
-      <rect x="44" y="73" width="12" height="13" rx="3" fill="#a0785a" />
-      {/* Head */}
-      <ellipse cx="50" cy="62" rx="24" ry="25" fill="#a0785a" />
-      {/* Short dark hair */}
-      <ellipse cx="50" cy="42" rx="22" ry="12" fill="#2c1a0e" />
-      {/* Serious eyes */}
-      <ellipse cx="42" cy="62" rx="6" ry="5.5" fill="white" />
-      <ellipse cx="58" cy="62" rx="6" ry="5.5" fill="white" />
-      <circle cx="43" cy="62" r="3" fill="#1a1a1a" />
-      <circle cx="59" cy="62" r="3" fill="#1a1a1a" />
-      {/* Neutral expression */}
-      <line x1="41" y1="75" x2="59" y2="75" stroke="#7a5c3e" strokeWidth="2" strokeLinecap="round" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="22" ry="15" fill="#1565c0" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#a0785a" />
+      <ellipse cx="40" cy="47" rx="20" ry="22" fill="#a0785a" />
+      <ellipse cx="40" cy="30" rx="19" ry="10" fill="#2c1a0e" />
+      <ellipse cx="33" cy="47" rx="5" ry="5" fill="white" />
+      <ellipse cx="47" cy="47" rx="5" ry="5" fill="white" />
+      <circle cx="34" cy="47" r="2.5" fill="#1a1a1a" />
+      <circle cx="48" cy="47" r="2.5" fill="#1a1a1a" />
+      <line x1="33" y1="57" x2="47" y2="57" stroke="#7a5c3e" strokeWidth="2" strokeLinecap="round" />
     </svg>
   )
 }
 
-function FreddieIllustration() {
+function FreddieSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body */}
-      <ellipse cx="50" cy="97" rx="25" ry="17" fill="#7b1fa2" />
-      {/* Neck */}
-      <rect x="44" y="73" width="12" height="14" rx="3" fill="#f4c2a1" />
-      {/* Head */}
-      <ellipse cx="50" cy="61" rx="23" ry="25" fill="#f4c2a1" />
-      {/* Wavy hair */}
-      <path d="M27 50 Q30 35 50 36 Q70 35 73 50" fill="#d4a017" stroke="#d4a017" strokeWidth="1" />
-      <path d="M27 50 Q25 42 30 38" fill="#d4a017" />
-      {/* Friendly eyes */}
-      <ellipse cx="42" cy="61" rx="6" ry="6.5" fill="white" />
-      <ellipse cx="58" cy="61" rx="6" ry="6.5" fill="white" />
-      <circle cx="43" cy="62" r="3.5" fill="#3d2b1f" />
-      <circle cx="59" cy="62" r="3.5" fill="#3d2b1f" />
-      {/* Smile */}
-      <path d="M40 73 Q50 81 60 73" stroke="#c0795a" strokeWidth="2" fill="none" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="21" ry="14" fill="#7b1fa2" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#f4c2a1" />
+      <ellipse cx="40" cy="47" rx="20" ry="22" fill="#f4c2a1" />
+      <path d="M21 40 Q25 26 40 28 Q55 26 59 40" fill="#d4a017" />
+      <ellipse cx="33" cy="47" rx="5.5" ry="6" fill="white" />
+      <ellipse cx="47" cy="47" rx="5.5" ry="6" fill="white" />
+      <circle cx="34" cy="48" r="3" fill="#2c1a0e" />
+      <circle cx="48" cy="48" r="3" fill="#2c1a0e" />
+      <path d="M31 58 Q40 64 49 58" stroke="#c0795a" strokeWidth="2" fill="none" />
     </svg>
   )
 }
 
-function MarcoIllustration() {
+function MarcoSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Body */}
-      <ellipse cx="50" cy="96" rx="25" ry="18" fill="#00838f" />
-      {/* Neck */}
-      <rect x="44" y="73" width="12" height="13" rx="3" fill="#e8b89a" />
-      {/* Head */}
-      <ellipse cx="50" cy="62" rx="23" ry="25" fill="#e8b89a" />
-      {/* Neat hair */}
-      <path d="M28 52 Q30 36 50 35 Q70 36 72 52" fill="#4a3000" />
-      {/* Calm eyes */}
-      <ellipse cx="42" cy="62" rx="5.5" ry="5" fill="white" />
-      <ellipse cx="58" cy="62" rx="5.5" ry="5" fill="white" />
-      <circle cx="43" cy="62" r="3" fill="#2c1a0e" />
-      <circle cx="59" cy="62" r="3" fill="#2c1a0e" />
-      {/* Calm smile */}
-      <path d="M41 74 Q50 79 59 74" stroke="#b07c5e" strokeWidth="2" fill="none" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="21" ry="14" fill="#00838f" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#e8b89a" />
+      <ellipse cx="40" cy="47" rx="20" ry="22" fill="#e8b89a" />
+      <path d="M22 40 Q25 27 40 27 Q55 27 58 40" fill="#4a3000" />
+      <ellipse cx="33" cy="47" rx="5" ry="5" fill="white" />
+      <ellipse cx="47" cy="47" rx="5" ry="5" fill="white" />
+      <circle cx="34" cy="47" r="2.5" fill="#2c1a0e" />
+      <circle cx="48" cy="47" r="2.5" fill="#2c1a0e" />
+      <path d="M33 57 Q40 62 47 57" stroke="#b07c5e" strokeWidth="2" fill="none" />
     </svg>
   )
 }
 
-function AaronIllustration() {
+function AaronSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Goalkeeper gloves suggestion */}
-      <ellipse cx="50" cy="96" rx="26" ry="18" fill="#1a1a2e" />
-      {/* Gloves */}
-      <ellipse cx="22" cy="90" rx="10" ry="7" fill="#333" />
-      <ellipse cx="78" cy="90" rx="10" ry="7" fill="#333" />
-      {/* Neck */}
-      <rect x="44" y="72" width="12" height="14" rx="3" fill="#f5deb3" />
-      {/* Head */}
-      <ellipse cx="50" cy="61" rx="23" ry="25" fill="#f5deb3" />
-      {/* Spiky blonde hair */}
-      <path d="M28 50 Q32 32 50 30 Q68 32 72 50" fill="#f4d03f" />
-      <rect x="36" y="26" width="6" height="16" rx="3" fill="#f4d03f" transform="rotate(-15,39,34)" />
-      <rect x="47" y="24" width="6" height="18" rx="3" fill="#f4d03f" />
-      <rect x="58" y="26" width="6" height="16" rx="3" fill="#f4d03f" transform="rotate(15,61,34)" />
-      {/* Eyes - confident */}
-      <ellipse cx="42" cy="62" rx="6" ry="6" fill="white" />
-      <ellipse cx="58" cy="62" rx="6" ry="6" fill="white" />
-      <circle cx="43" cy="62" r="3.5" fill="#3d2b1f" />
-      <circle cx="59" cy="62" r="3.5" fill="#3d2b1f" />
-      <circle cx="44" cy="61" r="1" fill="white" />
-      <circle cx="60" cy="61" r="1" fill="white" />
-      {/* Confident smile */}
-      <path d="M41 74 Q50 80 59 74" stroke="#c0a080" strokeWidth="2" fill="none" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="22" ry="15" fill="#1a1a2e" />
+      <ellipse cx="16" cy="70" rx="9" ry="6" fill="#333" />
+      <ellipse cx="64" cy="70" rx="9" ry="6" fill="#333" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#f5deb3" />
+      <ellipse cx="40" cy="47" rx="20" ry="22" fill="#f5deb3" />
+      <path d="M22 38 Q26 24 40 22 Q54 24 58 38" fill="#f4d03f" />
+      <rect x="28" y="19" width="5" height="14" rx="2.5" fill="#f4d03f" transform="rotate(-15,30,26)" />
+      <rect x="37" y="17" width="5" height="16" rx="2.5" fill="#f4d03f" />
+      <rect x="47" y="19" width="5" height="14" rx="2.5" fill="#f4d03f" transform="rotate(15,49,26)" />
+      <ellipse cx="33" cy="47" rx="5.5" ry="5.5" fill="white" />
+      <ellipse cx="47" cy="47" rx="5.5" ry="5.5" fill="white" />
+      <circle cx="34" cy="47" r="3" fill="#2c1a0e" />
+      <circle cx="48" cy="47" r="3" fill="#2c1a0e" />
+      <circle cx="35" cy="46" r="1" fill="white" />
+      <circle cx="49" cy="46" r="1" fill="white" />
+      <path d="M33 57 Q40 62 47 57" stroke="#c0a080" strokeWidth="2" fill="none" />
     </svg>
   )
 }
 
-function TitanIllustration() {
+function TitanSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      {/* Bulky body */}
-      <ellipse cx="50" cy="95" rx="30" ry="20" fill="#212121" />
-      {/* Neck - thick */}
-      <rect x="42" y="72" width="16" height="15" rx="4" fill="#8d5524" />
-      {/* Head - square jaw */}
-      <rect x="26" y="38" width="48" height="45" rx="15" fill="#8d5524" />
-      {/* Short military hair */}
-      <rect x="27" y="38" width="46" height="12" rx="8" fill="#3d2b1f" />
-      {/* Strong eyes */}
-      <ellipse cx="41" cy="60" rx="7" ry="5.5" fill="white" />
-      <ellipse cx="59" cy="60" rx="7" ry="5.5" fill="white" />
-      <circle cx="42" cy="60" r="3.5" fill="#1a1a1a" />
-      <circle cx="60" cy="60" r="3.5" fill="#1a1a1a" />
-      {/* Jaw line */}
-      <path d="M36 76 Q50 84 64 76" stroke="#6d4c41" strokeWidth="2" fill="none" />
-      {/* Scar */}
-      <line x1="65" y1="55" x2="70" y2="68" stroke="#5d4037" strokeWidth="2" />
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <ellipse cx="40" cy="74" rx="24" ry="16" fill="#212121" />
+      <rect x="33" y="56" width="14" height="13" rx="4" fill="#8d5524" />
+      <rect x="21" y="30" width="38" height="36" rx="12" fill="#8d5524" />
+      <rect x="21" y="30" width="38" height="11" rx="8" fill="#3d2b1f" />
+      <ellipse cx="32" cy="48" rx="6" ry="5" fill="white" />
+      <ellipse cx="48" cy="48" rx="6" ry="5" fill="white" />
+      <circle cx="33" cy="48" r="3" fill="#1a1a1a" />
+      <circle cx="49" cy="48" r="3" fill="#1a1a1a" />
+      <path d="M30 58 Q40 64 50 58" stroke="#6d4c41" strokeWidth="2" fill="none" />
+      <line x1="52" y1="42" x2="56" y2="54" stroke="#5d4037" strokeWidth="1.5" />
     </svg>
   )
 }
 
-function DefaultIllustration() {
+function DefaultSVG() {
   return (
-    <svg viewBox="0 0 100 120" className="card-svg">
-      <circle cx="50" cy="55" r="30" fill="#bdbdbd" />
-      <text x="50" y="62" textAnchor="middle" fill="#757575" fontSize="28">?</text>
+    <svg viewBox="0 0 80 90" className="pc-svg">
+      <circle cx="40" cy="45" r="25" fill="#bdbdbd" />
+      <text x="40" y="53" textAnchor="middle" fill="#757575" fontSize="24">?</text>
     </svg>
   )
 }

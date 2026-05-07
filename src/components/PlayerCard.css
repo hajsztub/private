@@ -1,273 +1,243 @@
-.player-card {
+.pc {
   position: relative;
   border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  width: 130px;
-  min-height: 200px;
-  transition: transform 0.15s, box-shadow 0.15s;
-  border: 2px solid rgba(255,255,255,0.6);
   font-family: 'Nunito', sans-serif;
+  border: 2px solid rgba(255,255,255,0.55);
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
 }
 
-.player-card--compact {
-  width: 90px;
-  min-height: 130px;
+/* Sizes */
+.pc--normal {
+  width: 110px;
+  min-height: 180px;
 }
 
-.player-card--clickable {
-  cursor: pointer;
+.pc--small {
+  width: 80px;
+  min-height: 136px;
 }
 
-.player-card--clickable:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+.pc--mini {
+  width: 60px;
+  min-height: 96px;
 }
 
-.player-card--selected {
-  border: 3px solid #ff9800;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 24px rgba(255, 152, 0, 0.4);
-}
-
-.player-card--dimmed {
-  opacity: 0.5;
-}
-
-.player-card--locked {
-  filter: grayscale(0.7);
-}
-
-.player-card--just-placed {
-  border: 2px solid #4caf50;
-  box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
-}
+/* States */
+.pc--clickable { cursor: pointer; }
+.pc--clickable:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.25); }
+.pc--selected { border: 2.5px solid #ff9800; transform: translateY(-5px); box-shadow: 0 8px 20px rgba(255,152,0,0.35); }
+.pc--dimmed { opacity: 0.45; }
+.pc--locked { filter: grayscale(0.6); }
+.pc--new { box-shadow: 0 0 10px rgba(76,175,80,0.55); border-color: #4caf50; }
 
 /* Type badge */
-.card-type-badge {
+.pc-type {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 900;
-  font-size: 13px;
-  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
   z-index: 2;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
-.player-card--compact .card-type-badge {
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
+.pc--small .pc-type, .pc--mini .pc-type {
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
   top: 4px;
   right: 4px;
 }
 
 /* Illustration */
-.card-illustration {
-  flex: 1;
+.pc-illus {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 8px 0;
-  min-height: 80px;
+  padding: 6px 6px 0;
+  flex: 1;
 }
 
-.player-card--compact .card-illustration {
-  min-height: 50px;
-  padding: 4px;
-}
-
-.card-svg {
+.pc-svg {
   width: 100%;
-  height: 100%;
-  max-height: 100px;
+  max-height: 80px;
 }
 
-.player-card--compact .card-svg {
-  max-height: 60px;
-}
+.pc--small .pc-svg { max-height: 56px; }
+.pc--mini .pc-svg { max-height: 40px; }
 
-/* Name bar */
-.card-name-bar {
-  background: rgba(255,255,255,0.85);
-  padding: 3px 6px;
+/* Name */
+.pc-name {
   text-align: center;
-  border-top: 1px solid rgba(0,0,0,0.08);
-}
-
-.card-name {
   font-family: 'Bangers', cursive;
-  font-size: 18px;
-  letter-spacing: 2px;
+  font-size: 15px;
+  letter-spacing: 1.5px;
   color: #e65100;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.8);
+  padding: 2px 4px;
+  line-height: 1.2;
 }
 
-.player-card--compact .card-name {
-  font-size: 12px;
-}
+.pc--small .pc-name { font-size: 11px; }
+.pc--mini .pc-name { font-size: 9px; }
 
 /* Ability */
-.card-ability {
-  padding: 5px 7px;
-  background: rgba(255,255,255,0.75);
+.pc-ability {
+  background: rgba(255,255,255,0.72);
+  padding: 4px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pc--mini .pc-ability { display: none; }
+
+.pc-ability-name {
   font-size: 9px;
-  line-height: 1.35;
-  flex-shrink: 0;
-}
-
-.ability-name {
   font-weight: 900;
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-  color: #1a1a1a;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1a1a1a;
 }
 
-.ability-desc {
-  margin: 0 0 2px;
+.pc--small .pc-ability-name { font-size: 8px; }
+
+.pc-ability-text {
+  font-size: 8px;
+  line-height: 1.3;
   color: #333;
 }
 
-.ability-label {
+.pc--small .pc-ability-text { font-size: 7px; }
+
+.pc-label {
   font-weight: 900;
+  font-size: 7px;
   text-transform: uppercase;
-  font-size: 8px;
 }
 
-.ability-label--active { color: #e65100; }
-.ability-label--passive { color: #1565c0; }
-.ability-label--no-activation { color: #c62828; }
+.pc-label--active { color: #e65100; }
+.pc-label--passive { color: #1565c0; }
+.pc-label--noa { color: #c62828; }
 
 /* Stats bar */
-.card-stats {
+.pc-stats {
   display: flex;
   align-items: center;
-  background: rgba(0,0,0,0.08);
-  padding: 4px 6px;
-  gap: 4px;
-  flex-shrink: 0;
+  gap: 3px;
+  background: rgba(0,0,0,0.1);
+  padding: 3px 5px;
 }
 
-.stat {
-  width: 28px;
-  height: 28px;
+.pc-stat {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 14px;
   color: white;
-  flex-shrink: 0;
   font-family: 'Bangers', cursive;
-  letter-spacing: 0;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
-.player-card--compact .stat {
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
-}
+.pc--small .pc-stat { width: 18px; height: 18px; font-size: 10px; }
+.pc--mini .pc-stat { width: 16px; height: 16px; font-size: 9px; }
 
-.stat--attack { background: #7b1c1c; }
-.stat--defense { background: #e65100; }
+.pc-stat--atk { background: #7b1c1c; }
+.pc-stat--def { background: #e65100; }
+.pc-stat--gk-def { background: #e65100; }
 
-.stat-spacer {
+.pc-stat-name {
   flex: 1;
   text-align: center;
+  font-family: 'Bangers', cursive;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #e65100;
   overflow: hidden;
 }
 
-.card-name-small {
-  font-family: 'Bangers', cursive;
-  font-size: 14px;
-  letter-spacing: 2px;
-  color: #e65100;
-}
-
-.player-card--compact .card-name-small {
-  font-size: 10px;
-}
+.pc--small .pc-stat-name { font-size: 9px; }
+.pc--mini .pc-stat-name { font-size: 8px; }
 
 /* Activate button */
-.card-activate-btn {
+.pc-activate {
   position: absolute;
-  bottom: 36px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   background: #ff9800;
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 3px 10px;
-  font-size: 10px;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 9px;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   font-family: 'Nunito', sans-serif;
-  transition: background 0.15s;
   z-index: 3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.card-activate-btn:hover {
-  background: #f57c00;
-}
+.pc-activate:hover { background: #f57c00; }
 
 /* Locked overlay */
-.card-locked-overlay {
+.pc-locked-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
   color: white;
   font-weight: 900;
-  font-size: 20px;
   border-radius: 12px;
 }
 
 /* Card back */
-.player-card--back {
-  background: linear-gradient(135deg, #1a6b3a, #2e8b57);
-  cursor: default;
+.pc--back {
+  background: linear-gradient(135deg, #1a6b3a, #2e8b57) !important;
   justify-content: center;
   align-items: center;
+  border-color: rgba(255,255,255,0.3);
 }
 
-.card-back-pattern {
+.pc-back-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 12px;
 }
 
-.card-back-logo {
-  font-size: 32px;
-}
+.pc-back-icon { font-size: 28px; }
 
-.card-back-text {
+.pc--small .pc-back-icon { font-size: 20px; }
+.pc--mini .pc-back-icon { font-size: 14px; }
+
+.pc-back-text {
   font-family: 'Bangers', cursive;
-  font-size: 14px;
+  font-size: 11px;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.8);
   text-align: center;
   line-height: 1.2;
 }
 
-.player-card--compact .card-back-logo { font-size: 20px; }
-.player-card--compact .card-back-text { font-size: 10px; }
+.pc--small .pc-back-text { font-size: 9px; }
+.pc--mini .pc-back-text { font-size: 7px; }

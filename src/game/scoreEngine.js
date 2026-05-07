@@ -1,0 +1,84 @@
+// Realistic football score simulation using sigmoid probability
+
+const MAX_GOALS_PER_TEAM = 6
+
+function sigmoid(x) {
+  return 1 / (1 + Math.exp(-x))
+}
+
+export function computeGoalChance(attackTotal, defenseTotal) {
+  const diff = attackTotal - defenseTotal
+  // sigmoid centered at 0, scaled so diff of 10 ≈ 73% chance
+  return sigmoid(diff / 8)
+}
+
+export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore) {
+  const playerChance = computeGoalChance(playerAttack, aiDefense)
+  const aiChance = computeGoalChance(aiAttack, playerDefense)
+
+  let playerGoal = false
+  let aiGoal = false
+
+  if (currentScore.player < MAX_GOALS_PER_TEAM) {
+    playerGoal = Math.random() < playerChance
+  }
+  if (currentScore.ai < MAX_GOALS_PER_TEAM) {
+    aiGoal = Math.random() < aiChance
+  }
+
+  return { playerGoal, aiGoal, playerChance, aiChance }
+}
+
+export function computeMatchStats(state) {
+  const p = state.players.A
+  const ai = state.players.B
+
+  const playerAttack = p.offenseSector.reduce((s, c) => s + (c.currentAttackStat ?? 0), 0)
+  const playerDefense =
+    p.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0) +
+    (p.activeGoalkeeper?.currentDefenseStat ?? 0)
+
+  const aiAttack = ai.offenseSector.reduce((s, c) => s + (c.currentAttackStat ?? 0), 0)
+  const aiDefense =
+    ai.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0) +
+    (ai.activeGoalkeeper?.currentDefenseStat ?? 0)
+
+  return { playerAttack, playerDefense, aiAttack, aiDefense }
+}
+
+export function computeRewardCoins(result, matchType, scoreDiff) {
+  const base = matchType === 'league'
+    ? { win: 150, draw: 60, loss: 30 }
+    : { win: 80, draw: 30, loss: 15 }
+
+  let coins = base[result]
+  if (result === 'win') coins += Math.min(scoreDiff * 10, 50)
+  return coins
+}
+
+export function computeRatingChange(result) {
+  return { win: 25, draw: 5, loss: -15 }[result] ?? 0
+}
+
+export function determinePlayerOfMatch(goalEvents, playerSectors, aiSectors) {
+  // Count goal involvements per card
+  const involvement = {}
+  for (const ev of goalEvents) {
+    if (ev.scorer === 'player' && ev.cardId) {
+      involvement[ev.cardId] = (involvement[ev.cardId] || 0) + 2
+    }
+  }
+  // Also weight by stats contributed
+  const allPlayerCards = [...(playerSectors.offense || []), ...(playerSectors.defense || [])]
+  let best = null
+  let bestScore = -1
+  for (const card of allPlayerCards) {
+    const inv = involvement[card.instanceId] || 0
+    const statScore = (card.currentAttackStat ?? 0) + (card.currentDefenseStat ?? 0) + inv
+    if (statScore > bestScore) {
+      bestScore = statScore
+      best = card
+    }
+  }
+  return best
+}

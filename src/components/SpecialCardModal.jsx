@@ -1,6 +1,7 @@
 import React from 'react'
 import './SpecialCardModal.css'
 
+export { SpecialCardModal }
 export default function SpecialCardModal({ card, onDismiss }) {
   if (!card) return null
 

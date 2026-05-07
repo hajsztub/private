@@ -1,0 +1,115 @@
+.goal-anim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.goal-anim-overlay--player {
+  background: linear-gradient(180deg, transparent 0%, rgba(0,100,0,0.7) 100%);
+}
+
+.goal-anim-overlay--ai {
+  background: linear-gradient(180deg, rgba(100,0,0,0.7) 0%, transparent 100%);
+}
+
+/* Ball animation */
+.goal-ball {
+  font-size: 52px;
+  position: absolute;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+}
+
+.goal-ball--down {
+  animation: ballArcDown 0.95s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+.goal-ball--up {
+  animation: ballArcUp 0.95s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+.goal-ball--hidden {
+  opacity: 0;
+}
+
+@keyframes ballArcDown {
+  0%   { transform: translate(0, -40vh) scale(0.5) rotate(0deg); opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { transform: translate(30px, 10vh) scale(1.3) rotate(180deg); }
+  100% { transform: translate(0, 35vh) scale(0.8) rotate(360deg); }
+}
+
+@keyframes ballArcUp {
+  0%   { transform: translate(0, 40vh) scale(0.5) rotate(0deg); opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { transform: translate(-30px, -10vh) scale(1.3) rotate(-180deg); }
+  100% { transform: translate(0, -35vh) scale(0.8) rotate(-360deg); }
+}
+
+/* Goal net */
+.goal-net {
+  position: absolute;
+  width: 200px;
+}
+
+.goal-net--bottom { bottom: 8%; }
+.goal-net--top { top: 8%; }
+
+.goal-net-svg {
+  width: 100%;
+  height: auto;
+}
+
+.goal-net--shake {
+  animation: netShake 0.5s ease-out;
+}
+
+@keyframes netShake {
+  0%  { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-4px, 2px) rotate(-1deg); }
+  40% { transform: translate(4px, -2px) rotate(1deg); }
+  60% { transform: translate(-2px, 1px) rotate(-0.5deg); }
+  80% { transform: translate(2px, -1px) rotate(0.5deg); }
+  100%{ transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Celebration */
+.goal-celebrate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: celebPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes celebPop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.goal-celebrate-text {
+  font-family: 'Bangers', cursive;
+  font-size: 72px;
+  color: white;
+  letter-spacing: 6px;
+  text-shadow: 0 0 30px rgba(255,220,0,0.8), 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.goal-score {
+  font-family: 'Bangers', cursive;
+  font-size: 48px;
+  color: white;
+  letter-spacing: 4px;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+}
+
+.goal-team {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.85);
+}

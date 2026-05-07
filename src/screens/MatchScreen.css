@@ -138,28 +138,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  height: 18px;
+  gap: 6px;
+  height: 22px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  background: rgba(255,255,255,0.03);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(255,255,255,0.12);
   transition: background 0.15s;
 }
 
-.ms-goal-tab:active { background: rgba(255,255,255,0.07); }
+.ms-goal-tab:active { background: rgba(255,255,255,0.14); }
 
 .ms-goal-tab-arrow {
-  font-size: 8px;
-  color: rgba(255,255,255,0.3);
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
   line-height: 1;
 }
 
 .ms-goal-tab-label {
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
   text-transform: uppercase;
 }
 
@@ -184,24 +184,24 @@
   padding: 5px 12px 4px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  background: rgba(255,255,255,0.03);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   transition: background 0.15s;
 }
 
-.ms-hand-toggle:active { background: rgba(255,255,255,0.07); }
+.ms-hand-toggle:active { background: rgba(255,255,255,0.12); }
 
 .ms-hand-toggle-arrow {
-  font-size: 8px;
-  color: rgba(255,255,255,0.3);
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
   line-height: 1;
 }
 
 .ms-hand-toggle-label {
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.5);
   text-transform: uppercase;
   flex: 1;
 }

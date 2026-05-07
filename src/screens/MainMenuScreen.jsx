@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
-import { LEAGUE_TIERS, getTier } from '../data/botNames'
+import { getTier } from '../data/botNames'
 import './MainMenuScreen.css'
 
 function Logo() {
@@ -21,11 +21,31 @@ function Logo() {
   }
   return (
     <div className="mm-logo-wrap">
-      <div className="mm-logo-ball">⚽</div>
+      <span className="mm-logo-ball">⚽</span>
       <div className="mm-logo-text">
         <span className="mm-logo-goal">GOAL</span>
         <span className="mm-logo-tcg">TCG</span>
       </div>
+    </div>
+  )
+}
+
+function ProfileAvatar({ name }) {
+  const [failed, setFailed] = useState(false)
+  const initial = (name || 'G')[0].toUpperCase()
+  return (
+    <div className="mm-avatar">
+      {!failed ? (
+        <img
+          className="mm-avatar-img"
+          src="/avatar_player.png"
+          alt=""
+          onError={() => setFailed(true)}
+          draggable={false}
+        />
+      ) : (
+        initial
+      )}
     </div>
   )
 }
@@ -36,19 +56,20 @@ export default function MainMenuScreen() {
 
   const tier = getTier(profile.rating)
   const gems = profile.gems ?? 0
+  const level = Math.max(1, Math.floor(profile.rating / 40))
 
   return (
     <div className="main-menu">
       <div className="mm-bg-field" />
 
-      {/* ── Logo ── */}
       <Logo />
 
       {/* ── Profile card ── */}
       <div className="mm-profile-card">
         <div className="mm-profile-left">
-          <div className="mm-avatar">
-            {(profile.name || 'G')[0].toUpperCase()}
+          <div className="mm-avatar-wrap">
+            <ProfileAvatar name={profile.name} />
+            <div className="mm-level-badge">Lv {level}</div>
           </div>
           <div className="mm-profile-info">
             <div className="mm-profile-name">{profile.name || 'Gracz'}</div>
@@ -76,33 +97,41 @@ export default function MainMenuScreen() {
       {/* ── Record ── */}
       <div className="mm-record">
         <span className="mmr-w">{profile.wins}W</span>
-        <span className="mmr-sep">·</span>
+        <span className="mmr-sep">|</span>
         <span className="mmr-d">{profile.draws}R</span>
-        <span className="mmr-sep">·</span>
+        <span className="mmr-sep">|</span>
         <span className="mmr-l">{profile.losses}P</span>
       </div>
 
       {/* ── Play buttons ── */}
       <div className="mm-play-section">
         <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
-          <span className="mm-btn-icon">🏆</span>
+          <div className="mm-btn-icon-wrap">
+            <span className="mm-btn-icon">🏆</span>
+          </div>
           <div className="mm-btn-body">
-            <span className="mm-btn-title">Mecz Ligowy</span>
+            <span className="mm-btn-title">MECZ LIGOWY</span>
             <span className="mm-btn-desc">Rankingowy · Więcej nagród</span>
           </div>
-          <span className="mm-btn-arrow">›</span>
+          <div className="mm-btn-right">
+            <span className="mm-btn-ball">⚽</span>
+          </div>
         </button>
 
         <button className="mm-btn mm-btn--training" onClick={() => {
           if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
           navigate('match', { matchType: 'local', matchId: Date.now() })
         }}>
-          <span className="mm-btn-icon">⚽</span>
+          <div className="mm-btn-icon-wrap">
+            <span className="mm-btn-icon">🚧</span>
+          </div>
           <div className="mm-btn-body">
-            <span className="mm-btn-title">Trening</span>
+            <span className="mm-btn-title">TRENING</span>
             <span className="mm-btn-desc">Bez rankingu · Mniej nagród</span>
           </div>
-          <span className="mm-btn-arrow">›</span>
+          <div className="mm-btn-right">
+            <span className="mm-btn-arrow">›</span>
+          </div>
         </button>
       </div>
 
@@ -113,7 +142,7 @@ export default function MainMenuScreen() {
           <span className="mm-nav-label">Skład</span>
         </button>
         <button className="mm-nav-btn" onClick={() => navigate('market')}>
-          <span className="mm-nav-icon">💰</span>
+          <span className="mm-nav-icon">🛒</span>
           <span className="mm-nav-label">Market</span>
         </button>
         <button className="mm-nav-btn" onClick={() => navigate('players')}>
@@ -122,7 +151,7 @@ export default function MainMenuScreen() {
         </button>
         <button className="mm-nav-btn" onClick={() => navigate('settings')}>
           <span className="mm-nav-icon">⚙️</span>
-          <span className="mm-nav-label">Ustawiania</span>
+          <span className="mm-nav-label">Ustawienia</span>
         </button>
       </div>
 

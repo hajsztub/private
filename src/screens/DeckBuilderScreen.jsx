@@ -190,6 +190,42 @@ export default function DeckBuilderScreen() {
     showNotif('Skład zapisany! ✓', true)
   }
 
+  const clearDeck = () => {
+    const empty = {}
+    FORMATION.forEach(s => { empty[s.id] = null })
+    setAssignments(empty)
+    showNotif('Skład wyczyszczony', true)
+  }
+
+  const autoFill = () => {
+    const usedIds = new Set(Object.values(assignments).filter(Boolean))
+    const next = { ...assignments }
+
+    for (const slot of FORMATION) {
+      if (next[slot.id]) continue // already filled
+      const accepts = SLOT_ACCEPTS[slot.type]
+      // Find first unassigned card that fits and isn't already a duplicate id in deck
+      const pick = allCards.find(({ owned, card }) => {
+        if (usedIds.has(owned.instanceId)) return false
+        if (!accepts.includes(card.type)) return false
+        // No duplicate card definitions in deck
+        const alreadyUsed = Object.values(next).some(id => {
+          if (!id) return false
+          const entry = allCards.find(e => e.owned.instanceId === id)
+          return entry?.card?.id === card.id
+        })
+        return !alreadyUsed
+      })
+      if (pick) {
+        next[slot.id] = pick.owned.instanceId
+        usedIds.add(pick.owned.instanceId)
+      }
+    }
+    setAssignments(next)
+    const filled = Object.values(next).filter(Boolean).length
+    showNotif(`Skład uzupełniony (${filled}/11)`, true)
+  }
+
   const formationRows = ROWS.map(r => FORMATION.filter(s => s.row === r))
 
   return (
@@ -277,6 +313,14 @@ export default function DeckBuilderScreen() {
 
       {/* Footer */}
       <div className="db-footer">
+        <div className="db-footer-row">
+          <button className="db-auto-btn" onClick={autoFill} title="Uzupełnij skład automatycznie">
+            ⚡ AUTO
+          </button>
+          <button className="db-clear-btn" onClick={clearDeck} title="Wyczyść skład">
+            🗑 WYCZYŚĆ
+          </button>
+        </div>
         <button className="db-save-btn" onClick={saveDeck}>
           Zapisz Skład ({filledCount}/11)
         </button>

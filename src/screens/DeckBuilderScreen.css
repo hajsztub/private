@@ -391,6 +391,45 @@
   padding: 10px 14px max(10px, env(safe-area-inset-bottom));
   background: rgba(0,0,0,0.5);
   border-top: 1px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.db-footer-row {
+  display: flex;
+  gap: 8px;
+}
+
+.db-auto-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 11px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 3px 10px rgba(21,101,192,0.3);
+}
+
+.db-clear-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-md);
+  padding: 11px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .db-save-btn {

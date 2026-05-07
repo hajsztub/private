@@ -270,11 +270,20 @@ function applyCoinEffect(state, playerId, card, effect) {
   }
 }
 
+// Allow one stat to go negative only if the other stays positive (trade-off design).
+// Both stats can never be simultaneously below 0.
+function clampStat(card, statKey, newVal) {
+  if (newVal >= 0) return newVal
+  const otherKey = statKey === 'currentAttackStat' ? 'currentDefenseStat' : 'currentAttackStat'
+  const otherVal = card[otherKey] ?? 0
+  return otherVal > 0 ? newVal : 0
+}
+
 function updateCardStat(state, playerId, instanceId, statKey, delta) {
   const player = state.players[playerId]
   const mapCard = c =>
     c.instanceId === instanceId
-      ? { ...c, [statKey]: Math.max(0, (c[statKey] ?? 0) + delta) }
+      ? { ...c, [statKey]: clampStat(c, statKey, (c[statKey] ?? 0) + delta) }
       : c
   const updatedPlayer = {
     ...player,
@@ -282,9 +291,10 @@ function updateCardStat(state, playerId, instanceId, statKey, delta) {
     defenseSector: player.defenseSector.map(mapCard),
   }
   if (player.activeGoalkeeper?.instanceId === instanceId) {
+    const gk = player.activeGoalkeeper
     updatedPlayer.activeGoalkeeper = {
-      ...player.activeGoalkeeper,
-      [statKey]: Math.max(0, (player.activeGoalkeeper[statKey] ?? 0) + delta),
+      ...gk,
+      [statKey]: clampStat(gk, statKey, (gk[statKey] ?? 0) + delta),
     }
   }
   return { ...state, players: { ...state.players, [playerId]: updatedPlayer } }
@@ -457,7 +467,7 @@ function applyPassiveEffects(state) {
     const player = newState.players[pid]
     const hasMarcroInSector = (sector) => sector.some(c => c.id === 'marco')
     const buffSector = (sector) => sector.map(c =>
-      c.id !== 'marco' ? { ...c, currentDefenseStat: (c.currentDefenseStat ?? 0) + 1 } : c
+      c.id !== 'marco' ? { ...c, currentDefenseStat: clampStat(c, 'currentDefenseStat', (c.currentDefenseStat ?? 0) + 1) } : c
     )
     let updated = { ...player }
     if (hasMarcroInSector(player.offenseSector)) updated.offenseSector = buffSector(player.offenseSector)
@@ -493,7 +503,7 @@ function applySpecialCardEffect(state, card) {
               ...p,
               offenseSector: p.offenseSector.map(c => ({
                 ...c,
-                currentAttackStat: Math.max(0, (c.currentAttackStat ?? 0) + card.effect.amount),
+                currentAttackStat: clampStat(c, 'currentAttackStat', (c.currentAttackStat ?? 0) + card.effect.amount),
               })),
             },
           },
@@ -516,7 +526,7 @@ function applySpecialCardEffect(state, card) {
             ...state.players,
             [underdog]: {
               ...p,
-              offenseSector: p.offenseSector.map(c => ({ ...c, currentAttackStat: (c.currentAttackStat ?? 0) + card.effect.amount })),
+              offenseSector: p.offenseSector.map(c => ({ ...c, currentAttackStat: clampStat(c, 'currentAttackStat', (c.currentAttackStat ?? 0) + card.effect.amount) })),
             },
           },
         }
@@ -527,7 +537,7 @@ function applySpecialCardEffect(state, card) {
           ...state.players,
           [underdog]: {
             ...p,
-            defenseSector: p.defenseSector.map(c => ({ ...c, currentDefenseStat: (c.currentDefenseStat ?? 0) + card.effect.amount })),
+            defenseSector: p.defenseSector.map(c => ({ ...c, currentDefenseStat: clampStat(c, 'currentDefenseStat', (c.currentDefenseStat ?? 0) + card.effect.amount) })),
           },
         },
       }

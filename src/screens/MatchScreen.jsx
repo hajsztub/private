@@ -378,7 +378,10 @@ export default function MatchScreen({ matchParams = {} }) {
             <span className="msb-sep">:</span>
             <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
           </div>
-          <span className="msb-round">R{round}/10</span>
+          <div className="msb-round-row">
+            <span className="msb-round-badge">R{round}</span>
+            <span className="msb-round-of">/10</span>
+          </div>
         </div>
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>

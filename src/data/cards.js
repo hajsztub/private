@@ -1585,3 +1585,56 @@ export function separateDeck(deck) {
   const players = deck.filter(c => c.type !== 'goalkeeper')
   return { goalkeepers: shuffleDeck(goalkeepers), players: shuffleDeck(players) }
 }
+
+// Build a balanced AI deck that matches the player's average card strength
+export function createBalancedAIDeck(playerDeck) {
+  if (!playerDeck?.length) return createDefaultDeck('B')
+
+  const avgPower = playerDeck.reduce((sum, c) =>
+    sum + (c.currentAttackStat ?? c.attackStat ?? 0) + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0
+  ) / playerDeck.length
+
+  const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0)
+
+  // Score each def by proximity to player avg power
+  const scored = pool.map(d => ({
+    def: d,
+    power: (d.attackStat || 0) + (d.defenseStat || 0),
+    diff: Math.abs(((d.attackStat || 0) + (d.defenseStat || 0)) - avgPower),
+  })).sort((a, b) => a.diff - b.diff)
+
+  const byType = (type) => scored.filter(s => s.def.type === type)
+
+  const pick = (type, n) => {
+    const pool = byType(type)
+    // Spread picks across range to avoid identical cards
+    const step = Math.max(1, Math.floor(pool.length / n))
+    return Array.from({ length: n }, (_, i) => pool[Math.min(i * step, pool.length - 1)]?.def).filter(Boolean)
+  }
+
+  const gks  = pick('goalkeeper', 2)
+  const defs = pick('defense', 4)
+  const mids = pick('midfield', 3)
+  const atks = pick('attack', 2)
+
+  let selected = [...gks, ...defs, ...mids, ...atks].filter(Boolean)
+
+  // Fill remaining slots if not enough cards in a type
+  if (selected.length < 11) {
+    const usedIds = new Set(selected.map(d => d.id))
+    const extras = scored.filter(s => !usedIds.has(s.def.id)).map(s => s.def)
+    selected = [...selected, ...extras].slice(0, 11)
+  }
+
+  return selected.slice(0, 11).map((def, i) => ({
+    ...def,
+    instanceId: `ai_${def.id}_${i}`,
+    currentAttackStat: def.attackStat,
+    currentDefenseStat: def.defenseStat,
+    isLocked: false,
+    lockedRounds: 0,
+    justPlaced: false,
+    faceDown: false,
+    upgradeLevel: 0,
+  }))
+}

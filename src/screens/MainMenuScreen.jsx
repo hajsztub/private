@@ -1,110 +1,109 @@
 import React from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
+import { LEAGUE_TIERS, getTier } from '../data/botNames'
 import './MainMenuScreen.css'
 
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
   const { profile } = useProfile()
 
-  const startMatch = (type) => {
-    navigate('match', { matchType: type, matchId: Date.now() })
-  }
+  const tier = getTier(profile.rating)
+  const gems = profile.gems ?? 0
 
   return (
     <div className="main-menu">
-      {/* Background field pattern */}
-      <div className="menu-field-bg" />
+      <div className="mm-bg-field" />
 
-      {/* Header */}
-      <div className="menu-header">
-        <div className="menu-logo">
-          <span className="menu-logo-ball">⚽</span>
-          <div className="menu-logo-text">
-            <span className="menu-logo-title">FOOTBALL</span>
-            <span className="menu-logo-sub">CARDS</span>
+      {/* ── Logo ── */}
+      <div className="mm-logo-wrap">
+        <div className="mm-logo-ball">⚽</div>
+        <div className="mm-logo-text">
+          <span className="mm-logo-goal">GOAL</span>
+          <span className="mm-logo-tcg">TCG</span>
+        </div>
+      </div>
+
+      {/* ── Profile card ── */}
+      <div className="mm-profile-card">
+        <div className="mm-profile-left">
+          <div className="mm-avatar">
+            {(profile.name || 'G')[0].toUpperCase()}
+          </div>
+          <div className="mm-profile-info">
+            <div className="mm-profile-name">{profile.name || 'Gracz'}</div>
+            <div className="mm-tier-badge" style={{ color: tier.color }}>
+              {tier.icon} {tier.label}
+            </div>
           </div>
         </div>
-
-        <div className="menu-profile-bar">
-          <div className="menu-stat">
-            <span className="menu-stat-icon">⭐</span>
-            <span className="menu-stat-value">{profile.rating}</span>
+        <div className="mm-profile-right">
+          <div className="mm-currency">
+            <span className="mm-cur-icon">⭐</span>
+            <span className="mm-cur-val">{profile.rating}</span>
           </div>
-          <div className="menu-stat">
-            <span className="menu-stat-icon">🪙</span>
-            <span className="menu-stat-value">{profile.coins}</span>
+          <div className="mm-currency">
+            <span className="mm-cur-icon">🪙</span>
+            <span className="mm-cur-val">{profile.coins}</span>
           </div>
-          <div className="menu-record">
-            <span className="record-w">{profile.wins}W</span>
-            <span className="record-sep">·</span>
-            <span className="record-d">{profile.draws}R</span>
-            <span className="record-sep">·</span>
-            <span className="record-l">{profile.losses}P</span>
+          <div className="mm-currency">
+            <span className="mm-cur-icon">💎</span>
+            <span className="mm-cur-val">{gems}</span>
           </div>
         </div>
       </div>
 
-      {/* Main buttons */}
-      <div className="menu-buttons">
-        <button className="menu-btn menu-btn--league" onClick={() => navigate('league')}>
-          <span className="menu-btn-icon">🏆</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Mecz Ligowy</span>
-            <span className="menu-btn-desc">Rankingowy · Zarabiasz więcej monet</span>
+      {/* ── Record ── */}
+      <div className="mm-record">
+        <span className="mmr-w">{profile.wins}W</span>
+        <span className="mmr-sep">·</span>
+        <span className="mmr-d">{profile.draws}R</span>
+        <span className="mmr-sep">·</span>
+        <span className="mmr-l">{profile.losses}P</span>
+      </div>
+
+      {/* ── Play buttons ── */}
+      <div className="mm-play-section">
+        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
+          <span className="mm-btn-icon">🏆</span>
+          <div className="mm-btn-body">
+            <span className="mm-btn-title">Mecz Ligowy</span>
+            <span className="mm-btn-desc">Rankingowy · Więcej nagród</span>
           </div>
-          <span className="menu-btn-arrow">›</span>
+          <span className="mm-btn-arrow">›</span>
         </button>
 
-        <button className="menu-btn menu-btn--local" onClick={() => startMatch('local')}>
-          <span className="menu-btn-icon">⚽</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Mecz Towarzyski</span>
-            <span className="menu-btn-desc">Bez rankingu · Trening z botem</span>
+        <button className="mm-btn mm-btn--training" onClick={() => navigate('match', { matchType: 'local', matchId: Date.now() })}>
+          <span className="mm-btn-icon">⚽</span>
+          <div className="mm-btn-body">
+            <span className="mm-btn-title">Trening</span>
+            <span className="mm-btn-desc">Bez rankingu · Mniej nagród</span>
           </div>
-          <span className="menu-btn-arrow">›</span>
-        </button>
-
-        <div className="menu-divider" />
-
-        <button className="menu-btn menu-btn--secondary" onClick={() => navigate('deck_builder')}>
-          <span className="menu-btn-icon">🃏</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Utwórz Zespół</span>
-            <span className="menu-btn-desc">Edytuj swoją talię</span>
-          </div>
-          <span className="menu-btn-arrow">›</span>
-        </button>
-
-        <button className="menu-btn menu-btn--secondary" onClick={() => navigate('market')}>
-          <span className="menu-btn-icon">💰</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Rynek Transferowy</span>
-            <span className="menu-btn-desc">Kupuj i sprzedawaj karty</span>
-          </div>
-          <span className="menu-btn-arrow">›</span>
-        </button>
-
-        <button className="menu-btn menu-btn--secondary" onClick={() => navigate('players')}>
-          <span className="menu-btn-icon">👥</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Zawodnicy</span>
-            <span className="menu-btn-desc">{profile.ownedCards.length} kart · Ulepszaj graczy</span>
-          </div>
-          <span className="menu-btn-arrow">›</span>
-        </button>
-
-        <button className="menu-btn menu-btn--settings" onClick={() => navigate('settings')}>
-          <span className="menu-btn-icon">⚙️</span>
-          <div className="menu-btn-content">
-            <span className="menu-btn-title">Ustawienia</span>
-          </div>
-          <span className="menu-btn-arrow">›</span>
+          <span className="mm-btn-arrow">›</span>
         </button>
       </div>
 
-      {/* Version */}
-      <div className="menu-version">Football Cards v1.0</div>
+      {/* ── Bottom nav ── */}
+      <div className="mm-nav">
+        <button className="mm-nav-btn" onClick={() => navigate('deck_builder')}>
+          <span className="mm-nav-icon">🃏</span>
+          <span className="mm-nav-label">Skład</span>
+        </button>
+        <button className="mm-nav-btn" onClick={() => navigate('market')}>
+          <span className="mm-nav-icon">💰</span>
+          <span className="mm-nav-label">Market</span>
+        </button>
+        <button className="mm-nav-btn" onClick={() => navigate('players')}>
+          <span className="mm-nav-icon">👥</span>
+          <span className="mm-nav-label">Gracze</span>
+        </button>
+        <button className="mm-nav-btn" onClick={() => navigate('settings')}>
+          <span className="mm-nav-icon">⚙️</span>
+          <span className="mm-nav-label">Ustawiania</span>
+        </button>
+      </div>
+
+      <div className="mm-version">GOAL TCG v1.0</div>
     </div>
   )
 }

@@ -1,13 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from '../router/AppRouter'
-import { useSettings } from '../App'
-import { useProfile } from '../App'
+import { useSettings, useProfile } from '../App'
 import './SettingsScreen.css'
 
 export default function SettingsScreen() {
   const { goBack } = useRouter()
   const { settings, toggle } = useSettings()
-  const { resetProfile } = useProfile()
+  const { profile, update, resetProfile } = useProfile()
+  const [nameInput, setNameInput] = useState(profile.name || 'Gracz')
+  const [nameSaved, setNameSaved] = useState(false)
+
+  const saveName = () => {
+    const trimmed = nameInput.trim()
+    if (!trimmed) return
+    update({ name: trimmed })
+    setNameSaved(true)
+    setTimeout(() => setNameSaved(false), 1800)
+  }
 
   const handleReset = () => {
     if (window.confirm('Czy na pewno chcesz zresetować cały postęp? Tej akcji nie można cofnąć.')) {
@@ -19,24 +28,56 @@ export default function SettingsScreen() {
   return (
     <div className="settings-screen">
       <div className="settings-header">
-        <button className="settings-back" onClick={goBack}>←</button>
+        <button className="back-btn" onClick={goBack}>←</button>
         <h1 className="settings-title">Ustawienia</h1>
       </div>
 
       <div className="settings-list">
+
+        {/* ── Player profile ── */}
+        <div className="settings-section-label">Profil gracza</div>
+
+        <div className="settings-row settings-row--name">
+          <div className="settings-row-info">
+            <span className="settings-row-icon">👤</span>
+            <div className="settings-row-labels">
+              <div className="settings-row-label">Nazwa gracza</div>
+              <div className="settings-row-desc">Widoczna w meczach i rankingu</div>
+            </div>
+          </div>
+          <div className="sn-field">
+            <input
+              className="sn-input"
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && saveName()}
+              maxLength={16}
+              placeholder="Twoja nazwa"
+            />
+            <button
+              className={`sn-save ${nameSaved ? 'sn-save--done' : ''}`}
+              onClick={saveName}
+            >
+              {nameSaved ? '✓' : 'OK'}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Graphics & sound ── */}
         <div className="settings-section-label">Grafika i dźwięk</div>
 
         <div className="settings-row">
           <div className="settings-row-info">
             <span className="settings-row-icon">✨</span>
-            <div>
+            <div className="settings-row-labels">
               <div className="settings-row-label">Efekty wizualne</div>
-              <div className="settings-row-desc">Animacje i efekty specjalne</div>
+              <div className="settings-row-desc">Animacje goli i efekty specjalne</div>
             </div>
           </div>
           <button
             className={`settings-toggle ${settings.visualEffects ? 'settings-toggle--on' : ''}`}
             onClick={() => toggle('visualEffects')}
+            aria-label="Toggle visual effects"
           >
             <div className="settings-toggle-knob" />
           </button>
@@ -45,38 +86,27 @@ export default function SettingsScreen() {
         <div className="settings-row">
           <div className="settings-row-info">
             <span className="settings-row-icon">🔊</span>
-            <div>
+            <div className="settings-row-labels">
               <div className="settings-row-label">Dźwięk</div>
-              <div className="settings-row-desc">Efekty dźwiękowe (wkrótce)</div>
+              <div className="settings-row-desc">Efekty dźwiękowe</div>
             </div>
           </div>
           <button
             className={`settings-toggle ${settings.sound ? 'settings-toggle--on' : ''}`}
             onClick={() => toggle('sound')}
+            aria-label="Toggle sound"
           >
             <div className="settings-toggle-knob" />
           </button>
         </div>
 
-        <div className="settings-section-label">Język</div>
-
-        <div className="settings-row settings-row--disabled">
-          <div className="settings-row-info">
-            <span className="settings-row-icon">🌍</span>
-            <div>
-              <div className="settings-row-label">Zmiana języka</div>
-              <div className="settings-row-desc">Wkrótce dostępne</div>
-            </div>
-          </div>
-          <span className="settings-badge">Wkrótce</span>
-        </div>
-
+        {/* ── Advanced ── */}
         <div className="settings-section-label">Zaawansowane</div>
 
         <button className="settings-row settings-row--danger" onClick={handleReset}>
           <div className="settings-row-info">
             <span className="settings-row-icon">🗑️</span>
-            <div>
+            <div className="settings-row-labels">
               <div className="settings-row-label">Resetuj postęp</div>
               <div className="settings-row-desc">Usuwa wszystkie dane gry</div>
             </div>
@@ -84,9 +114,10 @@ export default function SettingsScreen() {
           <span className="settings-badge settings-badge--danger">Reset</span>
         </button>
 
-        <button className="settings-quit-btn" onClick={() => window.close()}>
-          Zakończ grę
-        </button>
+        <div className="settings-app-info">
+          GOAL TCG v1.0 · © 2026
+        </div>
+
       </div>
     </div>
   )

@@ -15,6 +15,7 @@ function defaultProfile() {
     losses: 0,
     coins: 300,
     gems: 3,
+    hasSeenTutorial: false,
     ownedCards: [...STARTER_CARDS],
     activeDeck: STARTER_CARDS.map(c => c.instanceId), // all starters in deck
     matchHistory: [],
@@ -153,6 +154,10 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, activeDeck: deckInstanceIds }))
   }, [update])
 
+  const markTutorialSeen = useCallback(() => {
+    update(prev => ({ ...prev, hasSeenTutorial: true }))
+  }, [update])
+
   const resetProfile = useCallback(() => {
     const fresh = defaultProfile()
     try {
@@ -172,6 +177,7 @@ export function usePersistentStore() {
     sellCard,
     upgradeCard,
     setActiveDeck,
+    markTutorialSeen,
     resetProfile,
   }
 }

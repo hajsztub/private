@@ -1,7 +1,9 @@
+/* ── GOAL TCG — Settings ─────────────────────────────────────────────────── */
+
 .settings-screen {
   min-height: 100dvh;
-  background: linear-gradient(170deg, #1a2a1a, #2d4a2d);
-  color: white;
+  background: radial-gradient(ellipse at 50% 0%, #0d1a2a 0%, #07090e 60%);
+  color: var(--c-text);
   font-family: 'Nunito', sans-serif;
   display: flex;
   flex-direction: column;
@@ -11,45 +13,32 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 48px 20px 16px;
-}
-
-.settings-back {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: white;
-  font-size: 22px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  padding: max(16px, env(safe-area-inset-top)) 16px 16px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid var(--c-border);
 }
 
 .settings-title {
   font-family: 'Bangers', cursive;
-  font-size: 28px;
+  font-size: 26px;
   letter-spacing: 2px;
   margin: 0;
 }
 
 .settings-list {
-  padding: 0 16px 32px;
+  padding: 0 14px 32px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .settings-section-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  padding: 16px 4px 6px;
+  color: var(--c-text-3);
+  padding: 18px 4px 7px;
 }
 
 .settings-row {
@@ -57,24 +46,26 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
   padding: 14px 16px;
   cursor: default;
   width: 100%;
   text-align: left;
-  color: white;
+  color: var(--c-text);
   font-family: 'Nunito', sans-serif;
 }
 
-.settings-row--disabled {
-  opacity: 0.5;
+.settings-row--name {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .settings-row--danger {
-  background: rgba(198,40,40,0.15);
-  border-color: rgba(198,40,40,0.3);
+  background: rgba(198,40,40,0.1);
+  border-color: rgba(198,40,40,0.25);
   cursor: pointer;
 }
 
@@ -83,12 +74,12 @@
   align-items: center;
   gap: 12px;
   flex: 1;
+  width: 100%;
 }
 
-.settings-row-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
+.settings-row-icon { font-size: 22px; flex-shrink: 0; }
+
+.settings-row-labels { display: flex; flex-direction: column; gap: 2px; }
 
 .settings-row-label {
   font-size: 15px;
@@ -97,15 +88,60 @@
 
 .settings-row-desc {
   font-size: 12px;
-  color: rgba(255,255,255,0.5);
+  color: var(--c-text-2);
 }
 
-/* Toggle switch */
+/* ── Name field ───────────────────────────────────────────────────────────── */
+
+.sn-field {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.sn-input {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sn-input:focus { border-color: var(--c-primary); }
+
+.sn-save {
+  background: var(--c-surface-hi);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sn-save--done {
+  background: var(--c-primary-dim);
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+/* ── Toggle ───────────────────────────────────────────────────────────────── */
+
 .settings-toggle {
   width: 50px;
   height: 28px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.15);
   border: none;
   cursor: pointer;
   position: relative;
@@ -113,9 +149,7 @@
   transition: background 0.2s;
 }
 
-.settings-toggle--on {
-  background: #4caf50;
-}
+.settings-toggle--on { background: var(--c-primary); }
 
 .settings-toggle-knob {
   width: 22px;
@@ -126,37 +160,33 @@
   top: 3px;
   left: 3px;
   transition: transform 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-.settings-toggle--on .settings-toggle-knob {
-  transform: translateX(22px);
-}
+.settings-toggle--on .settings-toggle-knob { transform: translateX(22px); }
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
 
 .settings-badge {
   font-size: 11px;
   font-weight: 800;
-  background: rgba(255,255,255,0.15);
+  background: var(--c-surface-hi);
   border-radius: 8px;
   padding: 3px 10px;
   flex-shrink: 0;
 }
 
 .settings-badge--danger {
-  background: rgba(198,40,40,0.4);
+  background: rgba(198,40,40,0.35);
   color: #ff8a80;
 }
 
-.settings-quit-btn {
-  margin-top: 24px;
-  padding: 14px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
-  color: rgba(255,255,255,0.5);
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
+/* ── App info ─────────────────────────────────────────────────────────────── */
+
+.settings-app-info {
+  margin-top: 28px;
   text-align: center;
+  font-size: 11px;
+  color: var(--c-text-3);
+  letter-spacing: 0.5px;
 }

@@ -49,14 +49,15 @@ export function computeMatchStats(state) {
 export function computeRewardCoins(result, matchType, scoreDiff) {
   const base = matchType === 'league'
     ? { win: 150, draw: 60, loss: 30 }
-    : { win: 80, draw: 30, loss: 15 }
+    : { win: 40,  draw: 15, loss: 8  }  // training: much less coins
 
-  let coins = base[result]
+  let coins = base[result] ?? 0
   if (result === 'win') coins += Math.min(scoreDiff * 10, 50)
   return coins
 }
 
-export function computeRatingChange(result) {
+export function computeRatingChange(result, matchType) {
+  if (matchType !== 'league') return 0
   return { win: 25, draw: 5, loss: -15 }[result] ?? 0
 }
 

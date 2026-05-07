@@ -7,7 +7,7 @@ import {
 } from '../game/gameEngine'
 import { runAITurn, pickAIGoalkeeper } from '../game/aiEngine'
 import { computeRewardCoins, computeRatingChange, determinePlayerOfMatch } from '../game/scoreEngine'
-import { createDeckFromOwned, CARD_DEFINITIONS, createDefaultDeck } from '../data/cards'
+import { createDeckFromOwned, CARD_DEFINITIONS, createDefaultDeck, createBalancedAIDeck } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import { SFX } from '../game/soundEngine'
 import FieldCard, { GKCard } from '../components/FieldCard'
@@ -121,15 +121,21 @@ function GoalPosts({ side }) {
 
 export default function MatchScreen({ matchParams = {} }) {
   const { replace } = useRouter()
-  const { profile, addMatchResult } = useProfile()
+  const { profile, addMatchResult, markTutorialSeen } = useProfile()
   const { settings } = useSettings()
 
   const matchType = matchParams.matchType || 'local'
   const opponentName = matchParams.opponentName || 'BOT'
 
-  const [matchState, dispatch] = useReducer(gameReducer, null, () =>
-    createMatchState(matchType, buildPlayerDeck(profile), createDefaultDeck('B'))
-  )
+  const [matchState, dispatch] = useReducer(gameReducer, null, () => {
+    const playerDeck = buildPlayerDeck(profile)
+    const aiDeck = matchType === 'league'
+      ? createBalancedAIDeck(playerDeck)
+      : createDefaultDeck('B')
+    return createMatchState(matchType, playerDeck, aiDeck)
+  })
+
+  const [showTutorial, setShowTutorial] = useState(!profile.hasSeenTutorial)
 
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
@@ -169,7 +175,7 @@ export default function MatchScreen({ matchParams = {} }) {
     const score = matchState.displayScore
     const result = score.player > score.ai ? 'win' : score.ai > score.player ? 'loss' : 'draw'
     const coins = computeRewardCoins(result, matchType, Math.abs(score.player - score.ai))
-    const ratingChange = computeRatingChange(result)
+    const ratingChange = computeRatingChange(result, matchType)
     const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
@@ -289,14 +295,16 @@ export default function MatchScreen({ matchParams = {} }) {
   const isPlayerTurn = currentPlayer === 'A' && phase === 'playing'
   const canActivate = isPlayerTurn && !turnActionsUsed.activatedAbility && !coinFlipState
 
-  const aiTotalAtk = [...playerB.offenseSector, ...playerB.defenseSector]
+  const aiTotalAtk = playerB.offenseSector
     .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
-  const aiTotalDef = (playerB.activeGoalkeeper ? (playerB.activeGoalkeeper.currentDefenseStat ?? playerB.activeGoalkeeper.defenseStat ?? 0) : 0)
-    + [...playerB.defenseSector].reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
-  const myTotalAtk = [...playerA.offenseSector, ...playerA.defenseSector]
+  const aiTotalDef = (playerB.activeGoalkeeper
+    ? (playerB.activeGoalkeeper.currentDefenseStat ?? playerB.activeGoalkeeper.defenseStat ?? 0) : 0)
+    + playerB.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+  const myTotalAtk = playerA.offenseSector
     .reduce((s, c) => s + (c.currentAttackStat ?? c.attackStat ?? 0), 0)
-  const myTotalDef = (playerA.activeGoalkeeper ? (playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat ?? 0) : 0)
-    + [...playerA.defenseSector].reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+  const myTotalDef = (playerA.activeGoalkeeper
+    ? (playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat ?? 0) : 0)
+    + playerA.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
 
   // ── GK Selection ──────────────────────────────────────────────────────────
   if (phase === 'goalkeeper_selection') {
@@ -345,6 +353,25 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
           <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
+        </div>
+      </div>
+
+      {/* ── Stats matchup strip ─────────────────────────────────────────── */}
+      <div className="ms-stats-strip">
+        <div className={`mss-row ${myTotalAtk >= aiTotalDef ? 'mss-row--win' : 'mss-row--loss'}`}>
+          <span className="mss-label">TY ⚔</span>
+          <span className="mss-val mss-val--atk">{myTotalAtk}</span>
+          <span className="mss-vs">vs</span>
+          <span className="mss-val mss-val--def">{aiTotalDef}</span>
+          <span className="mss-label">🛡 BOT</span>
+        </div>
+        <div className="mss-divider" />
+        <div className={`mss-row ${aiTotalAtk >= myTotalDef ? 'mss-row--loss' : 'mss-row--win'}`}>
+          <span className="mss-label">BOT ⚔</span>
+          <span className="mss-val mss-val--atk">{aiTotalAtk}</span>
+          <span className="mss-vs">vs</span>
+          <span className="mss-val mss-val--def">{myTotalDef}</span>
+          <span className="mss-label">🛡 TY</span>
         </div>
       </div>
 
@@ -546,6 +573,82 @@ export default function MatchScreen({ matchParams = {} }) {
         <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} onDone={() => setGoalAnim(null)} />
       )}
       {zoomCard && <CardZoomModal card={zoomCard} onClose={() => setZoomCard(null)} />}
+
+      {/* ── Tutorial ────────────────────────────────────────────────────── */}
+      {showTutorial && (
+        <TutorialOverlay
+          onDone={() => {
+            setShowTutorial(false)
+            markTutorialSeen()
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+// ── Tutorial overlay ───────────────────────────────────────────────────────
+
+const TUTORIAL_STEPS = [
+  {
+    emoji: '⚽',
+    title: 'Witaj w GOAL TCG!',
+    text: 'Grasz kartami piłkarzy, by strzelać gole przeciwnikowi. Każda tura to walka ataku z obroną.',
+  },
+  {
+    emoji: '🃏',
+    title: 'Twoja ręka',
+    text: 'Na dole ekranu są Twoje karty. Tapnij kartę, żeby ją wybrać — albo przeciągnij ją prosto na boisko.',
+  },
+  {
+    emoji: '⚔',
+    title: 'Strefa Ataku',
+    text: 'Napastnicy i pomocnicy idą na ATAK. Im wyższy łączny ATK, tym większa szansa na gola!',
+  },
+  {
+    emoji: '🛡',
+    title: 'Strefa Obrony',
+    text: 'Obrońcy i pomocnicy idą na OBRONĘ. Twój DEF chroni Cię przed atakiem przeciwnika.',
+  },
+  {
+    emoji: '📊',
+    title: 'Pasek statystyk',
+    text: 'Pod tablicą wyników widać live porównanie: Twój ATK vs DEF bota i odwrotnie. Zielony = przewaga!',
+  },
+  {
+    emoji: '→',
+    title: 'Zakończ turę',
+    text: 'Naciśnij "Zakończ turę". Bot zagra swoją turę, potem system wyliczy gole. Powodzenia!',
+  },
+]
+
+function TutorialOverlay({ onDone }) {
+  const [step, setStep] = useState(0)
+  const s = TUTORIAL_STEPS[step]
+  const isLast = step === TUTORIAL_STEPS.length - 1
+
+  return (
+    <div className="tut-backdrop">
+      <div className="tut-panel">
+        <div className="tut-emoji">{s.emoji}</div>
+        <div className="tut-title">{s.title}</div>
+        <div className="tut-text">{s.text}</div>
+        <div className="tut-dots">
+          {TUTORIAL_STEPS.map((_, i) => (
+            <div
+              key={i}
+              className={`tut-dot ${i === step ? 'tut-dot--active' : i < step ? 'tut-dot--done' : ''}`}
+            />
+          ))}
+        </div>
+        <button
+          className="tut-next"
+          onClick={() => isLast ? onDone() : setStep(s => s + 1)}
+        >
+          {isLast ? '⚽ Zaczynamy!' : 'Dalej →'}
+        </button>
+        <button className="tut-skip" onClick={onDone}>Pomiń samouczek</button>
+      </div>
     </div>
   )
 }

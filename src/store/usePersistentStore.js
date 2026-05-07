@@ -18,6 +18,7 @@ function defaultProfile() {
     hasSeenTutorial: false,
     hasSetupProfile: false,
     lastAdWatchedAt: 0,
+    lastFreePackAt: 0,
     ownedCards: [...STARTER_CARDS],
     activeDeck: STARTER_CARDS.map(c => c.instanceId),
     deckAssignments: null, // { slotId: instanceId } — exact formation layout
@@ -188,6 +189,10 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, lastAdWatchedAt: Date.now() }))
   }, [update])
 
+  const recordFreePackClaimed = useCallback(() => {
+    update(prev => ({ ...prev, lastFreePackAt: Date.now() }))
+  }, [update])
+
   const resetProfile = useCallback(() => {
     const fresh = defaultProfile()
     try {
@@ -210,6 +215,7 @@ export function usePersistentStore() {
     markTutorialSeen,
     markProfileSetup,
     recordAdWatched,
+    recordFreePackClaimed,
     resetProfile,
   }
 }

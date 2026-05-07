@@ -30,7 +30,8 @@ const PACKS = [
     icon: '🎲',
     cost: 80,
     currency: 'coins',
-    iconBg: 'linear-gradient(135deg,#1565c0,#283593)',
+    iconBg: 'linear-gradient(160deg,#1565c0,#283593)',
+    itemBg: 'linear-gradient(120deg,#0d1b3e 0%,#1a2a5e 100%)',
     filter: d => d.marketPrice > 0,
   },
   {
@@ -40,7 +41,8 @@ const PACKS = [
     icon: '⚔️',
     cost: 100,
     currency: 'coins',
-    iconBg: 'linear-gradient(135deg,#c62828,#7f0000)',
+    iconBg: 'linear-gradient(160deg,#c62828,#7f0000)',
+    itemBg: 'linear-gradient(120deg,#2a0a0a 0%,#4a1010 100%)',
     filter: d => d.type === 'attack' && d.marketPrice > 0,
   },
   {
@@ -50,7 +52,8 @@ const PACKS = [
     icon: '🛡️',
     cost: 100,
     currency: 'coins',
-    iconBg: 'linear-gradient(135deg,#0d47a1,#1a237e)',
+    iconBg: 'linear-gradient(160deg,#0d47a1,#1a237e)',
+    itemBg: 'linear-gradient(120deg,#071530 0%,#0d2560 100%)',
     filter: d => d.type === 'defense' && d.marketPrice > 0,
   },
   {
@@ -60,7 +63,8 @@ const PACKS = [
     icon: '🔮',
     cost: 100,
     currency: 'coins',
-    iconBg: 'linear-gradient(135deg,#6a1b9a,#4a148c)',
+    iconBg: 'linear-gradient(160deg,#6a1b9a,#4a148c)',
+    itemBg: 'linear-gradient(120deg,#1a0830 0%,#2e1060 100%)',
     filter: d => d.type === 'midfield' && d.marketPrice > 0,
   },
   {
@@ -70,7 +74,8 @@ const PACKS = [
     icon: '🧤',
     cost: 120,
     currency: 'coins',
-    iconBg: 'linear-gradient(135deg,#00695c,#004d40)',
+    iconBg: 'linear-gradient(160deg,#00695c,#004d40)',
+    itemBg: 'linear-gradient(120deg,#021a16 0%,#063d30 100%)',
     filter: d => d.type === 'goalkeeper' && d.marketPrice > 0,
   },
   {
@@ -80,12 +85,15 @@ const PACKS = [
     icon: '💎',
     cost: 5,
     currency: 'gems',
-    iconBg: 'linear-gradient(135deg,#880e4f,#4a0072)',
+    iconBg: 'linear-gradient(160deg,#880e4f,#4a0072)',
+    itemBg: 'linear-gradient(120deg,#1a0020 0%,#380060 100%)',
     filter: d => d.rarity === 'legendary' || d.rarity === 'rare',
   },
 ]
 
 const PACK_REFUND = 30
+const AD_COOLDOWN_MS = 60 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 30 * 60 * 1000
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -99,7 +107,6 @@ function drawCards(pack, count = 3) {
   return drawn
 }
 
-// Convert card definition to a card object usable by FieldCard
 function defToCard(def) {
   return {
     ...def,
@@ -108,6 +115,29 @@ function defToCard(def) {
     currentDefenseStat: def.defenseStat,
     upgradeLevel: 0,
   }
+}
+
+function useCooldown(lastAt, durationMs) {
+  const compute = () => Math.max(0, Math.ceil((durationMs - (Date.now() - (lastAt || 0))) / 1000))
+  const [secsLeft, setSecsLeft] = useState(compute)
+  useEffect(() => {
+    const initial = compute()
+    setSecsLeft(initial)
+    if (initial <= 0) return
+    const id = setInterval(() => {
+      const left = compute()
+      setSecsLeft(left)
+      if (left <= 0) clearInterval(id)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [lastAt])
+  return secsLeft
+}
+
+function fmtCountdown(secs) {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return `${m}:${String(s).padStart(2, '0')}`
 }
 
 // ── Pack Opening Overlay ───────────────────────────────────────────────────
@@ -140,14 +170,12 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   return (
     <div className="pack-overlay">
       <div className="pack-overlay-panel">
-        {/* Title */}
         <div className="pack-overlay-header" style={{ background: pack.iconBg }}>
           <span className="poh-icon">{pack.icon}</span>
           <span className="poh-title">{pack.label}</span>
           <span className="poh-desc">{pack.desc}</span>
         </div>
 
-        {/* Cards */}
         <div className="pack-cards-row">
           {drawnCards.map((def, i) => {
             const card = defToCard(def)
@@ -172,7 +200,6 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
           })}
         </div>
 
-        {/* Actions */}
         {revealed >= drawnCards.length && !done && (
           <div className="pack-actions">
             <p className="pack-prompt">Wybierz kartę aby dodać do kolekcji</p>
@@ -259,45 +286,15 @@ function SellTab({ profile, sellCard, showNotif }) {
 
 // ── MarketScreen ───────────────────────────────────────────────────────────
 
-const AD_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
-
-function useAdCooldown(lastAdWatchedAt) {
-  const compute = () => {
-    const elapsed = Date.now() - (lastAdWatchedAt || 0)
-    return Math.max(0, Math.ceil((AD_COOLDOWN_MS - elapsed) / 1000))
-  }
-
-  const [secsLeft, setSecsLeft] = useState(compute)
-
-  useEffect(() => {
-    const initial = compute()
-    setSecsLeft(initial)
-    if (initial <= 0) return
-    const id = setInterval(() => {
-      const left = compute()
-      setSecsLeft(left)
-      if (left <= 0) clearInterval(id)
-    }, 1000)
-    return () => clearInterval(id)
-  }, [lastAdWatchedAt])
-
-  return secsLeft
-}
-
-function fmtCountdown(secs) {
-  const m = Math.floor(secs / 60)
-  const s = secs % 60
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
 export default function MarketScreen() {
   const { goBack } = useRouter()
-  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched } = useProfile()
+  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched, recordFreePackClaimed } = useProfile()
   const [tab, setTab] = useState('packs')
   const [openingPack, setOpeningPack] = useState(null)
   const [notification, setNotification] = useState(null)
   const gems = profile.gems ?? 0
-  const adSecsLeft = useAdCooldown(profile.lastAdWatchedAt || 0)
+  const adSecsLeft = useCooldown(profile.lastAdWatchedAt, AD_COOLDOWN_MS)
+  const freePackSecsLeft = useCooldown(profile.lastFreePackAt, FREE_PACK_COOLDOWN_MS)
 
   const showNotif = (msg, ok = true) => {
     setNotification({ msg, ok })
@@ -336,8 +333,7 @@ export default function MarketScreen() {
     showNotif('📺 Oglądasz reklamę...', true)
     recordAdWatched()
     setTimeout(() => {
-      const giveGem = Math.random() < 0.4
-      if (giveGem) {
+      if (Math.random() < 0.4) {
         update(prev => ({ ...prev, gems: (prev.gems ?? 0) + 1 }))
         showNotif('✅ +1 💎 klejnot za reklamę!')
       } else {
@@ -345,6 +341,19 @@ export default function MarketScreen() {
         showNotif('✅ +50 🪙 monet za reklamę!')
       }
     }, 2200)
+  }
+
+  const handleClaimFreePack = () => {
+    if (freePackSecsLeft > 0) {
+      showNotif(`⏳ Następna paczka za ${fmtCountdown(freePackSecsLeft)}`, false)
+      return
+    }
+    const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0 && d.rarity !== 'legendary')
+    const card = pool[Math.floor(Math.random() * pool.length)]
+    claimPackCard(card)
+    addCoins(50)
+    recordFreePackClaimed()
+    showNotif(`🎁 ${card.name} + 50 🪙 odebrane!`)
   }
 
   return (
@@ -366,22 +375,42 @@ export default function MarketScreen() {
 
       {tab === 'packs' ? (
         <div className="packs-list">
-          {/* Earn banner */}
-          <div className={`earn-gems-banner ${adSecsLeft > 0 ? 'earn-gems-banner--cooldown' : ''}`} onClick={handleWatchAd}>
-            <div className="egb-icon-wrap">{adSecsLeft > 0 ? '⏳' : '📺'}</div>
-            <div className="egb-text">
-              <span className="egb-title">OBEJRZYJ REKLAMĘ</span>
-              <span className="egb-desc">
+
+          {/* Ad banner */}
+          <div className={`ad-banner ${adSecsLeft > 0 ? 'ad-banner--cooldown' : ''}`} onClick={handleWatchAd}>
+            <div className="ad-banner-bg" />
+            <div className="ad-text">
+              <div className="ad-title">
+                OBEJRZYJ <span className="ad-kw">REKLAMĘ</span>
+              </div>
+              <div className="ad-desc">
                 {adSecsLeft > 0
                   ? `Dostępna za ${fmtCountdown(adSecsLeft)}`
                   : 'Zdobądź 50 monet lub 💎 klejnoty'}
-              </span>
+              </div>
             </div>
-            <span className="egb-cta">
+            <div className="ad-ball">⚽</div>
+            <div className={`ad-cta ${adSecsLeft > 0 ? 'ad-cta--wait' : ''}`}>
               {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OBEJRZYJ →'}
-            </span>
+            </div>
           </div>
 
+          {/* Free pack */}
+          <div
+            className={`free-pack ${freePackSecsLeft > 0 ? 'free-pack--cooldown' : ''}`}
+            onClick={handleClaimFreePack}
+          >
+            <div className="fp-icon">🎁</div>
+            <div className="fp-info">
+              <div className="fp-title">DARMOWA PACZKA</div>
+              <div className="fp-desc">1 zawodnik + 50 monet • co 30 minut</div>
+            </div>
+            <div className={`fp-cta ${freePackSecsLeft > 0 ? 'fp-cta--wait' : ''}`}>
+              {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
+            </div>
+          </div>
+
+          {/* Pack items */}
           {PACKS.map(pack => {
             const canAfford = pack.currency === 'coins'
               ? profile.coins >= pack.cost
@@ -390,18 +419,22 @@ export default function MarketScreen() {
               <div
                 key={pack.id}
                 className={`pack-item ${!canAfford ? 'pack-item--locked' : ''}`}
+                style={{ background: pack.itemBg }}
                 onClick={() => canAfford && handleBuyPack(pack)}
               >
-                <div className="pi-icon-wrap" style={{ background: pack.iconBg }}>
+                <div className="pi-stripe" style={{ background: pack.iconBg }}>
                   <span className="pi-icon">{pack.icon}</span>
                 </div>
                 <div className="pi-info">
                   <div className="pi-name">{pack.label}</div>
                   <div className="pi-desc">{pack.desc}</div>
                 </div>
-                <div className={`pi-buy-btn ${!canAfford ? 'pi-buy-btn--disabled' : ''}`}>
-                  <span className="pi-buy-cur">{pack.currency === 'coins' ? '🪙' : '💎'}</span>
-                  <span className="pi-buy-val">{pack.cost}</span>
+                <div className="pi-preview">
+                  <img src="/avatars/placeholder.png" className="pi-preview-img" alt="" />
+                </div>
+                <div className="pi-price">
+                  <span className="pi-price-cur">{pack.currency === 'coins' ? '🪙' : '💎'}</span>
+                  <span className="pi-price-val">{pack.cost}</span>
                 </div>
               </div>
             )

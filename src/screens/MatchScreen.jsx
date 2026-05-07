@@ -171,6 +171,8 @@ export default function MatchScreen({ matchParams = {} }) {
   const [zoomCard, setZoomCard] = useState(null)           // { card, isPlayerField, sector }
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
+  const [goalsCollapsed, setGoalsCollapsed] = useState(false)
+  const [handCollapsed, setHandCollapsed] = useState(false)
 
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
@@ -404,7 +406,7 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-field-markings" aria-hidden="true" />
 
         {/* === AI GOAL (top) === */}
-        <div className="ms-goal ms-goal--ai">
+        <div className={`ms-goal ms-goal--ai${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
           <GoalPosts side="ai" />
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--atk">
@@ -427,7 +429,11 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="msb-icon">🛡️</span>
             </div>
           </div>
-          {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
+          {aiThinking && !goalsCollapsed && <div className="ms-thinking">🤔 myśli...</div>}
+          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
+            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▼' : '▲'}</span>
+            <span className="ms-goal-tab-label">{goalsCollapsed ? `BOT ${aiTotalAtk}⚔ ${aiTotalDef}🛡` : 'ZWIŃ'}</span>
+          </div>
         </div>
 
         {/* === AI FIELD === */}
@@ -485,8 +491,12 @@ export default function MatchScreen({ matchParams = {} }) {
           />
         </div>
 
-        {/* === PLAYER GOAL (bottom) === */}
-        <div className="ms-goal ms-goal--player">
+        {/* === PLAYER GOAL (bottom) — column-reverse: first=bottom, last=top === */}
+        <div className={`ms-goal ms-goal--player${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
+          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
+            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▲' : '▼'}</span>
+            <span className="ms-goal-tab-label">{goalsCollapsed ? `TY ${myTotalDef}🛡 ${myTotalAtk}⚔` : 'ZWIŃ'}</span>
+          </div>
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
@@ -514,7 +524,12 @@ export default function MatchScreen({ matchParams = {} }) {
       </div>{/* end ms-field-wrap */}
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      <div className="ms-hand-area">
+      <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}`}>
+        <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
+          <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
+          <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
+          <span className="ms-deck-badge-sm">🃏 {playerA.deck.length}</span>
+        </div>
         <div className="ms-hand-scroll">
           {playerA.hand.map(card => (
             <FieldCard

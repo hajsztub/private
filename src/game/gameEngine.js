@@ -590,12 +590,45 @@ export function dismissSpecialCard(state) {
   return { ...state, phase: 'playing', specialCard: null }
 }
 
+// Pull a card from field back into hand (substitution action — uses sector placement slot)
+export function substituteCard(state, playerId, cardInstanceId, sector) {
+  if (state.currentPlayer !== playerId) return { state, error: 'Nie twoja tura!' }
+  if (state.phase !== 'playing') return { state, error: 'Gra nie jest w toku.' }
+
+  const actionKey = sector === 'offense' ? 'placedOffense' : 'placedDefense'
+  const player = state.players[playerId]
+  const sectorKey = sector === 'offense' ? 'offenseSector' : 'defenseSector'
+  const card = player[sectorKey].find(c => c.instanceId === cardInstanceId)
+  if (!card) return { state, error: 'Karta nie jest na boisku.' }
+
+  // Pull back into hand, mark sector action used so player can still place another
+  const restoredCard = { ...card, justPlaced: false, roundsOnField: card.roundsOnField || 0 }
+  let newState = {
+    ...state,
+    turnActionsUsed: { ...state.turnActionsUsed, [actionKey]: false }, // free up the slot for new placement
+    players: {
+      ...state.players,
+      [playerId]: {
+        ...player,
+        hand: [...player.hand, restoredCard],
+        [sectorKey]: player[sectorKey].filter(c => c.instanceId !== cardInstanceId),
+      },
+    },
+  }
+  newState = addLog(newState, `Zmiana: ${card.name} wraca na ławkę.`, 'action')
+  return { state: newState, error: null }
+}
+
 export function gameReducer(state, action) {
   switch (action.type) {
     case 'SELECT_GOALKEEPER':
       return selectGoalkeeper(state, action.playerId, action.gkInstanceId)
     case 'PLACE_CARD': {
       const { state: next, error } = placeCard(state, action.playerId, action.cardInstanceId, action.sector)
+      return error ? state : next
+    }
+    case 'SUBSTITUTE_CARD': {
+      const { state: next, error } = substituteCard(state, action.playerId, action.cardInstanceId, action.sector)
       return error ? state : next
     }
     case 'ACTIVATE_ABILITY': {

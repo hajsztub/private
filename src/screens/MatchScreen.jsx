@@ -26,7 +26,7 @@ function buildPlayerDeck(profile) {
 
 // ── Card Zoom Modal ────────────────────────────────────────────────────────
 
-function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstitute, onClose }) {
+function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstitute, onClose, placements }) {
   if (!card) return null
   const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
@@ -104,6 +104,16 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
                 🔄 Zmiana (wróć na ławkę)
               </button>
             )}
+          </div>
+        )}
+
+        {placements && placements.length > 0 && (
+          <div className="zoom-field-actions">
+            {placements.map((p, i) => (
+              <button key={i} className="zoom-act-btn zoom-act-btn--place" onClick={p.onClick}>
+                {p.label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -570,25 +580,36 @@ export default function MatchScreen({ matchParams = {} }) {
       {goalAnim && settings.visualEffects !== false && (
         <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} onDone={() => setGoalAnim(null)} />
       )}
-      {zoomCard && (
-        <CardZoomModal
-          card={zoomCard.card}
-          isPlayerField={zoomCard.isPlayerField}
-          canActivate={canActivate}
-          onActivate={() => {
-            if (matchState.turnActionsUsed.activatedAbility) { showNotif('Już aktywowano umiejętność tej tury.'); return }
-            SFX.activateAbility()
-            dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: zoomCard.card.instanceId })
-            setZoomCard(null)
-          }}
-          onSubstitute={zoomCard.isPlayerField && zoomCard.sector ? () => {
-            SFX.substitution()
-            dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: zoomCard.card.instanceId, sector: zoomCard.sector })
-            setZoomCard(null)
-          } : null}
-          onClose={() => setZoomCard(null)}
-        />
-      )}
+      {zoomCard && (() => {
+        const zc = zoomCard.card
+        const placements = []
+        if (!zoomCard.isPlayerField && !zoomCard.sector && isPlayerTurn) {
+          if (canPlaceInSector(zc, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE)
+            placements.push({ label: '⚔ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
+          if (canPlaceInSector(zc, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE)
+            placements.push({ label: '🛡 Wystaw w Obronie', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'defense' }); setZoomCard(null) } })
+        }
+        return (
+          <CardZoomModal
+            card={zc}
+            isPlayerField={zoomCard.isPlayerField}
+            canActivate={canActivate}
+            placements={placements}
+            onActivate={() => {
+              if (matchState.turnActionsUsed.activatedAbility) { showNotif('Już aktywowano umiejętność tej tury.'); return }
+              SFX.activateAbility()
+              dispatch({ type: 'ACTIVATE_ABILITY', playerId: 'A', cardInstanceId: zc.instanceId })
+              setZoomCard(null)
+            }}
+            onSubstitute={zoomCard.isPlayerField && zoomCard.sector ? () => {
+              SFX.substitution()
+              dispatch({ type: 'SUBSTITUTE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: zoomCard.sector })
+              setZoomCard(null)
+            } : null}
+            onClose={() => setZoomCard(null)}
+          />
+        )
+      })()}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {showTutorial && (

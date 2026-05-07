@@ -906,6 +906,11 @@
   color: rgba(255,255,255,0.75);
 }
 
+.zoom-act-btn--place {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: white;
+}
+
 /* ── Forfeit button in action bar ───────────────────────────────────────── */
 
 .ms-forfeit-btn {

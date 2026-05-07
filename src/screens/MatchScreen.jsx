@@ -398,15 +398,21 @@ export default function MatchScreen({ matchParams = {} }) {
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
               <span className="msb-num">{aiTotalAtk}</span>
+              <span className="msb-icon">⚔️</span>
             </div>
-            <GKCard
-              card={playerB.activeGoalkeeper}
-              side="ai"
-              onTap={() => playerB.activeGoalkeeper && setZoomCard({ card: playerB.activeGoalkeeper, isPlayerField: false })}
-            />
+            <div className="ms-gk-wrap">
+              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
+              <GKCard
+                card={playerB.activeGoalkeeper}
+                side="ai"
+                onTap={() => playerB.activeGoalkeeper && setZoomCard({ card: playerB.activeGoalkeeper, isPlayerField: false })}
+              />
+              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
+            </div>
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
               <span className="msb-num">{aiTotalDef}</span>
+              <span className="msb-icon">🛡️</span>
             </div>
           </div>
           {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
@@ -473,15 +479,21 @@ export default function MatchScreen({ matchParams = {} }) {
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
               <span className="msb-num">{myTotalAtk}</span>
+              <span className="msb-icon">⚔️</span>
             </div>
-            <GKCard
-              card={playerA.activeGoalkeeper}
-              side="player"
-              onTap={() => playerA.activeGoalkeeper && setZoomCard({ card: playerA.activeGoalkeeper, isPlayerField: false })}
-            />
+            <div className="ms-gk-wrap">
+              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
+              <GKCard
+                card={playerA.activeGoalkeeper}
+                side="player"
+                onTap={() => playerA.activeGoalkeeper && setZoomCard({ card: playerA.activeGoalkeeper, isPlayerField: false })}
+              />
+              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
+            </div>
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
               <span className="msb-num">{myTotalDef}</span>
+              <span className="msb-icon">🛡️</span>
             </div>
           </div>
           <GoalPosts side="player" />

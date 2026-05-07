@@ -170,7 +170,7 @@
 }
 
 .ms-stat-box {
-  width: 54px;
+  width: 108px;
   height: 90px;
   border-radius: 10px;
   display: flex;
@@ -181,13 +181,33 @@
   gap: 2px;
 }
 
+.msb-icon { font-size: 14px; line-height: 1; opacity: 0.7; }
+
+.ms-gk-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ms-gk-glove {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
+}
+
+.ms-gk-glove--left  { transform: scaleX(-1); }
+.ms-gk-glove--right { transform: scaleX(1); }
+
 .ms-stat-box--atk { background: linear-gradient(135deg, #c62828, #b71c1c); }
 .ms-stat-box--def { background: linear-gradient(135deg, #1565c0, #0d47a1); }
 
 .msb-lbl {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   color: rgba(255,255,255,0.85);
   text-transform: uppercase;
   line-height: 1;

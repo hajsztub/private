@@ -167,6 +167,11 @@ export default function DeckBuilderScreen() {
       }
     } else {
       // Auto-assign to first compatible empty slot
+      // If already in deck (same instance), do nothing
+      if (assignedIds.has(instanceId)) {
+        showNotif(`${card.name} już jest w składzie!`, false)
+        return
+      }
       const compatible = FORMATION.filter(s =>
         SLOT_ACCEPTS[s.type].includes(card.type) && !assignments[s.id]
       )

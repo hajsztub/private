@@ -354,6 +354,9 @@ function AvatarSVG({ id, color, className }) {
     starter_atk1: <StarterOutfieldSVG shirt="#b71c1c" />,
     starter_atk2: <StarterOutfieldSVG shirt="#b71c1c" hair="dark" />,
     starter_atk3: <StarterOutfieldSVG shirt="#b71c1c" hair="curly" />,
+    starter_def4: <StarterOutfieldSVG shirt="#1565c0" hair="curly" />,
+    starter_mid4: <StarterOutfieldSVG shirt="#6a1b9a" hair="short" />,
+    starter_atk4: <StarterOutfieldSVG shirt="#b71c1c" hair="bald" />,
   }
   const el = handcrafted[id]
   if (el) return <div className={`fc-svg-wrap ${className || ''}`}>{el}</div>

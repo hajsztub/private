@@ -1,0 +1,134 @@
+.coin-flip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.coin-flip-modal {
+  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  border-radius: 24px;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  border: 3px solid rgba(255,255,255,0.8);
+  min-width: 280px;
+}
+
+.coin-flip-title {
+  font-family: 'Bangers', cursive;
+  font-size: 32px;
+  letter-spacing: 3px;
+  color: #e65100;
+  margin: 0;
+}
+
+.coin {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.3);
+  transition: transform 0.2s;
+}
+
+.coin--spinning {
+  animation: coinSpin 1.2s ease-in-out;
+}
+
+.coin--ball {
+  background: linear-gradient(135deg, #43a047, #1b5e20);
+}
+
+.coin--glove {
+  background: linear-gradient(135deg, #e53935, #7b1fa2);
+}
+
+@keyframes coinSpin {
+  0% { transform: rotateY(0deg) scale(1); }
+  25% { transform: rotateY(360deg) scale(1.2); }
+  50% { transform: rotateY(720deg) scale(0.9); }
+  75% { transform: rotateY(1080deg) scale(1.1); }
+  100% { transform: rotateY(1440deg) scale(1); }
+}
+
+.coin-face {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.coin-face--question {
+  font-family: 'Bangers', cursive;
+  font-size: 48px;
+  color: rgba(255,255,255,0.9);
+}
+
+.coin-result {
+  font-family: 'Bangers', cursive;
+  font-size: 30px;
+  letter-spacing: 2px;
+  padding: 8px 20px;
+  border-radius: 12px;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.coin-result--ball {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 2px solid #43a047;
+}
+
+.coin-result--glove {
+  background: #fce4ec;
+  color: #880e4f;
+  border: 2px solid #e91e63;
+}
+
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.coin-flip-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.coin-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.coin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.coin-btn--flip {
+  background: #e65100;
+  color: white;
+  font-size: 18px;
+  padding: 14px 36px;
+}
+
+.coin-btn--ok {
+  background: #2e7d32;
+  color: white;
+}

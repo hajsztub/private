@@ -1,0 +1,80 @@
+.special-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 20, 140, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.special-modal {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  border-radius: 24px;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  border: 3px solid rgba(255,255,255,0.7);
+  max-width: 400px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.special-modal__icon {
+  font-size: 64px;
+}
+
+.special-modal__title {
+  font-family: 'Bangers', cursive;
+  font-size: 36px;
+  letter-spacing: 3px;
+  color: #4a148c;
+  margin: 0;
+}
+
+.special-modal__card-name {
+  font-family: 'Bangers', cursive;
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: #7b1fa2;
+  background: rgba(255,255,255,0.6);
+  padding: 6px 20px;
+  border-radius: 12px;
+}
+
+.special-modal__desc {
+  color: #4a148c;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.special-modal__btn {
+  background: #7b1fa2;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 28px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.special-modal__btn:hover {
+  background: #6a1b9a;
+  transform: translateY(-2px);
+}

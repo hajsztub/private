@@ -333,6 +333,251 @@
   font-weight: 300;
 }
 
+/* ── Daily missions bar ───────────────────────────────────────────────────── */
+
+.mm-missions-bar {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255,230,0,0.07);
+  border: 1px solid rgba(255,230,0,0.18);
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  margin-bottom: 4px;
+  z-index: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.mm-missions-bar:active { background: rgba(255,230,0,0.13); }
+
+.mm-missions-bar-icon { font-size: 18px; flex-shrink: 0; }
+
+.mm-missions-bar-label {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: rgba(255,230,0,0.85);
+}
+
+.mm-missions-bar-dots {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+}
+
+.mm-missions-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.2s;
+}
+
+.mm-missions-dot--ready { background: #ffd600; box-shadow: 0 0 6px rgba(255,214,0,0.8); }
+.mm-missions-dot--done  { background: #66bb6a; }
+
+.mm-missions-badge {
+  background: #ffd600;
+  color: #1a1200;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: badge-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+
+.mm-missions-bar-arrow {
+  font-size: 18px;
+  color: rgba(255,230,0,0.4);
+  flex-shrink: 0;
+  font-weight: 300;
+}
+
+/* ── Daily missions overlay ───────────────────────────────────────────────── */
+
+.mm-missions-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fade-up 0.2s ease;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mm-missions-panel {
+  width: 100%;
+  max-width: 480px;
+  background: #111820;
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid rgba(255,230,0,0.2);
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  animation: slide-up 0.25s ease;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.mm-missions-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.mm-missions-title {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: #ffd600;
+  flex: 1;
+}
+
+.mm-missions-reset {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+}
+
+.mm-missions-close {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mm-missions-list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px 4px;
+  gap: 6px;
+}
+
+/* ── Single mission row ───────────────────────────────────────────────────── */
+
+.mm-mission {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 12px 12px 12px 14px;
+  transition: border-color 0.2s;
+}
+
+.mm-mission--ready {
+  border-color: rgba(255,214,0,0.35);
+  background: rgba(255,214,0,0.06);
+}
+
+.mm-mission--done {
+  opacity: 0.45;
+}
+
+.mm-mission-icon { font-size: 24px; flex-shrink: 0; line-height: 1; }
+
+.mm-mission-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.mm-mission-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+}
+
+.mm-mission-track {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mm-mission-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd600, #ffab00);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.mm-mission--done .mm-mission-fill { background: #66bb6a; }
+
+.mm-mission-count {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.3px;
+}
+
+.mm-mission-right { flex-shrink: 0; }
+
+.mm-mission-check {
+  font-size: 18px;
+  color: #66bb6a;
+}
+
+.mm-mission-claim {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.3);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: default;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mm-mission-claim--ready {
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  border-color: transparent;
+  color: #1a0900;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(249,168,37,0.4);
+}
+
 /* ── Training mode panel ──────────────────────────────────────────────────── */
 
 .mm-training-panel {

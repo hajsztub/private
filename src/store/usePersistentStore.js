@@ -6,6 +6,73 @@ const ALL_CARD_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
 
 const STORAGE_KEY = 'football_cards_v2'
 
+// ── Daily missions ─────────────────────────────────────────────────────────
+
+const MISSION_POOL = [
+  { type: 'play_matches', target: 1, label: 'Zagraj 1 mecz',              icon: '🎮', reward: 50  },
+  { type: 'play_matches', target: 3, label: 'Zagraj 3 mecze',             icon: '🎮', reward: 120 },
+  { type: 'win_matches',  target: 1, label: 'Wygraj 1 mecz',              icon: '🏆', reward: 80  },
+  { type: 'win_matches',  target: 2, label: 'Wygraj 2 mecze',             icon: '🏆', reward: 150 },
+  { type: 'win_matches',  target: 3, label: 'Wygraj 3 mecze',             icon: '🏆', reward: 220 },
+  { type: 'win_league',   target: 1, label: 'Wygraj mecz ligowy',         icon: '⭐', reward: 120 },
+  { type: 'win_league',   target: 2, label: 'Wygraj 2 mecze ligowe',      icon: '⭐', reward: 220 },
+  { type: 'score_goals',  target: 3, label: 'Strzel 3 gole',              icon: '⚽', reward: 80  },
+  { type: 'score_goals',  target: 5, label: 'Strzel 5 goli',              icon: '⚽', reward: 130 },
+  { type: 'score_goals',  target: 8, label: 'Strzel 8 goli',              icon: '⚽', reward: 200 },
+  { type: 'win_pro',      target: 1, label: 'Wygraj trening PRO',         icon: '🔴', reward: 200 },
+  { type: 'clean_sheet',  target: 1, label: 'Wygraj nie tracąc gola',     icon: '🧤', reward: 160 },
+]
+
+function getTodayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function seededRandom(seed) {
+  let s = seed >>> 0
+  return () => {
+    s ^= s << 13; s ^= s >> 17; s ^= s << 5
+    return (s >>> 0) / 0xffffffff
+  }
+}
+
+function generateDailyMissions(dateStr) {
+  const seed = dateStr.replace(/-/g, '').split('').reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 7)
+  const rand = seededRandom(seed)
+  const shuffled = [...MISSION_POOL].sort(() => rand() - 0.5)
+  return shuffled.slice(0, 3).map((m, i) => ({
+    ...m,
+    id: `${dateStr}_${i}`,
+    progress: 0,
+    claimed: false,
+  }))
+}
+
+function applyMissionProgress(missions, result) {
+  return missions.map(m => {
+    if (m.claimed) return m
+    let progress = m.progress
+    switch (m.type) {
+      case 'play_matches': progress = Math.min(m.target, progress + 1); break
+      case 'win_matches':  if (result.type === 'win') progress = Math.min(m.target, progress + 1); break
+      case 'win_league':   if (result.type === 'win' && result.matchType === 'league') progress = Math.min(m.target, progress + 1); break
+      case 'score_goals':  progress = Math.min(m.target, progress + (result.playerGoals || 0)); break
+      case 'win_pro':      if (result.type === 'win' && result.matchType === 'training_pro') progress = Math.min(m.target, progress + 1); break
+      case 'clean_sheet':  if (result.type === 'win' && (result.score?.ai ?? 1) === 0) progress = Math.min(m.target, progress + 1); break
+      default: break
+    }
+    return { ...m, progress }
+  })
+}
+
+function ensureDailyMissions(profile) {
+  const today = getTodayStr()
+  if (!profile.dailyMissions || profile.dailyMissions.date !== today) {
+    return { ...profile, dailyMissions: { date: today, missions: generateDailyMissions(today) } }
+  }
+  return profile
+}
+
 function defaultProfile() {
   return {
     name: 'Gracz',
@@ -23,6 +90,7 @@ function defaultProfile() {
     activeDeck: STARTER_CARDS.map(c => c.instanceId),
     deckAssignments: null, // { slotId: instanceId } — exact formation layout
     matchHistory: [],
+    dailyMissions: { date: '', missions: [] },
   }
 }
 
@@ -41,9 +109,9 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProfile()
     const parsed = JSON.parse(raw)
-    return migrateProfile({ ...defaultProfile(), ...parsed })
+    return ensureDailyMissions(migrateProfile({ ...defaultProfile(), ...parsed }))
   } catch {
-    return defaultProfile()
+    return ensureDailyMissions(defaultProfile())
   }
 }
 
@@ -74,7 +142,7 @@ export function usePersistentStore() {
   }, [update])
 
   const addMatchResult = useCallback((result) => {
-    // result: { type: 'win'|'draw'|'loss', matchType, score, coinsEarned, ratingChange }
+    // result: { type, matchType, score, coinsEarned, ratingChange, playerGoals }
     update(prev => {
       const wins = prev.wins + (result.type === 'win' ? 1 : 0)
       const draws = prev.draws + (result.type === 'draw' ? 1 : 0)
@@ -82,17 +150,40 @@ export function usePersistentStore() {
       const newRating = result.matchType === 'league'
         ? Math.max(0, prev.rating + (result.ratingChange || 0))
         : prev.rating
+
+      const today = getTodayStr()
+      const dm = (prev.dailyMissions?.date === today)
+        ? prev.dailyMissions
+        : { date: today, missions: generateDailyMissions(today) }
+      const dailyMissions = { ...dm, missions: applyMissionProgress(dm.missions, result) }
+
       return {
         ...prev,
-        wins,
-        draws,
-        losses,
+        wins, draws, losses,
         coins: prev.coins + result.coinsEarned,
         rating: newRating,
+        dailyMissions,
         matchHistory: [
           { ...result, date: Date.now() },
           ...prev.matchHistory.slice(0, 19),
         ],
+      }
+    })
+  }, [update])
+
+  const claimMission = useCallback((missionId) => {
+    update(prev => {
+      const dm = prev.dailyMissions
+      if (!dm) return prev
+      const mission = dm.missions.find(m => m.id === missionId)
+      if (!mission || mission.claimed || mission.progress < mission.target) return prev
+      return {
+        ...prev,
+        coins: prev.coins + mission.reward,
+        dailyMissions: {
+          ...dm,
+          missions: dm.missions.map(m => m.id === missionId ? { ...m, claimed: true } : m),
+        },
       }
     })
   }, [update])
@@ -207,6 +298,7 @@ export function usePersistentStore() {
     addCoins,
     spendCoins,
     addMatchResult,
+    claimMission,
     buyCard,
     claimPackCard,
     sellCard,

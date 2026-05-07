@@ -117,9 +117,13 @@ function ProfileAvatar({ name }) {
 
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
-  const { profile } = useProfile()
+  const { profile, claimMission } = useProfile()
   const [showTutorial, setShowTutorial] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
+  const [showMissions, setShowMissions] = useState(false)
+
+  const missions = profile.dailyMissions?.missions || []
+  const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
@@ -172,6 +176,24 @@ export default function MainMenuScreen() {
         <span className="mmr-sep">|</span>
         <span className="mmr-l">{profile.losses}P</span>
       </div>
+
+      {/* ── Daily missions button ── */}
+      <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
+        <span className="mm-missions-bar-icon">⚡</span>
+        <span className="mm-missions-bar-label">MISJE DNIA</span>
+        <div className="mm-missions-bar-dots">
+          {missions.map(m => (
+            <span
+              key={m.id}
+              className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`}
+            />
+          ))}
+        </div>
+        {claimableCount > 0 && (
+          <span className="mm-missions-badge">{claimableCount}</span>
+        )}
+        <span className="mm-missions-bar-arrow">›</span>
+      </button>
 
       {/* ── Play buttons ── */}
       <div className="mm-play-section">
@@ -254,6 +276,49 @@ export default function MainMenuScreen() {
       </div>
 
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+
+      {showMissions && (
+        <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
+          <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
+            <div className="mm-missions-header">
+              <span className="mm-missions-title">⚡ MISJE DNIA</span>
+              <span className="mm-missions-reset">Reset o północy</span>
+              <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
+            </div>
+            <div className="mm-missions-list">
+              {missions.map(m => {
+                const pct = Math.min(100, (m.progress / m.target) * 100)
+                const ready = !m.claimed && m.progress >= m.target
+                return (
+                  <div key={m.id} className={`mm-mission ${m.claimed ? 'mm-mission--done' : ready ? 'mm-mission--ready' : ''}`}>
+                    <span className="mm-mission-icon">{m.icon}</span>
+                    <div className="mm-mission-body">
+                      <span className="mm-mission-label">{m.label}</span>
+                      <div className="mm-mission-track">
+                        <div className="mm-mission-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="mm-mission-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                    </div>
+                    <div className="mm-mission-right">
+                      {m.claimed ? (
+                        <span className="mm-mission-check">✓</span>
+                      ) : (
+                        <button
+                          className={`mm-mission-claim ${ready ? 'mm-mission-claim--ready' : ''}`}
+                          onClick={() => ready && claimMission(m.id)}
+                          disabled={!ready}
+                        >
+                          +{m.reward} 🪙
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mm-version">GOAL TCG v1.1 — build 20260507</div>
     </div>

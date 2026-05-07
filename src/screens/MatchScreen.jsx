@@ -220,7 +220,7 @@ export default function MatchScreen({ matchParams = {} }) {
     const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
-    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange })
+    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player })
     setTimeout(() => replace('post_match', {
       result, score, matchType, coinsEarned: coins, ratingChange,
       goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,

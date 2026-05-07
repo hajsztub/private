@@ -7,6 +7,7 @@ import MatchScreen from './screens/MatchScreen'
 import PostMatchScreen from './screens/PostMatchScreen'
 import DeckBuilderScreen from './screens/DeckBuilderScreen'
 import MarketScreen from './screens/MarketScreen'
+import LeagueScreen from './screens/LeagueScreen'
 import PlayersScreen from './screens/PlayersScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
@@ -25,6 +26,7 @@ function ScreenRouter() {
     case 'post_match':  return <PostMatchScreen result={params} />
     case 'deck_builder': return <DeckBuilderScreen />
     case 'market':      return <MarketScreen />
+    case 'league':      return <LeagueScreen />
     case 'players':     return <PlayersScreen />
     case 'settings':    return <SettingsScreen />
     default:            return <MainMenuScreen />

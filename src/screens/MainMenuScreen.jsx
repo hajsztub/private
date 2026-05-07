@@ -47,7 +47,7 @@ export default function MainMenuScreen() {
 
       {/* Main buttons */}
       <div className="menu-buttons">
-        <button className="menu-btn menu-btn--league" onClick={() => startMatch('league')}>
+        <button className="menu-btn menu-btn--league" onClick={() => navigate('league')}>
           <span className="menu-btn-icon">🏆</span>
           <div className="menu-btn-content">
             <span className="menu-btn-title">Mecz Ligowy</span>

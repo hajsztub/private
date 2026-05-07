@@ -14,6 +14,7 @@ function defaultProfile() {
     draws: 0,
     losses: 0,
     coins: 300,
+    gems: 3,
     ownedCards: [...STARTER_CARDS],
     activeDeck: STARTER_CARDS.map(c => c.instanceId), // all starters in deck
     matchHistory: [],
@@ -99,6 +100,19 @@ export function usePersistentStore() {
     })
   }, [update])
 
+  // Add a card won from a pack (no coin cost)
+  const claimPackCard = useCallback((cardDef) => {
+    update(prev => ({
+      ...prev,
+      ownedCards: [...prev.ownedCards, {
+        cardId: cardDef.id,
+        instanceId: `pack_${cardDef.id}_${Date.now()}`,
+        upgradeLevel: 0,
+        isStarter: false,
+      }],
+    }))
+  }, [update])
+
   const sellCard = useCallback((instanceId) => {
     update(prev => {
       const card = prev.ownedCards.find(c => c.instanceId === instanceId)
@@ -154,6 +168,7 @@ export function usePersistentStore() {
     spendCoins,
     addMatchResult,
     buyCard,
+    claimPackCard,
     sellCard,
     upgradeCard,
     setActiveDeck,

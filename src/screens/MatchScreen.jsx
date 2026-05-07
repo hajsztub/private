@@ -92,6 +92,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const { settings } = useSettings()
 
   const matchType = matchParams.matchType || 'local'
+  const opponentName = matchParams.opponentName || 'BOT'
 
   const [matchState, dispatch] = useReducer(gameReducer, null, () => {
     const playerDeck = buildPlayerDeck(profile)
@@ -308,7 +309,7 @@ export default function MatchScreen({ matchParams = {} }) {
       <div className="match-scoreboard">
         <div className="sb-team sb-team--left">
           <span className={`sb-dot ${currentPlayer === 'B' ? 'sb-dot--active' : ''}`} />
-          <span className="sb-team-name">BOT</span>
+          <span className="sb-team-name">{opponentName}</span>
         </div>
         <div className="sb-center">
           <span className={`score-num ${displayScore.player > displayScore.ai ? 'score-num--winning' : ''}`}>

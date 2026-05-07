@@ -286,6 +286,9 @@ export default function DeckBuilderScreen() {
         </div>
       </div>
 
+      {/* Scrollable body */}
+      <div className="db-body">
+
       {/* Formation pitch */}
       <div className="db-pitch">
         <div className="db-pitch-label db-pitch-label--top">ATK</div>
@@ -377,6 +380,8 @@ export default function DeckBuilderScreen() {
           <div className="db-empty">Brak kart dla tej pozycji</div>
         )}
       </div>
+
+      </div>{/* end db-body */}
 
       {/* Footer */}
       <div className="db-footer">

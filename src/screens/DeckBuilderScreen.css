@@ -40,6 +40,19 @@
 .db-count--full { color: var(--c-primary); }
 .db-count-total { font-size: 13px; opacity: 0.6; }
 
+/* ── Scrollable body ──────────────────────────────────────────────────────── */
+
+.db-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+
+.db-body::-webkit-scrollbar { display: none; }
+
 /* ── Pitch (formation) ────────────────────────────────────────────────────── */
 
 .db-pitch {
@@ -276,13 +289,10 @@
 /* ── Card picker ──────────────────────────────────────────────────────────── */
 
 .db-picker {
-  flex: 1;
-  overflow-y: auto;
   padding: 6px 10px 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  scrollbar-width: thin;
 }
 
 .db-empty {

@@ -103,7 +103,7 @@ export default function MainMenuScreen() {
         </button>
       </div>
 
-      <div className="mm-version">GOAL TCG v1.0</div>
+      <div className="mm-version">GOAL TCG v1.1 — build 20260507</div>
     </div>
   )
 }

@@ -1348,7 +1348,7 @@ const EXTENDED_CARDS = [
     name: 'SILAS',
     type: 'midfield',
     typeLabel: 'M',
-    attackStat: -5,
+    attackStat: 5,
     defenseStat: -10,
     rarity: 'legendary',
     marketPrice: 999,

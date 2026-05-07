@@ -135,6 +135,15 @@
   flex-shrink: 0;
 }
 
+.earn-gems-banner--cooldown {
+  opacity: 0.6;
+  border-color: rgba(255,255,255,0.1);
+  cursor: default;
+}
+
+.earn-gems-banner--cooldown .egb-title { color: rgba(255,255,255,0.5); }
+.earn-gems-banner--cooldown .egb-cta { color: #ef9a9a; }
+
 /* Pack items */
 .pack-item {
   display: flex;

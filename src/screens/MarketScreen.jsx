@@ -247,13 +247,42 @@ function SellTab({ profile, sellCard, showNotif }) {
 
 // ── MarketScreen ───────────────────────────────────────────────────────────
 
+const AD_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
+
+function useAdCooldown(lastAdWatchedAt) {
+  const [secsLeft, setSecsLeft] = useState(() => {
+    const elapsed = Date.now() - (lastAdWatchedAt || 0)
+    return Math.max(0, Math.ceil((AD_COOLDOWN_MS - elapsed) / 1000))
+  })
+
+  useEffect(() => {
+    if (secsLeft <= 0) return
+    const id = setInterval(() => {
+      const elapsed = Date.now() - (lastAdWatchedAt || 0)
+      const left = Math.max(0, Math.ceil((AD_COOLDOWN_MS - elapsed) / 1000))
+      setSecsLeft(left)
+      if (left <= 0) clearInterval(id)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [lastAdWatchedAt, secsLeft > 0])
+
+  return secsLeft
+}
+
+function fmtCountdown(secs) {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return `${m}:${String(s).padStart(2, '0')}`
+}
+
 export default function MarketScreen() {
   const { goBack } = useRouter()
-  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update } = useProfile()
+  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched } = useProfile()
   const [tab, setTab] = useState('packs')
   const [openingPack, setOpeningPack] = useState(null)
   const [notification, setNotification] = useState(null)
   const gems = profile.gems ?? 0
+  const adSecsLeft = useAdCooldown(profile.lastAdWatchedAt || 0)
 
   const showNotif = (msg, ok = true) => {
     setNotification({ msg, ok })
@@ -285,7 +314,12 @@ export default function MarketScreen() {
   }
 
   const handleWatchAd = () => {
+    if (adSecsLeft > 0) {
+      showNotif(`⏳ Następna reklama za ${fmtCountdown(adSecsLeft)}`, false)
+      return
+    }
     showNotif('📺 Oglądasz reklamę...', true)
+    recordAdWatched()
     setTimeout(() => {
       const giveGem = Math.random() < 0.4
       if (giveGem) {
@@ -318,13 +352,19 @@ export default function MarketScreen() {
       {tab === 'packs' ? (
         <div className="packs-list">
           {/* Earn banner */}
-          <div className="earn-gems-banner" onClick={handleWatchAd}>
-            <div className="egb-icon-wrap">📺</div>
+          <div className={`earn-gems-banner ${adSecsLeft > 0 ? 'earn-gems-banner--cooldown' : ''}`} onClick={handleWatchAd}>
+            <div className="egb-icon-wrap">{adSecsLeft > 0 ? '⏳' : '📺'}</div>
             <div className="egb-text">
               <span className="egb-title">OBEJRZYJ REKLAMĘ</span>
-              <span className="egb-desc">Zdobądź 50 monet lub 💎 klejnoty</span>
+              <span className="egb-desc">
+                {adSecsLeft > 0
+                  ? `Dostępna za ${fmtCountdown(adSecsLeft)}`
+                  : 'Zdobądź 50 monet lub 💎 klejnoty'}
+              </span>
             </div>
-            <span className="egb-cta">OBEJRZYJ →</span>
+            <span className="egb-cta">
+              {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OBEJRZYJ →'}
+            </span>
           </div>
 
           {PACKS.map(pack => {

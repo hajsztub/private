@@ -16,6 +16,8 @@ function defaultProfile() {
     coins: 300,
     gems: 3,
     hasSeenTutorial: false,
+    hasSetupProfile: false,
+    lastAdWatchedAt: 0,
     ownedCards: [...STARTER_CARDS],
     activeDeck: STARTER_CARDS.map(c => c.instanceId), // all starters in deck
     matchHistory: [],
@@ -158,6 +160,14 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, hasSeenTutorial: true }))
   }, [update])
 
+  const markProfileSetup = useCallback((name) => {
+    update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true }))
+  }, [update])
+
+  const recordAdWatched = useCallback(() => {
+    update(prev => ({ ...prev, lastAdWatchedAt: Date.now() }))
+  }, [update])
+
   const resetProfile = useCallback(() => {
     const fresh = defaultProfile()
     try {
@@ -178,6 +188,8 @@ export function usePersistentStore() {
     upgradeCard,
     setActiveDeck,
     markTutorialSeen,
+    markProfileSetup,
+    recordAdWatched,
     resetProfile,
   }
 }

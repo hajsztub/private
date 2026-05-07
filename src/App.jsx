@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useRef } from 'react'
 import AppRouter, { useRouter } from './router/AppRouter'
 import { usePersistentStore } from './store/usePersistentStore'
 import { useSettingsStore } from './store/useSettingsStore'
@@ -17,6 +17,66 @@ export const SettingsContext = createContext(null)
 
 export function useProfile() { return useContext(ProfileContext) }
 export function useSettings() { return useContext(SettingsContext) }
+
+function ProfileNamePopup({ onDone }) {
+  const [name, setName] = useState('')
+  const inputRef = useRef(null)
+
+  const handleConfirm = () => {
+    const trimmed = name.trim()
+    onDone(trimmed || 'Gracz')
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 9999, padding: '24px', fontFamily: "'Nunito', sans-serif",
+    }}>
+      <div style={{
+        background: '#161b2e', border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: '20px', padding: '28px 24px', width: '100%', maxWidth: '360px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
+      }}>
+        <div style={{ fontSize: '48px', lineHeight: 1 }}>⚽</div>
+        <div style={{
+          fontFamily: "'Bangers', cursive", fontSize: '28px',
+          letterSpacing: '2px', color: 'white', textAlign: 'center',
+        }}>WITAJ W GOAL TCG!</div>
+        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 1.5 }}>
+          Jak masz na imię? Twoja nazwa będzie widoczna w meczach i rankingu.
+        </div>
+        <input
+          ref={inputRef}
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleConfirm()}
+          placeholder="Twoja nazwa gracza"
+          maxLength={16}
+          autoFocus
+          style={{
+            width: '100%', padding: '12px 16px', borderRadius: '12px',
+            background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.18)',
+            color: 'white', fontSize: '16px', fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, outline: 'none', boxSizing: 'border-box',
+          }}
+        />
+        <button
+          onClick={handleConfirm}
+          style={{
+            width: '100%', padding: '14px', borderRadius: '14px',
+            background: 'linear-gradient(110deg, #00897b, #00695c)',
+            border: 'none', color: 'white', fontFamily: "'Bangers', cursive",
+            fontSize: '20px', letterSpacing: '2px', cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(0,137,123,0.5)',
+          }}
+        >
+          ZACZNIJ GRĘ →
+        </button>
+      </div>
+    </div>
+  )
+}
 
 function ScreenRouter() {
   const { screen, params } = useRouter()
@@ -41,12 +101,19 @@ export default function App() {
 
   if (splash) return <SplashScreen onDone={() => setSplash(false)} />
 
+  const showNamePopup = !persistentStore.profile.hasSetupProfile
+
+  const handleNameDone = (name) => {
+    persistentStore.markProfileSetup(name)
+  }
+
   return (
     <ProfileContext.Provider value={persistentStore}>
       <SettingsContext.Provider value={settingsStore}>
         <AppRouter>
           <ScreenRouter />
         </AppRouter>
+        {showNamePopup && <ProfileNamePopup onDone={handleNameDone} />}
       </SettingsContext.Provider>
     </ProfileContext.Provider>
   )

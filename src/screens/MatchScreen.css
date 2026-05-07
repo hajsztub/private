@@ -180,7 +180,13 @@
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
-  background: #0d1117;
+  background: linear-gradient(
+    90deg,
+    rgba(127,0,0,0.18) 0%,
+    #0d1117 25%,
+    #0d1117 75%,
+    rgba(13,71,161,0.18) 100%
+  );
   border-top: 1px solid rgba(255,255,255,0.07);
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
@@ -217,8 +223,69 @@
 .ms-gk-glove--left  { transform: scaleX(-1); }
 .ms-gk-glove--right { transform: scaleX(1); }
 
-.ms-stat-box--atk { background: linear-gradient(135deg, #c62828, #b71c1c); }
-.ms-stat-box--def { background: linear-gradient(135deg, #1565c0, #0d47a1); }
+/* ── Stat boxes with field-graphic effects ───────────────────────────────── */
+
+.ms-stat-box {
+  position: relative;
+  overflow: hidden;
+}
+
+.ms-stat-box--atk {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 60%, #7f0000 100%);
+  box-shadow: 0 0 18px rgba(198,40,40,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.ms-stat-box--def {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 60%, #002171 100%);
+  box-shadow: 0 0 18px rgba(21,101,192,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+/* Diagonal bright slash — main light streak */
+.ms-stat-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    118deg,
+    transparent 25%,
+    rgba(255,255,255,0.07) 38%,
+    rgba(255,255,255,0.18) 44%,
+    rgba(255,255,255,0.07) 50%,
+    transparent 63%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Corner orb — warm glow in one corner */
+.ms-stat-box--atk::after {
+  content: '';
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle, rgba(255,100,80,0.45) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ms-stat-box--def::after {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: -18px;
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle, rgba(80,160,255,0.45) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Text must sit above the pseudo-elements */
+.ms-stat-box .msb-lbl,
+.ms-stat-box .msb-num,
+.ms-stat-box .msb-icon { position: relative; z-index: 2; }
 
 .msb-lbl {
   font-size: 9px;

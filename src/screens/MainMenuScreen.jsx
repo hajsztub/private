@@ -119,6 +119,12 @@ export default function MainMenuScreen() {
   const { navigate } = useRouter()
   const { profile } = useProfile()
   const [showTutorial, setShowTutorial] = useState(false)
+  const [trainingOpen, setTrainingOpen] = useState(false)
+
+  const startTraining = (type) => {
+    if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
+    navigate('match', { matchType: type, matchId: Date.now() })
+  }
 
   const tier = getTier(profile.rating)
   const gems = profile.gems ?? 0
@@ -182,21 +188,45 @@ export default function MainMenuScreen() {
           </div>
         </button>
 
-        <button className="mm-btn mm-btn--training" onClick={() => {
-          if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-          navigate('match', { matchType: 'local', matchId: Date.now() })
-        }}>
-          <div className="mm-btn-icon-wrap">
-            <span className="mm-btn-icon">🚧</span>
+        {!trainingOpen ? (
+          <button className="mm-btn mm-btn--training" onClick={() => setTrainingOpen(true)}>
+            <div className="mm-btn-icon-wrap">
+              <span className="mm-btn-icon">🚧</span>
+            </div>
+            <div className="mm-btn-body">
+              <span className="mm-btn-title">TRENING</span>
+              <span className="mm-btn-desc">Bez rankingu · Wybierz poziom</span>
+            </div>
+            <div className="mm-btn-right">
+              <span className="mm-btn-arrow">›</span>
+            </div>
+          </button>
+        ) : (
+          <div className="mm-training-panel">
+            <div className="mm-training-header">
+              <span className="mm-training-label">🚧 TRENING — wybierz tryb</span>
+              <button className="mm-training-close" onClick={() => setTrainingOpen(false)}>✕</button>
+            </div>
+            <div className="mm-training-modes">
+              <button className="mm-tmode mm-tmode--amateur" onClick={() => startTraining('training_amateur')}>
+                <span className="mm-tmode-icon">🟢</span>
+                <div className="mm-tmode-body">
+                  <span className="mm-tmode-title">AMATOR</span>
+                  <span className="mm-tmode-desc">Słabsze drużyny · łatwa wygrana</span>
+                </div>
+                <span className="mm-tmode-reward">+12 🪙</span>
+              </button>
+              <button className="mm-tmode mm-tmode--pro" onClick={() => startTraining('training_pro')}>
+                <span className="mm-tmode-icon">🔴</span>
+                <div className="mm-tmode-body">
+                  <span className="mm-tmode-title">PRO</span>
+                  <span className="mm-tmode-desc">Top drużyny · 10% szans</span>
+                </div>
+                <span className="mm-tmode-reward">+80 🪙</span>
+              </button>
+            </div>
           </div>
-          <div className="mm-btn-body">
-            <span className="mm-btn-title">TRENING</span>
-            <span className="mm-btn-desc">Bez rankingu · Mniej nagród</span>
-          </div>
-          <div className="mm-btn-right">
-            <span className="mm-btn-arrow">›</span>
-          </div>
-        </button>
+        )}
       </div>
 
       {/* ── Bottom nav ── */}

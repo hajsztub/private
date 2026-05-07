@@ -1638,3 +1638,68 @@ export function createBalancedAIDeck(playerDeck) {
     upgradeLevel: 0,
   }))
 }
+
+// Weaker AI deck — cards at ~55% of player's average power (amateur training)
+export function createWeakerAIDeck(playerDeck) {
+  if (!playerDeck?.length) return createDefaultDeck('B')
+
+  const avgPower = playerDeck.reduce((sum, c) =>
+    sum + (c.currentAttackStat ?? c.attackStat ?? 0) + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0
+  ) / playerDeck.length
+
+  const targetPower = avgPower * 0.55
+
+  const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0)
+  const scored = pool.map(d => ({
+    def: d,
+    power: (d.attackStat || 0) + (d.defenseStat || 0),
+    diff: Math.abs(((d.attackStat || 0) + (d.defenseStat || 0)) - targetPower),
+  })).sort((a, b) => a.diff - b.diff)
+
+  const byType = (type) => scored.filter(s => s.def.type === type)
+  const pick = (type, n) => {
+    const bucket = byType(type)
+    const step = Math.max(1, Math.floor(bucket.length / n))
+    return Array.from({ length: n }, (_, i) => bucket[Math.min(i * step, bucket.length - 1)]?.def).filter(Boolean)
+  }
+
+  let selected = [...pick('goalkeeper', 2), ...pick('defense', 4), ...pick('midfield', 3), ...pick('attack', 2)].filter(Boolean)
+  if (selected.length < 11) {
+    const usedIds = new Set(selected.map(d => d.id))
+    selected = [...selected, ...scored.filter(s => !usedIds.has(s.def.id)).map(s => s.def)].slice(0, 11)
+  }
+
+  return selected.slice(0, 11).map((def, i) => ({
+    ...def,
+    instanceId: `ai_${def.id}_${i}`,
+    currentAttackStat: def.attackStat,
+    currentDefenseStat: def.defenseStat,
+    isLocked: false, lockedRounds: 0, justPlaced: false, faceDown: false, upgradeLevel: 0,
+  }))
+}
+
+// Elite AI deck — top-stat cards per position (pro training, ~10% player win rate)
+export function createEliteAIDeck() {
+  const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0)
+  const scored = pool.map(d => ({
+    def: d,
+    power: (d.attackStat || 0) + (d.defenseStat || 0),
+  })).sort((a, b) => b.power - a.power)
+
+  const byType = (type) => scored.filter(s => s.def.type === type)
+  const pick = (type, n) => byType(type).slice(0, n).map(s => s.def)
+
+  let selected = [...pick('goalkeeper', 2), ...pick('defense', 4), ...pick('midfield', 3), ...pick('attack', 2)].filter(Boolean)
+  if (selected.length < 11) {
+    const usedIds = new Set(selected.map(d => d.id))
+    selected = [...selected, ...scored.filter(s => !usedIds.has(s.def.id)).map(s => s.def)].slice(0, 11)
+  }
+
+  return selected.slice(0, 11).map((def, i) => ({
+    ...def,
+    instanceId: `ai_${def.id}_${i}`,
+    currentAttackStat: def.attackStat,
+    currentDefenseStat: def.defenseStat,
+    isLocked: false, lockedRounds: 0, justPlaced: false, faceDown: false, upgradeLevel: 0,
+  }))
+}

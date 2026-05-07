@@ -34,7 +34,7 @@ const SLOT_ACCEPTS = {
   midfield:   ['midfield', 'attack', 'defense'],
   defense:    ['defense', 'midfield'],
   goalkeeper: ['goalkeeper'],
-  reserve:    ['attack', 'midfield', 'defense'],
+  reserve:    ['attack', 'midfield', 'defense', 'goalkeeper'],
 }
 
 const FILTER_ACCEPTS = {

@@ -1094,6 +1094,64 @@
   line-height: 1.4;
 }
 
+/* ── Mobile scaling ──────────────────────────────────────────────────────── */
+
+@media (max-height: 750px) {
+  /* Scoreboard */
+  .ms-scoreboard {
+    height: max(42px, calc(36px + env(safe-area-inset-top)));
+    padding-top: max(4px, env(safe-area-inset-top));
+  }
+  .msb-num { font-size: 26px; min-width: 20px; }
+  .msb-sep { font-size: 16px; }
+  .msb-round-badge { font-size: 11px; }
+  .msb-team-icon { width: 24px; height: 24px; font-size: 11px; }
+  .msb-name { font-size: 9px; }
+
+  /* Goal / stat area */
+  .ms-goal-inner {
+    grid-template-columns: 80px 1fr 80px;
+    gap: 6px;
+    padding: 4px 8px;
+  }
+  .ms-stat-box {
+    width: 80px;
+    height: 65px;
+  }
+  .msb-lbl  { font-size: 7px; letter-spacing: 1.5px; }
+  .msb-num  { font-size: 20px; }
+  .msb-icon { font-size: 11px; }
+  .ms-gk-glove { font-size: 16px; }
+  .goal-posts { height: 10px; }
+
+  /* Midfield line */
+  .ms-midfield { height: 16px; }
+  .ms-mid-ball { font-size: 13px; }
+
+  /* Drop slot matches fc--field size */
+  .msz-drop-slot {
+    width: 76px;
+    height: 106px;
+    font-size: 20px;
+  }
+
+  /* Hand area */
+  .ms-hand-scroll {
+    padding: 5px 8px 4px;
+    gap: 6px;
+  }
+
+  /* Action bar */
+  .ms-action-bar {
+    padding: 5px 8px;
+    padding-bottom: max(5px, env(safe-area-inset-bottom));
+  }
+  .ms-end-btn {
+    font-size: 12px;
+    padding: 9px 14px;
+  }
+}
+
 /* ── Forfeit confirm dialog ─────────────────────────────────────────────── */
 
 .ms-forfeit-confirm {

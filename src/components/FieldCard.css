@@ -289,6 +289,23 @@
   color: rgba(0,230,118,0.5);
 }
 
+/* ── Mobile scaling ──────────────────────────────────────────────────────── */
+
+@media (max-height: 750px) {
+  .fc--field {
+    width: 76px;
+    height: 106px;
+  }
+  .fc--field .fc-rating { font-size: 20px; }
+  .fc--field .fc-name   { font-size: 11px; }
+  .fc--field .fc-mini-stat { font-size: 9px; }
+
+  .fc--back {
+    width: 70px;
+    height: 98px;
+  }
+}
+
 /* ── Portrait GK Card ────────────────────────────────────────────────────── */
 
 .gk-card {

@@ -25,13 +25,22 @@ function defaultProfile() {
   }
 }
 
+const NEW_STARTER_IDS = ['starter_def4', 'starter_mid4', 'starter_atk4']
+
+function migrateProfile(profile) {
+  const ownedIds = new Set(profile.ownedCards.map(c => c.instanceId))
+  const missing = NEW_STARTER_IDS.filter(id => !ownedIds.has(id))
+  if (missing.length === 0) return profile
+  const newCards = missing.map(id => ({ cardId: id, instanceId: id, upgradeLevel: 0, isStarter: true }))
+  return { ...profile, ownedCards: [...profile.ownedCards, ...newCards] }
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProfile()
     const parsed = JSON.parse(raw)
-    // Merge with defaults for new fields added in updates
-    return { ...defaultProfile(), ...parsed }
+    return migrateProfile({ ...defaultProfile(), ...parsed })
   } catch {
     return defaultProfile()
   }

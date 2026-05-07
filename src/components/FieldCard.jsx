@@ -40,19 +40,18 @@ function getPrimaryRating(card) {
 }
 
 function AvatarArt({ id, color, className }) {
-  const [failed, setFailed] = useState(false)
-  if (!failed) {
-    return (
-      <img
-        className={`fc-art-img ${className || ''}`}
-        src={`/avatars/${id}.png`}
-        alt=""
-        onError={() => setFailed(true)}
-        draggable={false}
-      />
-    )
-  }
-  return <AvatarSVG id={id} color={color} className={className} />
+  const [src, setSrc] = useState(`/avatars/${id}.png`)
+  return (
+    <img
+      className={`fc-art-img ${className || ''}`}
+      src={src}
+      alt=""
+      onError={() => {
+        if (src !== '/avatars/placeholder.png') setSrc('/avatars/placeholder.png')
+      }}
+      draggable={false}
+    />
+  )
 }
 
 // ── FieldCard (vertical, full-bleed) ─────────────────────────────────────────
@@ -173,7 +172,7 @@ export default function FieldCard({
 // ── Horizontal GK card ────────────────────────────────────────────────────────
 
 export function GKCard({ card, side, onTap }) {
-  const [imgFailed, setImgFailed] = useState(false)
+  const [gkSrc, setGkSrc] = useState(null)
   if (!card) {
     return (
       <div className="gk-card gk-card--empty">
@@ -196,17 +195,13 @@ export function GKCard({ card, side, onTap }) {
       onClick={onTap}
     >
       <div className="gk-art">
-        {!imgFailed ? (
-          <img
-            className="gk-art-img"
-            src={`/avatars/${card.id}.png`}
-            alt={card.name}
-            onError={() => setImgFailed(true)}
-            draggable={false}
-          />
-        ) : (
-          <AvatarSVG id={card.id} color={card.color} className="gk-art-svg" />
-        )}
+        <img
+          className="gk-art-img"
+          src={gkSrc || `/avatars/${card.id}.png`}
+          alt={card.name}
+          onError={() => { if (!gkSrc || gkSrc !== '/avatars/placeholder.png') setGkSrc('/avatars/placeholder.png') }}
+          draggable={false}
+        />
       </div>
       <div className="gk-info">
         <span className="gk-pos-badge">GK</span>

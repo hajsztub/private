@@ -374,9 +374,9 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
         <div className="msb-score-wrap">
           <div className="msb-score">
-            <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
-            <span className="msb-sep">:</span>
             <span className={`msb-num ${displayScore.ai > displayScore.player ? 'msb-num--win' : ''}`}>{displayScore.ai}</span>
+            <span className="msb-sep">:</span>
+            <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
           </div>
           <span className="msb-round">R{round}/10</span>
         </div>

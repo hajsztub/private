@@ -17,12 +17,12 @@ export default function GoalAnimation({ scorer, score, onDone }) {
   return (
     <div className={`goal-anim-overlay goal-anim-overlay--${isPlayer ? 'player' : 'ai'}`}>
       {/* Ball arc */}
-      <div className={`goal-ball goal-ball--${isPlayer ? 'down' : 'up'} ${phase === 'celebrate' ? 'goal-ball--hidden' : ''}`}>
+      <div className={`goal-ball goal-ball--${isPlayer ? 'up' : 'down'} ${phase === 'celebrate' ? 'goal-ball--hidden' : ''}`}>
         ⚽
       </div>
 
       {/* Net shake */}
-      <div className={`goal-net goal-net--${isPlayer ? 'bottom' : 'top'} ${phase === 'celebrate' ? 'goal-net--shake' : ''}`}>
+      <div className={`goal-net goal-net--${isPlayer ? 'top' : 'bottom'} ${phase === 'celebrate' ? 'goal-net--shake' : ''}`}>
         <svg viewBox="0 0 120 50" className="goal-net-svg">
           {/* Posts */}
           <rect x="5" y="5" width="4" height="45" fill="white" rx="2" />

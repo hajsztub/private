@@ -1,14 +1,50 @@
 import React, { useRef, useState } from 'react'
 import './FieldCard.css'
 
-// ── Avatar: try PNG first, fall back to SVG art ───────────────────────────
+const TYPE_COLOR = {
+  attack:     '#e53935',
+  midfield:   '#8e24aa',
+  defense:    '#1e88e5',
+  goalkeeper: '#00897b',
+  starter:    '#546e7a',
+}
 
-function AvatarImage({ id, color }) {
+const TYPE_LABEL = {
+  attack:     'ATK',
+  midfield:   'MID',
+  defense:    'DEF',
+  goalkeeper: 'GK',
+  starter:    'STR',
+}
+
+const RARITY_BORDER = {
+  common:    'rgba(255,255,255,0.28)',
+  rare:      '#ff9800',
+  legendary: '#ffd700',
+  starter:   'rgba(255,255,255,0.18)',
+}
+
+const RARITY_SHADOW = {
+  common:    'none',
+  rare:      '0 0 10px rgba(255,152,0,0.6), 0 4px 14px rgba(0,0,0,0.5)',
+  legendary: '0 0 20px rgba(255,215,0,0.75), 0 4px 16px rgba(0,0,0,0.5)',
+  starter:   '0 4px 12px rgba(0,0,0,0.4)',
+}
+
+function getPrimaryRating(card) {
+  const atk = card.currentAttackStat ?? card.attackStat ?? 0
+  const def = card.currentDefenseStat ?? card.defenseStat ?? 0
+  if (card.type === 'goalkeeper' || card.type === 'defense') return def
+  if (card.type === 'attack') return atk
+  return Math.max(atk, def)
+}
+
+function AvatarArt({ id, color, className }) {
   const [failed, setFailed] = useState(false)
   if (!failed) {
     return (
       <img
-        className="fc-avatar-img"
+        className={`fc-art-img ${className || ''}`}
         src={`/avatars/${id}.png`}
         alt=""
         onError={() => setFailed(true)}
@@ -16,26 +52,10 @@ function AvatarImage({ id, color }) {
       />
     )
   }
-  return <AvatarSVG id={id} color={color} />
+  return <AvatarSVG id={id} color={color} className={className} />
 }
 
-const TYPE_COLOR = {
-  attack:     '#b71c1c',
-  midfield:   '#6a1b9a',
-  defense:    '#0d47a1',
-  goalkeeper: '#1b5e20',
-  starter:    '#37474f',
-}
-
-const RARITY_BORDER = {
-  common:    'rgba(255,255,255,0.6)',
-  rare:      '#ff9800',
-  legendary: '#ffd700',
-  starter:   'rgba(255,255,255,0.4)',
-}
-
-// ── FieldCard ─────────────────────────────────────────────────────────────
-// size: 'hand' | 'field' (same visual size, different context)
+// ── FieldCard (vertical, full-bleed) ─────────────────────────────────────────
 
 export default function FieldCard({
   card,
@@ -50,10 +70,14 @@ export default function FieldCard({
 }) {
   const longRef = useRef(null)
   const typeColor = TYPE_COLOR[card.type] || TYPE_COLOR.attack
-  const rarityBorder = RARITY_BORDER[card.rarity] || RARITY_BORDER.common
-  const isGK = card.type === 'goalkeeper'
+  const typeLabel = TYPE_LABEL[card.type] || 'ATK'
+  const rarity = card.rarity || 'common'
+  const rarityBorder = RARITY_BORDER[rarity]
+  const rarityShadow = RARITY_SHADOW[rarity]
+  const primaryRating = getPrimaryRating(card)
   const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
+  const upgradeLevel = card.upgradeLevel || 0
 
   const handleTouchStart = (e) => {
     longRef.current = setTimeout(() => {
@@ -62,20 +86,18 @@ export default function FieldCard({
     }, 480)
     onDragStart?.(e, card)
   }
-
   const handleTouchEnd = () => {
-    if (longRef.current) {
-      clearTimeout(longRef.current)
-      longRef.current = null
-    }
+    if (longRef.current) { clearTimeout(longRef.current); longRef.current = null }
   }
 
   if (faceDown) {
     return (
       <div className="fc fc--back" onClick={onTap}>
-        <div className="fc-back-inner">
-          <div className="fc-back-ball">⚽</div>
-          <div className="fc-back-text">FC</div>
+        <div className="fc-back-pattern" />
+        <div className="fc-back-logo">
+          <span className="fc-back-ball">⚽</span>
+          <span className="fc-back-label">GOAL</span>
+          <span className="fc-back-sub">TCG</span>
         </div>
       </div>
     )
@@ -89,110 +111,140 @@ export default function FieldCard({
         dimmed ? 'fc--dim' : '',
         card.isLocked ? 'fc--locked' : '',
         isNew ? 'fc--new' : '',
-        card.rarity === 'legendary' ? 'fc--legendary' : '',
+        `fc--${rarity}`,
       ].filter(Boolean).join(' ')}
       style={{
         '--type-c': typeColor,
         '--rarity-b': rarityBorder,
-        '--card-bg': card.color || '#e8f5e9',
+        '--rarity-s': rarityShadow,
+        '--card-color': card.color || '#1a2a1a',
       }}
       onClick={onTap}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchEnd}
     >
-      {/* Avatar zone */}
-      <div className="fc-art" style={{ background: `linear-gradient(160deg, ${card.color || '#e8f5e9'}, #fff)` }}>
-        <AvatarImage id={card.id} color={card.color} />
-        <div className="fc-type-pip" style={{ background: typeColor }}>{card.typeLabel}</div>
-        {card.rarity === 'legendary' && <div className="fc-legend-glow" />}
-        {card.rarity === 'rare' && <div className="fc-rare-shine" />}
-      </div>
+      {/* Full-bleed art */}
+      <div className="fc-art">
+        <AvatarArt id={card.id} color={card.color} />
+        {rarity === 'legendary' && <div className="fc-legendary-shimmer" />}
+        {rarity === 'rare' && <div className="fc-rare-shine" />}
 
-      {/* Info zone */}
-      <div className="fc-body">
-        <div className="fc-name">{card.name}</div>
-        <div className="fc-stats">
-          {isGK ? (
-            <span className="fc-stat fc-stat--def">🛡 {defVal}</span>
-          ) : (
-            <>
-              <span className="fc-stat fc-stat--atk">⚔ {atkVal}</span>
-              <span className="fc-stat fc-stat--def">🛡 {defVal}</span>
-            </>
-          )}
+        {/* Top row: position badge + rating */}
+        <div className="fc-top">
+          <span className="fc-pos-badge" style={{ background: typeColor }}>{typeLabel}</span>
+          <span className="fc-rating">{primaryRating}</span>
         </div>
-        <div className="fc-skill">{card.abilityName}</div>
-      </div>
 
-      {/* Status badges */}
-      {card.isLocked && <div className="fc-status fc-status--lock">🔒 {card.lockedRounds}r</div>}
-      {isNew && <div className="fc-status fc-status--new">NEW</div>}
+        {/* Bottom overlay: name + stats */}
+        <div className="fc-bottom">
+          <div className="fc-name">{card.name}</div>
+          <div className="fc-stats-row">
+            <span className="fc-mini-stat fc-mini-stat--atk">⚔{atkVal}</span>
+            <span className="fc-mini-stat fc-mini-stat--def">🛡{defVal}</span>
+          </div>
+        </div>
+
+        {/* Upgrade pips */}
+        {upgradeLevel > 0 && (
+          <div className="fc-pips">
+            {Array.from({ length: upgradeLevel }).map((_, i) => (
+              <span key={i} className="fc-pip" />
+            ))}
+          </div>
+        )}
+
+        {/* Lock / new badges */}
+        {card.isLocked && <div className="fc-badge fc-badge--lock">🔒{card.lockedRounds}r</div>}
+        {isNew && <div className="fc-badge fc-badge--new">NEW</div>}
+      </div>
     </div>
   )
 }
 
-// ── Horizontal GK card (landscape orientation) ────────────────────────────
+// ── Horizontal GK card ────────────────────────────────────────────────────────
 
 export function GKCard({ card, side, onTap }) {
   const [imgFailed, setImgFailed] = useState(false)
-  if (!card) return <div className="gk-card gk-card--empty">— brak bramkarza —</div>
+  if (!card) {
+    return (
+      <div className="gk-card gk-card--empty">
+        <span>— brak bramkarza —</span>
+      </div>
+    )
+  }
 
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
+  const rarity = card.rarity || 'common'
 
   return (
     <div
-      className={`gk-card gk-card--${side}`}
-      style={{ '--gk-bg': card.color || '#cfd8dc' }}
+      className={`gk-card gk-card--${side} gk-card--${rarity}`}
+      style={{
+        '--gk-color': card.color || '#0d2a1a',
+        '--rarity-b': RARITY_BORDER[rarity],
+        '--rarity-s': RARITY_SHADOW[rarity],
+      }}
       onClick={onTap}
     >
-      <div className="gk-avatar-wrap">
+      <div className="gk-art">
         {!imgFailed ? (
           <img
-            className="gk-avatar-img"
+            className="gk-art-img"
             src={`/avatars/${card.id}.png`}
             alt={card.name}
             onError={() => setImgFailed(true)}
             draggable={false}
           />
         ) : (
-          <AvatarSVG id={card.id} color={card.color} className="gk-avatar-svg" />
+          <AvatarSVG id={card.id} color={card.color} className="gk-art-svg" />
         )}
       </div>
       <div className="gk-info">
-        <span className="gk-type-badge">B</span>
+        <span className="gk-pos-badge">GK</span>
         <span className="gk-name">{card.name}</span>
-        <span className="gk-ability">{card.abilityName}</span>
+        {card.abilityName && <span className="gk-ability">{card.abilityName}</span>}
       </div>
-      <div className="gk-defense">
-        <span className="gk-def-icon">🛡</span>
+      <div className="gk-def-block">
+        <span className="gk-def-label">DEF</span>
         <span className="gk-def-val">{defVal}</span>
       </div>
     </div>
   )
 }
 
-// ── SVG Fallback Avatars ──────────────────────────────────────────────────
+// ── SVG Fallback Avatars ──────────────────────────────────────────────────────
 
 function AvatarSVG({ id, color, className }) {
-  const svgs = {
-    hugo: <HugoSVG />, harry: <HarrySVG />, rushy: <RushySVG />,
-    wilko: <WilkoSVG />, freddie: <FreddieSVG />, marco: <MarcoSVG />,
-    aaron: <AaronSVG />, titan: <TitanSVG />,
-    starter_gk1: <StarterGKSVG hair="none" />, starter_gk2: <StarterGKSVG hair="short" />,
-    starter_def1: <StarterOutfieldSVG shirt="#1565c0" />, starter_def2: <StarterOutfieldSVG shirt="#1565c0" hair="bald" />,
+  const map = {
+    hugo:        <HugoSVG />,
+    harry:       <HarrySVG />,
+    rushy:       <RushySVG />,
+    wilko:       <WilkoSVG />,
+    freddie:     <FreddieSVG />,
+    marco:       <MarcoSVG />,
+    aaron:       <AaronSVG />,
+    titan:       <TitanSVG />,
+    starter_gk1: <StarterGKSVG hair="none" />,
+    starter_gk2: <StarterGKSVG hair="short" />,
+    starter_def1: <StarterOutfieldSVG shirt="#1565c0" />,
+    starter_def2: <StarterOutfieldSVG shirt="#1565c0" hair="bald" />,
     starter_def3: <StarterOutfieldSVG shirt="#1565c0" hair="dark" />,
-    starter_mid1: <StarterOutfieldSVG shirt="#6a1b9a" />, starter_mid2: <StarterOutfieldSVG shirt="#6a1b9a" hair="bald" />,
+    starter_mid1: <StarterOutfieldSVG shirt="#6a1b9a" />,
+    starter_mid2: <StarterOutfieldSVG shirt="#6a1b9a" hair="bald" />,
     starter_mid3: <StarterOutfieldSVG shirt="#6a1b9a" hair="dark" />,
-    starter_atk1: <StarterOutfieldSVG shirt="#b71c1c" />, starter_atk2: <StarterOutfieldSVG shirt="#b71c1c" hair="dark" />,
+    starter_atk1: <StarterOutfieldSVG shirt="#b71c1c" />,
+    starter_atk2: <StarterOutfieldSVG shirt="#b71c1c" hair="dark" />,
     starter_atk3: <StarterOutfieldSVG shirt="#b71c1c" hair="curly" />,
   }
-  const Comp = svgs[id]
-  if (Comp) return <div className={`fc-svg-wrap ${className || ''}`}>{Comp}</div>
-  return <DefaultSVG color={color} className={className} />
+  const el = map[id]
+  if (el) return <div className={`fc-svg-wrap ${className || ''}`}>{el}</div>
+  return (
+    <div className={`fc-svg-wrap fc-default-avatar ${className || ''}`} style={{ background: color || '#1a2a1a' }}>
+      <span style={{ fontSize: 28, color: 'rgba(255,255,255,0.3)' }}>?</span>
+    </div>
+  )
 }
-
-// ── SVG Art (from PlayerCard.jsx, adapted) ────────────────────────────────
 
 function HugoSVG() {
   return (
@@ -365,13 +417,5 @@ function StarterOutfieldSVG({ shirt, hair }) {
       <circle cx="49" cy="46" r="2.5" fill="#1a1a1a" />
       <path d="M32 57 Q40 61 48 57" stroke="#7a5040" strokeWidth="2" fill="none" />
     </svg>
-  )
-}
-
-function DefaultSVG({ color, className }) {
-  return (
-    <div className={`fc-default-avatar ${className || ''}`} style={{ background: color || '#bbb' }}>
-      <span>?</span>
-    </div>
   )
 }

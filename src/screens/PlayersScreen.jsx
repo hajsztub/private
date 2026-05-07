@@ -1,48 +1,58 @@
 import React, { useState } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
-import PlayerCard from '../components/PlayerCard'
+import FieldCard from '../components/FieldCard'
+import CurrencyBar from '../components/CurrencyBar'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import './PlayersScreen.css'
 
 const ALL_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
 
-function getCardDef(cardId) {
-  return ALL_DEFS.find(d => d.id === cardId)
-}
+const FILTERS = [
+  { id: 'all',        label: 'Wszyscy' },
+  { id: 'attack',     label: 'ATK' },
+  { id: 'midfield',   label: 'MID' },
+  { id: 'defense',    label: 'DEF' },
+  { id: 'goalkeeper', label: 'GK' },
+]
 
 function buildDisplayCard(owned, def) {
   if (!def) return null
-  const bonus = (owned.upgradeLevel || 0) * (def.upgradeStatBonus || 1)
+  const level = owned.upgradeLevel || 0
+  const bonus = level * (def.upgradeStatBonus || 1)
   const isPrimAtk = def.type === 'attack' || (def.type === 'midfield' && def.attackStat >= def.defenseStat)
   return {
     ...def,
     instanceId: owned.instanceId,
     currentAttackStat: def.attackStat + (isPrimAtk ? bonus : 0),
     currentDefenseStat: def.defenseStat + (!isPrimAtk || def.type === 'goalkeeper' || def.type === 'defense' ? bonus : 0),
-    upgradeLevel: owned.upgradeLevel || 0,
+    upgradeLevel: level,
     isStarter: owned.isStarter,
   }
 }
 
 export default function PlayersScreen() {
-  const { goBack } = useRouter()
+  const router = useRouter()
   const { profile, upgradeCard } = useProfile()
-  const [selected, setSelected] = useState(null)
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState(null)
 
-  const displayCards = profile.ownedCards
-    .map(o => ({ owned: o, def: getCardDef(o.cardId), card: buildDisplayCard(o, getCardDef(o.cardId)) }))
-    .filter(x => x.card !== null)
-    .filter(x => filter === 'all' || x.def?.type === filter)
+  const allCards = profile.ownedCards
+    .map(o => {
+      const def = ALL_DEFS.find(d => d.id === o.cardId)
+      return { owned: o, def, card: buildDisplayCard(o, def) }
+    })
+    .filter(x => x.card)
 
-  const selectedEntry = selected ? displayCards.find(x => x.owned.instanceId === selected) : null
-  const selectedCard = selectedEntry?.card
-  const selectedDef = selectedEntry?.def
-  const selectedOwned = selectedEntry?.owned
-  const upgradeLevel = selectedOwned?.upgradeLevel || 0
-  const upgradeCost = selectedDef?.upgradeCost?.[upgradeLevel]
+  const displayed = filter === 'all'
+    ? allCards
+    : allCards.filter(x => x.def?.type === filter)
+
+  const selectedEntry = selected ? allCards.find(x => x.owned.instanceId === selected) : null
+  const { owned: selOwned, def: selDef, card: selCard } = selectedEntry || {}
+  const upgradeLevel = selOwned?.upgradeLevel || 0
+  const upgradeCost = selDef?.upgradeCost?.[upgradeLevel]
   const canUpgrade = upgradeLevel < 3 && upgradeCost && profile.coins >= upgradeCost
 
   const handleUpgrade = () => {
@@ -51,73 +61,105 @@ export default function PlayersScreen() {
   }
 
   return (
-    <div className="players-screen">
-      <div className="players-header">
-        <button className="back-btn" onClick={goBack}>←</button>
-        <h1 className="players-title">Zawodnicy</h1>
-        <div className="players-coins">🪙 {profile.coins}</div>
+    <div className="ps-screen">
+      {/* Header */}
+      <div className="ps-header">
+        <button className="ps-back" onClick={() => router.goBack()}>←</button>
+        <h1 className="ps-title">Zawodnicy</h1>
+        <CurrencyBar />
       </div>
 
-      {/* Filter tabs */}
-      <div className="players-filter">
-        {['all', 'attack', 'midfield', 'defense', 'goalkeeper'].map(f => (
+      {/* Filter pills */}
+      <div className="ps-filters">
+        {FILTERS.map(f => (
           <button
-            key={f}
-            className={`filter-tab ${filter === f ? 'filter-tab--active' : ''}`}
-            onClick={() => setFilter(f)}
+            key={f.id}
+            className={`ps-pill ${filter === f.id ? 'ps-pill--on' : ''}`}
+            onClick={() => setFilter(f.id)}
           >
-            {f === 'all' ? 'Wszyscy' : f === 'attack' ? '⚔️ ATK' : f === 'midfield' ? '🔄 MID' : f === 'defense' ? '🛡️ DEF' : '🥅 GK'}
+            {f.label}
           </button>
         ))}
       </div>
 
-      {/* Card grid */}
-      <div className="players-grid">
-        {displayCards.map(({ owned, card }) => (
+      {/* Album grid */}
+      <div className="ps-grid">
+        {displayed.map(({ owned, card }) => (
           <div
             key={owned.instanceId}
-            className={`player-grid-item ${selected === owned.instanceId ? 'player-grid-item--selected' : ''}`}
-            onClick={() => setSelected(prev => prev === owned.instanceId ? null : owned.instanceId)}
+            className={`ps-cell ${selected === owned.instanceId ? 'ps-cell--on' : ''}`}
+            onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
           >
-            <PlayerCard card={card} size="small" />
-            {owned.upgradeLevel > 0 && (
-              <div className="upgrade-pip">+{owned.upgradeLevel}</div>
-            )}
-            {owned.isStarter && (
-              <div className="starter-pip">S</div>
-            )}
+            <FieldCard
+              card={card}
+              selected={selected === owned.instanceId}
+            />
           </div>
         ))}
+        {displayed.length === 0 && (
+          <div className="ps-empty">Brak kart w tej kategorii</div>
+        )}
       </div>
 
-      {/* Detail panel */}
-      {selectedCard && selectedDef && (
-        <div className="players-detail">
-          <div className="players-detail-card">
-            <PlayerCard card={selectedCard} size="normal" />
-          </div>
-          <div className="players-detail-info">
-            <div className="detail-name">{selectedCard.name}</div>
-            <div className="detail-type">{selectedCard.typeLabel} · {selectedCard.rarity || 'starter'}</div>
-            <div className="detail-stats">
-              <span>⚔️ {selectedCard.currentAttackStat}</span>
-              <span>🛡️ {selectedCard.currentDefenseStat}</span>
-              <span>+{selectedOwned?.upgradeLevel ?? 0}/3 lvl</span>
+      {/* Detail bottom sheet */}
+      {selCard && selDef && (
+        <div className="ps-sheet" onClick={e => e.target === e.currentTarget && setSelected(null)}>
+          <div className="ps-sheet-panel">
+            <div className="ps-sheet-handle" />
+            <div className="ps-sheet-body">
+              <div className="ps-sheet-card">
+                <FieldCard card={selCard} />
+              </div>
+              <div className="ps-sheet-info">
+                <div className="psi-name">{selCard.name}</div>
+                <div className="psi-meta">
+                  <span className="psi-type-badge" style={{ background: selCard.color || '#333' }}>
+                    {selCard.typeLabel}
+                  </span>
+                  <span className="psi-rarity">{selCard.rarity || 'common'}</span>
+                  {selOwned.isStarter && <span className="psi-starter">Starter</span>}
+                </div>
+                <div className="psi-stats">
+                  <div className="psi-stat psi-stat--atk">
+                    <span className="psi-slabel">ATK</span>
+                    <span className="psi-sval">{selCard.currentAttackStat}</span>
+                  </div>
+                  <div className="psi-stat psi-stat--def">
+                    <span className="psi-slabel">DEF</span>
+                    <span className="psi-sval">{selCard.currentDefenseStat}</span>
+                  </div>
+                  <div className="psi-stat">
+                    <span className="psi-slabel">LVL</span>
+                    <span className="psi-sval">{upgradeLevel}/3</span>
+                  </div>
+                </div>
+                {selCard.abilityName && (
+                  <div className="psi-ability">
+                    <span className="psi-ability-name">{selCard.abilityName}</span>
+                    {selCard.abilityDesc && <span className="psi-ability-desc">{selCard.abilityDesc}</span>}
+                  </div>
+                )}
+
+                {upgradeLevel < 3 ? (
+                  <button
+                    className={`psi-upgrade-btn ${!canUpgrade ? 'psi-upgrade-btn--off' : ''}`}
+                    onClick={handleUpgrade}
+                    disabled={!canUpgrade}
+                  >
+                    ⬆ Ulepsz · {upgradeCost ?? '—'} 🪙
+                    {!canUpgrade && profile.coins < (upgradeCost || 0) && (
+                      <span className="psi-upgrade-hint"> (brak monet)</span>
+                    )}
+                  </button>
+                ) : (
+                  <div className="psi-maxed">✦ Maksymalny poziom</div>
+                )}
+
+                {selOwned.isStarter && (
+                  <p className="psi-starter-note">Karta startowa · nie można sprzedać</p>
+                )}
+              </div>
             </div>
-            {upgradeLevel < 3 ? (
-              <button
-                className={`upgrade-btn ${!canUpgrade ? 'upgrade-btn--disabled' : ''}`}
-                onClick={handleUpgrade}
-                disabled={!canUpgrade}
-              >
-                ⬆️ Ulepsz ({upgradeCost ?? '—'} 🪙)
-              </button>
-            ) : (
-              <div className="upgrade-maxed">✅ Maksymalny poziom</div>
-            )}
-            {selectedOwned?.isStarter && (
-              <div className="detail-starter-note">Karta startowa · Nie można sprzedać</div>
-            )}
           </div>
         </div>
       )}

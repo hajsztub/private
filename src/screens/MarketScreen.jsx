@@ -3,6 +3,7 @@ import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
+import CurrencyBar from '../components/CurrencyBar'
 import './MarketScreen.css'
 
 const ALL_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
@@ -309,10 +310,7 @@ export default function MarketScreen() {
       <div className="market-header">
         <button className="back-btn" onClick={goBack}>←</button>
         <h1 className="market-title">Market</h1>
-        <div className="market-currencies">
-          <div className="mkt-coin">🪙 {profile.coins}</div>
-          <div className="mkt-gem">💎 {gems}</div>
-        </div>
+        <CurrencyBar onGemsClick={handleWatchAd} />
       </div>
 
       <div className="market-tabs">

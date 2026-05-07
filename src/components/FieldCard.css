@@ -1,48 +1,54 @@
-/* ── FieldCard ────────────────────────────────────────────────────────────── */
+/* ── FieldCard (full-bleed, portrait) ─────────────────────────────────────── */
 
 .fc {
   width: 80px;
-  border-radius: 12px;
+  height: 112px;
+  border-radius: 10px;
   overflow: hidden;
-  border: 2px solid var(--rarity-b, rgba(255,255,255,0.6));
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  border: 2px solid var(--rarity-b, rgba(255,255,255,0.28));
+  box-shadow: var(--rarity-s, 0 4px 12px rgba(0,0,0,0.4));
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   position: relative;
   font-family: 'Nunito', sans-serif;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .fc--selected {
   border-color: #ff9800 !important;
-  transform: translateY(-8px) scale(1.04);
-  box-shadow: 0 12px 28px rgba(255,152,0,0.5);
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 16px 32px rgba(255,152,0,0.55) !important;
   z-index: 10;
 }
 
-.fc--dim { opacity: 0.5; }
-.fc--locked { filter: grayscale(0.5) brightness(0.8); }
-.fc--new { border-color: #66bb6a !important; box-shadow: 0 0 16px rgba(102,187,106,0.6); }
+.fc--dim { opacity: 0.45; }
+.fc--locked { filter: grayscale(0.6) brightness(0.75); }
+.fc--new { border-color: #66bb6a !important; box-shadow: 0 0 18px rgba(102,187,106,0.7) !important; }
 
+/* Rarity glow animations */
 .fc--legendary {
   border-color: #ffd700 !important;
-  box-shadow: 0 0 12px rgba(255,215,0,0.4), 0 4px 12px rgba(0,0,0,0.35);
+  animation: fc-legend-pulse 2.4s ease-in-out infinite;
+}
+@keyframes fc-legend-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(255,215,0,0.65), 0 4px 16px rgba(0,0,0,0.5); }
+  50%       { box-shadow: 0 0 32px rgba(255,215,0,0.95), 0 4px 16px rgba(0,0,0,0.5); }
 }
 
-/* Art / avatar zone (top 58%) */
+.fc--rare { border-color: #ff9800 !important; }
+
+/* Full-bleed art fills entire card */
 .fc-art {
-  position: relative;
-  width: 100%;
-  height: 60px;
-  overflow: hidden;
-  flex-shrink: 0;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, var(--card-color, #1a2a1a), #07090e);
 }
 
-.fc-avatar-img {
+.fc-art-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -64,220 +70,307 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  color: rgba(0,0,0,0.3);
 }
 
-.fc-type-pip {
+/* Legendary shimmer sweep */
+.fc-legendary-shimmer {
   position: absolute;
-  top: 4px;
-  left: 4px;
-  font-size: 9px;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255,215,0,0.18) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: fc-shimmer 2.8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes fc-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Rare shine */
+.fc-rare-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,152,0,0.12) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Top overlay: position badge (left) + primary rating (right) */
+.fc-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 5px 5px 0;
+  z-index: 2;
+}
+
+.fc-pos-badge {
+  font-size: 8px;
   font-weight: 900;
   color: white;
   background: var(--type-c);
   border-radius: 4px;
-  padding: 1px 5px;
+  padding: 2px 5px;
   letter-spacing: 0.5px;
-  line-height: 1.4;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-.fc-legend-glow {
+.fc-rating {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  line-height: 1;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7);
+  letter-spacing: 1px;
+}
+
+/* Bottom gradient overlay: name + stats */
+.fc-bottom {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,215,0,0.15), transparent);
-  pointer-events: none;
-}
-
-.fc-rare-shine {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-/* Info zone (bottom) */
-.fc-body {
-  background: var(--card-bg, #e8f5e9);
-  padding: 4px 5px 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 60%, transparent 100%);
+  padding: 16px 5px 5px;
+  z-index: 2;
 }
 
 .fc-name {
   font-family: 'Bangers', cursive;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 1px;
-  color: #111;
+  color: white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
-.fc-stats {
+.fc-stats-row {
   display: flex;
   gap: 4px;
   align-items: center;
+  margin-top: 2px;
 }
 
-.fc-stat {
+.fc-mini-stat {
   font-size: 9px;
   font-weight: 900;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   letter-spacing: 0.3px;
 }
 
-.fc-stat--atk { color: #b71c1c; }
-.fc-stat--def { color: #0d47a1; }
+.fc-mini-stat--atk { color: #ff8a65; }
+.fc-mini-stat--def { color: #82b1ff; }
 
-.fc-skill {
-  font-size: 7px;
-  color: rgba(0,0,0,0.45);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Upgrade pips */
+.fc-pips {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 3px;
+  z-index: 3;
+}
+
+.fc-pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffd700;
+  box-shadow: 0 0 4px rgba(255,215,0,0.8);
 }
 
 /* Status badges */
-.fc-status {
+.fc-badge {
   position: absolute;
-  bottom: 4px;
+  bottom: 30px;
   right: 4px;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 900;
   padding: 1px 4px;
   border-radius: 4px;
   color: white;
+  z-index: 3;
 }
+.fc-badge--lock { background: rgba(0,0,0,0.7); }
+.fc-badge--new  { background: #2e7d32; }
 
-.fc-status--lock { background: rgba(0,0,0,0.6); }
-.fc-status--new { background: #2e7d32; }
-
-/* Face-down back */
+/* Face-down card */
 .fc--back {
   width: 80px;
-  height: 108px;
-  background: linear-gradient(135deg, #1a3a1a, #2d5a2d);
-  border: 2px solid rgba(255,255,255,0.15);
-  border-radius: 12px;
+  height: 112px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.12);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  position: relative;
+  background: #0d1f12;
 }
 
-.fc-back-inner {
+.fc-back-pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(0,230,118,0.04) 0px,
+      rgba(0,230,118,0.04) 1px,
+      transparent 1px,
+      transparent 12px
+    );
+}
+
+.fc-back-logo {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 1px;
+  z-index: 1;
 }
 
-.fc-back-ball { font-size: 22px; }
-.fc-back-text { font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+.fc-back-ball { font-size: 24px; }
+.fc-back-label {
+  font-family: 'Bangers', cursive;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #00e676;
+  line-height: 1;
+}
+.fc-back-sub {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: rgba(0,230,118,0.5);
+}
 
 /* ── Horizontal GK Card ──────────────────────────────────────────────────── */
 
 .gk-card {
   width: 100%;
   height: 64px;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
-  align-items: center;
-  gap: 0;
+  align-items: stretch;
   overflow: hidden;
-  border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  border: 2px solid var(--rarity-b, rgba(255,255,255,0.25));
+  box-shadow: var(--rarity-s, 0 3px 10px rgba(0,0,0,0.4));
   cursor: pointer;
   flex-shrink: 0;
   font-family: 'Nunito', sans-serif;
-  background: var(--gk-bg, #cfd8dc);
   position: relative;
+  background: linear-gradient(90deg, var(--gk-color, #0d1f12), #0a1510);
 }
 
+.gk-card--legendary { animation: fc-legend-pulse 2.4s ease-in-out infinite; }
+
 .gk-card--empty {
-  background: rgba(255,255,255,0.05);
-  border: 2px dashed rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.25);
-  font-size: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 2px dashed rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.22);
+  font-size: 11px;
   justify-content: center;
+  align-items: center;
   height: 54px;
 }
 
-.gk-avatar-wrap {
-  width: 64px;
-  height: 64px;
+.gk-art {
+  width: 60px;
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
 }
 
-.gk-avatar-img {
+.gk-art-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
 }
 
-.gk-avatar-svg {
-  width: 100%;
-  height: 100%;
-}
+.gk-art-svg { width: 100%; height: 100%; }
 
 .gk-info {
   flex: 1;
   padding: 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  justify-content: center;
+  gap: 2px;
   min-width: 0;
 }
 
-.gk-type-badge {
-  font-size: 9px;
+.gk-pos-badge {
+  font-size: 8px;
   font-weight: 900;
-  background: #1b5e20;
+  background: #00897b;
   color: white;
   padding: 1px 5px;
   border-radius: 4px;
   width: fit-content;
+  letter-spacing: 0.5px;
 }
 
 .gk-name {
   font-family: 'Bangers', cursive;
-  font-size: 16px;
-  letter-spacing: 1.5px;
-  color: #111;
+  font-size: 15px;
+  letter-spacing: 1.2px;
+  color: white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.1;
 }
 
 .gk-ability {
   font-size: 8px;
-  color: rgba(0,0,0,0.45);
+  color: rgba(255,255,255,0.4);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.gk-defense {
+.gk-def-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 0 12px 0 6px;
-  gap: 0;
+  background: rgba(0,0,0,0.35);
+  min-width: 44px;
 }
 
-.gk-def-icon { font-size: 14px; }
+.gk-def-label {
+  font-size: 8px;
+  font-weight: 900;
+  color: #82b1ff;
+  letter-spacing: 1px;
+  line-height: 1;
+}
 
 .gk-def-val {
   font-family: 'Bangers', cursive;
-  font-size: 24px;
-  color: #0d47a1;
+  font-size: 26px;
+  color: white;
   line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }

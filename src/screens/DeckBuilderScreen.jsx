@@ -19,7 +19,14 @@ const FORMATION = [
   { id: 'def3', type: 'defense',    pos: 'DEF', row: 2 },
   { id: 'def4', type: 'defense',    pos: 'DEF', row: 2 },
   { id: 'gk1',  type: 'goalkeeper', pos: 'GK',  row: 3 },
+  // Reserve bench (optional, any outfield type)
+  { id: 'res1', type: 'reserve',    pos: 'RES', row: 4 },
+  { id: 'res2', type: 'reserve',    pos: 'RES', row: 4 },
+  { id: 'res3', type: 'reserve',    pos: 'RES', row: 4 },
 ]
+
+const MAIN_SLOTS = FORMATION.filter(s => s.type !== 'reserve')
+const RESERVE_SLOTS = FORMATION.filter(s => s.type === 'reserve')
 
 // Which card types each slot accepts
 const SLOT_ACCEPTS = {
@@ -27,6 +34,7 @@ const SLOT_ACCEPTS = {
   midfield:   ['midfield', 'attack', 'defense'],
   defense:    ['defense', 'midfield'],
   goalkeeper: ['goalkeeper'],
+  reserve:    ['attack', 'midfield', 'defense'],
 }
 
 const FILTER_ACCEPTS = {
@@ -42,6 +50,7 @@ const TYPE_COLOR = {
 }
 
 const ROWS = [0, 1, 2, 3]
+const TYPE_COLOR_RESERVE = '#546e7a'
 
 function buildCard(owned, def) {
   const bonus = (owned.upgradeLevel || 0) * (def.upgradeStatBonus || 1)
@@ -61,16 +70,27 @@ function initAssignments(allCards, activeDeck) {
   if (!activeDeck?.length) return result
 
   const deckSet = new Set(activeDeck)
-  const queues = { attack: [], midfield: [], defense: [], goalkeeper: [] }
+  const queues = { attack: [], midfield: [], defense: [], goalkeeper: [], reserve: [] }
+  const assigned = new Set()
 
+  // Fill main slots first
   for (const { owned, card } of allCards) {
     if (deckSet.has(owned.instanceId) && queues[card.type]) {
       queues[card.type].push(owned.instanceId)
     }
   }
-  for (const slot of FORMATION) {
+  for (const slot of MAIN_SLOTS) {
     const q = queues[slot.type]
-    if (q?.length) result[slot.id] = q.shift()
+    if (q?.length) { result[slot.id] = q.shift(); assigned.add(result[slot.id]) }
+  }
+  // Fill reserve with any remaining deck cards
+  for (const { owned } of allCards) {
+    if (deckSet.has(owned.instanceId) && !assigned.has(owned.instanceId)) {
+      queues.reserve.push(owned.instanceId)
+    }
+  }
+  for (const slot of RESERVE_SLOTS) {
+    if (queues.reserve.length) result[slot.id] = queues.reserve.shift()
   }
   return result
 }
@@ -96,6 +116,14 @@ export default function DeckBuilderScreen() {
 
   const assignedIds = useMemo(
     () => new Set(Object.values(assignments).filter(Boolean)),
+    [assignments]
+  )
+  const mainFilledCount = useMemo(
+    () => MAIN_SLOTS.filter(s => assignments[s.id]).length,
+    [assignments]
+  )
+  const reserveFilledCount = useMemo(
+    () => RESERVE_SLOTS.filter(s => assignments[s.id]).length,
     [assignments]
   )
   const filledCount = assignedIds.size
@@ -206,29 +234,33 @@ export default function DeckBuilderScreen() {
     const usedIds = new Set(Object.values(assignments).filter(Boolean))
     const next = { ...assignments }
 
-    for (const slot of FORMATION) {
-      if (next[slot.id]) continue // already filled
-      const accepts = SLOT_ACCEPTS[slot.type]
-      // Find first unassigned card that fits and isn't already a duplicate id in deck
-      const pick = allCards.find(({ owned, card }) => {
-        if (usedIds.has(owned.instanceId)) return false
-        if (!accepts.includes(card.type)) return false
-        // No duplicate card definitions in deck
-        const alreadyUsed = Object.values(next).some(id => {
-          if (!id) return false
-          const entry = allCards.find(e => e.owned.instanceId === id)
-          return entry?.card?.id === card.id
+    const tryFill = (slots) => {
+      for (const slot of slots) {
+        if (next[slot.id]) continue
+        const accepts = SLOT_ACCEPTS[slot.type]
+        const pick = allCards.find(({ owned, card }) => {
+          if (usedIds.has(owned.instanceId)) return false
+          if (!accepts.includes(card.type)) return false
+          const alreadyUsed = Object.values(next).some(id => {
+            if (!id) return false
+            const entry = allCards.find(e => e.owned.instanceId === id)
+            return entry?.card?.id === card.id
+          })
+          return !alreadyUsed
         })
-        return !alreadyUsed
-      })
-      if (pick) {
-        next[slot.id] = pick.owned.instanceId
-        usedIds.add(pick.owned.instanceId)
+        if (pick) {
+          next[slot.id] = pick.owned.instanceId
+          usedIds.add(pick.owned.instanceId)
+        }
       }
     }
+
+    tryFill(MAIN_SLOTS)
+    tryFill(RESERVE_SLOTS)
     setAssignments(next)
-    const filled = Object.values(next).filter(Boolean).length
-    showNotif(`Skład uzupełniony (${filled}/11)`, true)
+    const mainFilled = MAIN_SLOTS.filter(s => next[s.id]).length
+    const resFilled = RESERVE_SLOTS.filter(s => next[s.id]).length
+    showNotif(`Skład uzupełniony (${mainFilled}/11${resFilled ? ` +${resFilled}R` : ''})`, true)
   }
 
   const formationRows = ROWS.map(r => FORMATION.filter(s => s.row === r))
@@ -240,8 +272,9 @@ export default function DeckBuilderScreen() {
       <div className="db-header">
         <button className="back-btn" onClick={goBack}>←</button>
         <h1 className="db-title">Ustaw Skład</h1>
-        <div className={`db-count ${filledCount === 11 ? 'db-count--full' : ''}`}>
-          {filledCount}<span className="db-count-total">/11</span>
+        <div className={`db-count ${mainFilledCount === 11 ? 'db-count--full' : ''}`}>
+          {mainFilledCount}<span className="db-count-total">/11</span>
+          {reserveFilledCount > 0 && <span className="db-count-res"> +{reserveFilledCount}</span>}
         </div>
       </div>
 
@@ -267,6 +300,27 @@ export default function DeckBuilderScreen() {
           </div>
         ))}
         <div className="db-pitch-label db-pitch-label--bot">GK</div>
+      </div>
+
+      {/* Reserve bench */}
+      <div className="db-reserve">
+        <span className="db-reserve-label">REZERWA</span>
+        <div className="db-reserve-slots">
+          {RESERVE_SLOTS.map(slot => {
+            const card = assignments[slot.id]
+              ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+              : null
+            return (
+              <FormationSlot
+                key={slot.id}
+                slot={slot}
+                card={card}
+                selected={selectedSlot === slot.id}
+                onClick={() => handleSlotClick(slot.id)}
+              />
+            )
+          })}
+        </div>
       </div>
 
       {/* Filter tabs */}
@@ -327,7 +381,7 @@ export default function DeckBuilderScreen() {
           </button>
         </div>
         <button className="db-save-btn" onClick={saveDeck}>
-          Zapisz Skład ({filledCount}/11)
+          Zapisz Skład ({mainFilledCount}/11{reserveFilledCount > 0 ? ` +${reserveFilledCount}` : ''})
         </button>
       </div>
 

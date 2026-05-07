@@ -353,70 +353,83 @@
 
 .sell-tab::-webkit-scrollbar { display: none; }
 
-.sell-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.sell-list {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   padding: 12px;
 }
 
-.sell-item {
-  border-radius: 12px;
-  padding: 10px 8px;
+.sell-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 10px 12px 10px 10px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sell-row--selected {
+  border-color: #ff9800;
+  background: rgba(255,152,0,0.08);
+}
+
+.sr-card { flex-shrink: 0; }
+
+.sr-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s, border-color 0.15s;
-  position: relative;
+  gap: 3px;
 }
 
-.sell-item--selected {
-  border-color: #ff9800;
-  transform: scale(1.04);
-}
-
-.si-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.si-type {
-  font-size: 9px;
-  font-weight: 900;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 4px;
-}
-
-.si-lvl { font-size: 9px; font-weight: 900; color: #ffd54f; }
-
-.si-name {
+.sr-name {
   font-family: 'Bangers', cursive;
-  font-size: 14px;
-  letter-spacing: 1px;
+  font-size: 18px;
+  letter-spacing: 1.5px;
   color: white;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  line-height: 1;
 }
 
-.si-stats { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.5); }
-.si-price { font-size: 11px; font-weight: 800; color: #90caf9; }
+.sr-lvl {
+  font-size: 11px;
+  font-weight: 900;
+  color: #ffd54f;
+}
+
+.sr-ability {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sr-price {
+  font-size: 13px;
+  font-weight: 900;
+  color: #90caf9;
+}
 
 .si-sell-btn {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: #c62828;
+  flex-shrink: 0;
+  background: linear-gradient(110deg, #c62828, #b71c1c);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 5px 10px;
+  border-radius: 10px;
+  padding: 10px 16px;
   font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 10px;
+  font-weight: 900;
+  font-size: 13px;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(198,40,40,0.4);
 }
 
 .market-empty {

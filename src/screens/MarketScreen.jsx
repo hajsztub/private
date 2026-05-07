@@ -7,6 +7,17 @@ import CurrencyBar from '../components/CurrencyBar'
 import FieldCard from '../components/FieldCard'
 import './MarketScreen.css'
 
+function defToSellCard(def, owned) {
+  const bonus = (owned.upgradeLevel || 0) * (def.upgradeStatBonus || 1)
+  return {
+    ...def,
+    instanceId: owned.instanceId,
+    currentAttackStat: def.attackStat + bonus,
+    currentDefenseStat: def.defenseStat + bonus,
+    upgradeLevel: owned.upgradeLevel || 0,
+  }
+}
+
 const ALL_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
 
 // ── Pack definitions ───────────────────────────────────────────────────────
@@ -191,11 +202,9 @@ function SellTab({ profile, sellCard, showNotif }) {
     .map(o => {
       const def = ALL_DEFS.find(d => d.id === o.cardId)
       if (!def) return null
-      return { owned: o, def }
+      return { owned: o, def, card: defToSellCard(def, o) }
     })
     .filter(Boolean)
-
-  const TYPE_C = { attack: '#b71c1c', midfield: '#6a1b9a', defense: '#0d47a1', goalkeeper: '#37474f' }
 
   return (
     <div className="sell-tab">
@@ -206,23 +215,26 @@ function SellTab({ profile, sellCard, showNotif }) {
           <p>Karty startowe nie mogą być sprzedane.<br/>Otwórz paczki aby zdobyć nowe karty.</p>
         </div>
       ) : (
-        <div className="sell-grid">
-          {sellableCards.map(({ owned, def }) => {
+        <div className="sell-list">
+          {sellableCards.map(({ owned, def, card }) => {
             const isSelected = selected === owned.instanceId
             return (
               <div
                 key={owned.instanceId}
-                className={`sell-item ${isSelected ? 'sell-item--selected' : ''}`}
-                style={{ background: def.color || '#1a2a1a' }}
+                className={`sell-row ${isSelected ? 'sell-row--selected' : ''}`}
                 onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
               >
-                <div className="si-top">
-                  <span className="si-type" style={{ background: TYPE_C[def.type] }}>{def.typeLabel}</span>
-                  {(owned.upgradeLevel || 0) > 0 && <span className="si-lvl">+{owned.upgradeLevel}</span>}
+                <div className="sr-card">
+                  <FieldCard card={card} />
                 </div>
-                <div className="si-name">{def.name}</div>
-                <div className="si-stats">{def.attackStat}/{def.defenseStat}</div>
-                <div className="si-price">🪙 {def.sellPrice}</div>
+                <div className="sr-info">
+                  <div className="sr-name">{def.name}</div>
+                  {(owned.upgradeLevel || 0) > 0 && (
+                    <span className="sr-lvl">+{owned.upgradeLevel}</span>
+                  )}
+                  <div className="sr-ability">{def.abilityName}</div>
+                  <div className="sr-price">🪙 {def.sellPrice}</div>
+                </div>
                 {isSelected && (
                   <button
                     className="si-sell-btn"

@@ -1,6 +1,6 @@
 // Realistic football score simulation using sigmoid probability
 
-const MAX_GOALS_PER_TEAM = 6
+const MAX_GOALS_PER_TEAM = 5
 
 function sigmoid(x) {
   return 1 / (1 + Math.exp(-x))
@@ -8,8 +8,9 @@ function sigmoid(x) {
 
 export function computeGoalChance(attackTotal, defenseTotal) {
   const diff = attackTotal - defenseTotal
-  // sigmoid centered at 0, scaled so diff of 10 ≈ 73% chance
-  return sigmoid(diff / 8)
+  // Base 17% chance at equal stats → ~1.7 goals/team expected per match
+  // Scales up to ~30% at strong advantage, never below 5%
+  return 0.05 + 0.25 * sigmoid(diff / 15)
 }
 
 export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore) {

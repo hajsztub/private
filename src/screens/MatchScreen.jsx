@@ -356,25 +356,6 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
       </div>
 
-      {/* ── Stats matchup strip ─────────────────────────────────────────── */}
-      <div className="ms-stats-strip">
-        <div className={`mss-row ${myTotalAtk >= aiTotalDef ? 'mss-row--win' : 'mss-row--loss'}`}>
-          <span className="mss-label">TY ⚔</span>
-          <span className="mss-val mss-val--atk">{myTotalAtk}</span>
-          <span className="mss-vs">vs</span>
-          <span className="mss-val mss-val--def">{aiTotalDef}</span>
-          <span className="mss-label">🛡 BOT</span>
-        </div>
-        <div className="mss-divider" />
-        <div className={`mss-row ${aiTotalAtk >= myTotalDef ? 'mss-row--loss' : 'mss-row--win'}`}>
-          <span className="mss-label">BOT ⚔</span>
-          <span className="mss-val mss-val--atk">{aiTotalAtk}</span>
-          <span className="mss-vs">vs</span>
-          <span className="mss-val mss-val--def">{myTotalDef}</span>
-          <span className="mss-label">🛡 TY</span>
-        </div>
-      </div>
-
       {/* ── Field ───────────────────────────────────────────────────────── */}
       <div className="ms-field-wrap">
 
@@ -382,18 +363,16 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-goal ms-goal--ai">
           <GoalPosts side="ai" />
           <div className="ms-goal-inner">
-            <div className="ms-stat-pill ms-stat-pill--atk">
-              <span className="msp-lbl">ATK</span>
-              <span className="msp-val">{aiTotalAtk}</span>
+            <div className="ms-stat-box ms-stat-box--atk">
+              <span className="msb-num">{aiTotalAtk}</span>
             </div>
             <GKCard
               card={playerB.activeGoalkeeper}
               side="ai"
               onTap={() => playerB.activeGoalkeeper && setZoomCard(playerB.activeGoalkeeper)}
             />
-            <div className="ms-stat-pill ms-stat-pill--def">
-              <span className="msp-lbl">DEF</span>
-              <span className="msp-val">{aiTotalDef}</span>
+            <div className="ms-stat-box ms-stat-box--def">
+              <span className="msb-num">{aiTotalDef}</span>
             </div>
           </div>
           {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
@@ -455,18 +434,18 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* === PLAYER GOAL (bottom) === */}
         <div className="ms-goal ms-goal--player">
           <div className="ms-goal-inner">
-            <div className="ms-stat-pill ms-stat-pill--atk">
-              <span className="msp-lbl">ATK</span>
-              <span className="msp-val">{myTotalAtk}</span>
+            <div className="ms-stat-box ms-stat-box--atk">
+              <span className="msb-lbl">ATAK</span>
+              <span className="msb-num">{myTotalAtk}</span>
             </div>
             <GKCard
               card={playerA.activeGoalkeeper}
               side="player"
               onTap={() => playerA.activeGoalkeeper && setZoomCard(playerA.activeGoalkeeper)}
             />
-            <div className="ms-stat-pill ms-stat-pill--def">
-              <span className="msp-lbl">DEF</span>
-              <span className="msp-val">{myTotalDef}</span>
+            <div className="ms-stat-box ms-stat-box--def">
+              <span className="msb-lbl">OBRONA</span>
+              <span className="msb-num">{myTotalDef}</span>
             </div>
           </div>
           <GoalPosts side="player" />

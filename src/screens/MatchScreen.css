@@ -132,31 +132,33 @@
   background: rgba(0,0,0,0.3);
 }
 
-.ms-stat-pill {
+.ms-stat-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2px 8px;
-  border-radius: 8px;
-  min-width: 38px;
   flex-shrink: 0;
+  gap: 1px;
 }
 
-.ms-stat-pill--atk { background: rgba(183,28,28,0.55); }
-.ms-stat-pill--def { background: rgba(13,71,161,0.55); }
+.ms-stat-box--atk { background: #d84315; }   /* deep orange */
+.ms-stat-box--def { background: #7b0000; }   /* dark maroon */
 
-.msp-lbl {
+.msb-lbl {
   font-size: 7px;
   font-weight: 900;
-  letter-spacing: 1px;
-  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
   line-height: 1;
 }
 
-.msp-val {
+.msb-num {
   font-family: 'Bangers', cursive;
-  font-size: 20px;
+  font-size: 30px;
   color: white;
   line-height: 1;
 }
@@ -696,60 +698,6 @@
   padding: 10px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* ── Stats matchup strip ─────────────────────────────────────────────────── */
-
-.ms-stats-strip {
-  flex-shrink: 0;
-  display: flex;
-  gap: 0;
-  background: rgba(0,0,0,0.5);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-
-.mss-row {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  transition: background 0.3s;
-}
-
-.mss-row--win  { background: rgba(105,240,174,0.07); }
-.mss-row--loss { background: rgba(255,82,82,0.06); }
-
-.mss-label {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--c-text-3, rgba(255,255,255,0.32));
-  white-space: nowrap;
-}
-
-.mss-val {
-  font-family: 'Bangers', cursive;
-  font-size: 18px;
-  line-height: 1;
-  min-width: 20px;
-  text-align: center;
-}
-
-.mss-val--atk { color: #ff5252; }
-.mss-val--def { color: #448aff; }
-
-.mss-vs {
-  font-size: 8px;
-  font-weight: 800;
-  color: rgba(255,255,255,0.25);
-  letter-spacing: 1px;
-}
-
-.mss-divider {
-  width: 1px;
-  background: rgba(255,255,255,0.08);
-  align-self: stretch;
 }
 
 /* ── Tutorial overlay ────────────────────────────────────────────────────── */

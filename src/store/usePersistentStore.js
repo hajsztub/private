@@ -19,7 +19,8 @@ function defaultProfile() {
     hasSetupProfile: false,
     lastAdWatchedAt: 0,
     ownedCards: [...STARTER_CARDS],
-    activeDeck: STARTER_CARDS.map(c => c.instanceId), // all starters in deck
+    activeDeck: STARTER_CARDS.map(c => c.instanceId),
+    deckAssignments: null, // { slotId: instanceId } — exact formation layout
     matchHistory: [],
   }
 }
@@ -122,11 +123,17 @@ export function usePersistentStore() {
       if (!card || card.isStarter) return prev
       const def = ALL_CARD_DEFS.find(d => d.id === card.cardId)
       if (!def) return prev
+      const newAssignments = prev.deckAssignments
+        ? Object.fromEntries(
+            Object.entries(prev.deckAssignments).map(([k, v]) => [k, v === instanceId ? null : v])
+          )
+        : null
       return {
         ...prev,
         coins: prev.coins + (def.sellPrice || 0),
         ownedCards: prev.ownedCards.filter(c => c.instanceId !== instanceId),
         activeDeck: prev.activeDeck.filter(id => id !== instanceId),
+        deckAssignments: newAssignments,
       }
     })
   }, [update])
@@ -152,8 +159,12 @@ export function usePersistentStore() {
     })
   }, [update])
 
-  const setActiveDeck = useCallback((deckInstanceIds) => {
-    update(prev => ({ ...prev, activeDeck: deckInstanceIds }))
+  const setActiveDeck = useCallback((deckInstanceIds, assignments) => {
+    update(prev => ({
+      ...prev,
+      activeDeck: deckInstanceIds,
+      deckAssignments: assignments ?? prev.deckAssignments,
+    }))
   }, [update])
 
   const markTutorialSeen = useCallback(() => {

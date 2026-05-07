@@ -64,16 +64,26 @@ function buildCard(owned, def) {
   }
 }
 
-function initAssignments(allCards, activeDeck) {
+function initAssignments(allCards, activeDeck, savedAssignments) {
   const result = {}
   FORMATION.forEach(s => { result[s.id] = null })
+
+  // Use saved layout if available, just validate cards still exist
+  if (savedAssignments) {
+    const ownedIds = new Set(allCards.map(({ owned }) => owned.instanceId))
+    for (const slot of FORMATION) {
+      const id = savedAssignments[slot.id]
+      result[slot.id] = id && ownedIds.has(id) ? id : null
+    }
+    return result
+  }
+
   if (!activeDeck?.length) return result
 
   const deckSet = new Set(activeDeck)
   const queues = { attack: [], midfield: [], defense: [], goalkeeper: [], reserve: [] }
   const assigned = new Set()
 
-  // Fill main slots first
   for (const { owned, card } of allCards) {
     if (deckSet.has(owned.instanceId) && queues[card.type]) {
       queues[card.type].push(owned.instanceId)
@@ -83,7 +93,6 @@ function initAssignments(allCards, activeDeck) {
     const q = queues[slot.type]
     if (q?.length) { result[slot.id] = q.shift(); assigned.add(result[slot.id]) }
   }
-  // Fill reserve with any remaining deck cards
   for (const { owned } of allCards) {
     if (deckSet.has(owned.instanceId) && !assigned.has(owned.instanceId)) {
       queues.reserve.push(owned.instanceId)
@@ -111,7 +120,7 @@ export default function DeckBuilderScreen() {
   , [profile.ownedCards])
 
   const [assignments, setAssignments] = useState(() =>
-    initAssignments(allCards, profile.activeDeck)
+    initAssignments(allCards, profile.activeDeck, profile.deckAssignments)
   )
 
   const assignedIds = useMemo(
@@ -219,7 +228,7 @@ export default function DeckBuilderScreen() {
     }).length
     if (gkCount < 1) { showNotif('Wymagany co najmniej 1 bramkarz!', false); return }
     if (ids.length < 4) { showNotif('Za mało kart (min. 4)!', false); return }
-    setActiveDeck(ids)
+    setActiveDeck(ids, { ...assignments })
     showNotif('Skład zapisany! ✓', true)
   }
 

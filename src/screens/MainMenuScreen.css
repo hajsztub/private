@@ -33,6 +33,13 @@
   z-index: 1;
 }
 
+.mm-logo-img {
+  max-width: 240px;
+  max-height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(0,230,118,0.35));
+}
+
 .mm-logo-ball {
   font-size: 56px;
   filter: drop-shadow(0 0 20px rgba(0,230,118,0.4));

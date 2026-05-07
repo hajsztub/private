@@ -1,8 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { LEAGUE_TIERS, getTier } from '../data/botNames'
 import './MainMenuScreen.css'
+
+function Logo() {
+  const [failed, setFailed] = useState(false)
+  if (!failed) {
+    return (
+      <div className="mm-logo-wrap">
+        <img
+          src="/logo.png"
+          alt="GOAL TCG"
+          className="mm-logo-img"
+          onError={() => setFailed(true)}
+          draggable={false}
+        />
+      </div>
+    )
+  }
+  return (
+    <div className="mm-logo-wrap">
+      <div className="mm-logo-ball">⚽</div>
+      <div className="mm-logo-text">
+        <span className="mm-logo-goal">GOAL</span>
+        <span className="mm-logo-tcg">TCG</span>
+      </div>
+    </div>
+  )
+}
 
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
@@ -16,13 +42,7 @@ export default function MainMenuScreen() {
       <div className="mm-bg-field" />
 
       {/* ── Logo ── */}
-      <div className="mm-logo-wrap">
-        <div className="mm-logo-ball">⚽</div>
-        <div className="mm-logo-text">
-          <span className="mm-logo-goal">GOAL</span>
-          <span className="mm-logo-tcg">TCG</span>
-        </div>
-      </div>
+      <Logo />
 
       {/* ── Profile card ── */}
       <div className="mm-profile-card">

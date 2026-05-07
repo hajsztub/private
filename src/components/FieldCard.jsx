@@ -221,10 +221,121 @@ export function GKCard({ card, side, onTap }) {
   )
 }
 
+// ── Generic procedural avatar ─────────────────────────────────────────────────
+
+function idHash(str) {
+  let h = 0
+  for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+
+const SKINS  = ['#f4c2a1', '#d4a373', '#c68642', '#a0785a', '#8d5524', '#f5deb3', '#e8b89a']
+const HAIRS  = ['short', 'dark', 'bald', 'curly', 'blonde', 'grey', 'afro', 'cap']
+const HAIR_C = ['#2c1a0e', '#c0a060', '#8b4513', '#4a3000', '#f4d03f', '#888', '#1a1a1a', '#3d2b1f']
+
+function GenericPlayerSVG({ shirt, seed }) {
+  const h = idHash(seed)
+  const skin     = SKINS[h % SKINS.length]
+  const hairKey  = HAIRS[(h >> 3) % HAIRS.length]
+  const hairFill = HAIR_C[(h >> 6) % HAIR_C.length]
+
+  const isBald   = hairKey === 'bald'
+  const isAfro   = hairKey === 'afro'
+  const isCap    = hairKey === 'cap'
+  const isCurly  = hairKey === 'curly'
+  const isBlonde = hairKey === 'blonde'
+
+  // eyebrow angle varies
+  const browAngle = (h >> 9) % 2 === 0 ? 1 : -1
+
+  return (
+    <svg viewBox="0 0 80 90" style={{ width: '100%', height: '100%' }}>
+      {/* Body / shirt */}
+      <ellipse cx="40" cy="74" rx="22" ry="15" fill={shirt} />
+      {/* Neck */}
+      <rect x="35" y="56" width="10" height="12" rx="3" fill={skin} />
+      {/* Head */}
+      <ellipse cx="40" cy="46" rx="20" ry="22" fill={skin} />
+
+      {/* Hair */}
+      {!isBald && !isAfro && !isCap && (
+        <ellipse cx="40" cy="29" rx="18" ry={isBlonde ? 11 : 10} fill={hairFill} />
+      )}
+      {isCurly && (
+        <>
+          <circle cx="27" cy="30" r="8" fill={hairFill} />
+          <circle cx="35" cy="24" r="8" fill={hairFill} />
+          <circle cx="45" cy="24" r="8" fill={hairFill} />
+          <circle cx="53" cy="30" r="8" fill={hairFill} />
+        </>
+      )}
+      {isAfro && (
+        <ellipse cx="40" cy="26" rx="22" ry="16" fill={hairFill} />
+      )}
+      {isCap && (
+        <>
+          <rect x="20" y="26" width="40" height="10" rx="5" fill={hairFill} />
+          <rect x="17" y="32" width="46" height="5" rx="2" fill={hairFill} />
+        </>
+      )}
+
+      {/* Eyebrows */}
+      <line x1="28" y1={38 - browAngle} x2="37" y2={39 + browAngle} stroke={hairFill === '#f4d03f' ? '#a08020' : hairFill} strokeWidth="2" strokeLinecap="round" />
+      <line x1="43" y1={39 + browAngle} x2="52" y2={38 - browAngle} stroke={hairFill === '#f4d03f' ? '#a08020' : hairFill} strokeWidth="2" strokeLinecap="round" />
+
+      {/* Eyes */}
+      <ellipse cx="33" cy="46" rx="5" ry="4.5" fill="white" />
+      <ellipse cx="47" cy="46" rx="5" ry="4.5" fill="white" />
+      <circle cx="34" cy="46" r="2.5" fill="#1a1a1a" />
+      <circle cx="48" cy="46" r="2.5" fill="#1a1a1a" />
+
+      {/* Ears */}
+      <ellipse cx="20" cy="46" rx="3.5" ry="5" fill={skin} />
+      <ellipse cx="60" cy="46" rx="3.5" ry="5" fill={skin} />
+
+      {/* Mouth — varies: smile, neutral, smirk */}
+      {(h >> 12) % 3 === 0
+        ? <path d="M32 57 Q40 63 48 57" stroke="#9a6040" strokeWidth="2" fill="none" strokeLinecap="round" />
+        : (h >> 12) % 3 === 1
+          ? <line x1="33" y1="57" x2="47" y2="57" stroke="#9a6040" strokeWidth="2" strokeLinecap="round" />
+          : <path d="M33 56 Q38 60 46 57" stroke="#9a6040" strokeWidth="2" fill="none" strokeLinecap="round" />
+      }
+    </svg>
+  )
+}
+
 // ── SVG Fallback Avatars ──────────────────────────────────────────────────────
 
+// Shirt colors matching card type color palette
+const TYPE_SHIRT = {
+  attack:     '#b71c1c',
+  midfield:   '#6a1b9a',
+  defense:    '#1565c0',
+  goalkeeper: '#00695c',
+}
+
+// Card type lookup for generic avatars (used when PNG not available)
+const CARD_TYPES = {
+  lorenzo:'attack', diego:'attack', max:'midfield', lucas:'goalkeeper',
+  samuel:'defense', alejandro:'attack', benjamin:'midfield', oliver:'goalkeeper',
+  pierre:'defense', ivan:'attack', finn:'midfield', rafael:'goalkeeper',
+  eric:'defense', miquel:'attack', tyler:'midfield', matteo:'goalkeeper',
+  jackson:'defense', victor:'midfield', leon:'goalkeeper', fabio:'defense',
+  oscar:'attack', liam:'midfield', yusuf:'goalkeeper', niklas:'defense',
+  thiago:'attack', jasper:'midfield', nathan:'goalkeeper', kurt:'defense',
+  enrique:'attack', dylan:'midfield', gabriel:'goalkeeper', luka:'defense',
+  esteban:'attack', felix:'midfield', kyle:'goalkeeper', stefano:'defense',
+  rodrigo:'attack', milo:'midfield', tom:'goalkeeper', gerald:'defense',
+  juan:'attack', sven:'midfield', kenzo:'goalkeeper', roman:'defense',
+  xander:'attack', satoshi:'midfield', carlos:'goalkeeper', cedric:'attack',
+  maxim:'midfield', paul:'defense', quentin:'attack', isak:'midfield',
+  clery:'defense', ajri:'attack', silas:'midfield', claus:'goalkeeper',
+  jim:'goalkeeper', bardo:'attack', harvy:'defense', zenit:'defense',
+  grey:'midfield',
+}
+
 function AvatarSVG({ id, color, className }) {
-  const map = {
+  const handcrafted = {
     hugo:        <HugoSVG />,
     harry:       <HarrySVG />,
     rushy:       <RushySVG />,
@@ -245,11 +356,15 @@ function AvatarSVG({ id, color, className }) {
     starter_atk2: <StarterOutfieldSVG shirt="#b71c1c" hair="dark" />,
     starter_atk3: <StarterOutfieldSVG shirt="#b71c1c" hair="curly" />,
   }
-  const el = map[id]
+  const el = handcrafted[id]
   if (el) return <div className={`fc-svg-wrap ${className || ''}`}>{el}</div>
+
+  // Generic procedural avatar for all other players
+  const cardType = CARD_TYPES[id]
+  const shirt = cardType ? TYPE_SHIRT[cardType] : (color || '#1a3a5c')
   return (
-    <div className={`fc-svg-wrap fc-default-avatar ${className || ''}`} style={{ background: color || '#1a2a1a' }}>
-      <span style={{ fontSize: 28, color: 'rgba(255,255,255,0.3)' }}>?</span>
+    <div className={`fc-svg-wrap ${className || ''}`}>
+      <GenericPlayerSVG shirt={shirt} seed={id} />
     </div>
   )
 }

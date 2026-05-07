@@ -186,7 +186,7 @@ export function GKCard({ card, side, onTap }) {
 
   return (
     <div
-      className={`gk-card gk-card--${side} gk-card--${rarity}`}
+      className={`gk-card gk-card--${rarity}`}
       style={{
         '--gk-color': card.color || '#0d2a1a',
         '--rarity-b': RARITY_BORDER[rarity],
@@ -194,6 +194,7 @@ export function GKCard({ card, side, onTap }) {
       }}
       onClick={onTap}
     >
+      {/* Full-bleed avatar */}
       <div className="gk-art">
         <img
           className="gk-art-img"
@@ -202,15 +203,18 @@ export function GKCard({ card, side, onTap }) {
           onError={() => { if (!gkSrc || gkSrc !== '/avatars/placeholder.png') setGkSrc('/avatars/placeholder.png') }}
           draggable={false}
         />
+        {rarity === 'legendary' && <div className="fc-legendary-shimmer" />}
       </div>
-      <div className="gk-info">
+
+      {/* Top-left: GK badge */}
+      <div className="gk-top">
         <span className="gk-pos-badge">GK</span>
-        <span className="gk-name">{card.name}</span>
-        {card.abilityName && <span className="gk-ability">{card.abilityName}</span>}
       </div>
-      <div className="gk-def-block">
-        <span className="gk-def-label">DEF</span>
-        <span className="gk-def-val">{defVal}</span>
+
+      {/* Bottom overlay: name + DEF */}
+      <div className="gk-bottom">
+        <span className="gk-name">{card.name}</span>
+        <span className="gk-def-val">🛡{defVal}</span>
       </div>
     </div>
   )

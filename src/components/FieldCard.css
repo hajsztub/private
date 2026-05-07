@@ -289,24 +289,21 @@
   color: rgba(0,230,118,0.5);
 }
 
-/* ── Horizontal GK Card ──────────────────────────────────────────────────── */
+/* ── Portrait GK Card ────────────────────────────────────────────────────── */
 
 .gk-card {
   flex: 1;
   min-width: 0;
-  max-width: 180px;
-  height: 40px;
+  max-width: 160px;
+  height: 90px;
   border-radius: 10px;
-  display: flex;
-  align-items: stretch;
   overflow: hidden;
   border: 2px solid var(--rarity-b, rgba(255,255,255,0.25));
   box-shadow: var(--rarity-s, 0 3px 10px rgba(0,0,0,0.4));
   cursor: pointer;
-  flex-shrink: 1;
   font-family: 'Nunito', sans-serif;
   position: relative;
-  background: linear-gradient(90deg, var(--gk-color, #0d1f12), #0a1510);
+  background: linear-gradient(160deg, var(--gk-color, #0d1f12), #07090e);
 }
 
 .gk-card--legendary { animation: fc-legend-pulse 2.4s ease-in-out infinite; }
@@ -316,16 +313,16 @@
   border: 2px dashed rgba(255,255,255,0.12);
   color: rgba(255,255,255,0.22);
   font-size: 11px;
-  justify-content: center;
+  display: flex;
   align-items: center;
-  height: 36px;
+  justify-content: center;
+  height: 90px;
 }
 
+/* Full-bleed avatar */
 .gk-art {
-  width: 40px;
-  flex-shrink: 0;
-  overflow: hidden;
-  position: relative;
+  position: absolute;
+  inset: 0;
 }
 
 .gk-art-img {
@@ -333,18 +330,31 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  display: block;
 }
 
-.gk-art-svg { width: 100%; height: 100%; }
+/* Diagonal shimmer same as FieldCard */
+.gk-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    rgba(255,255,255,0.1) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(255,255,255,0.04) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
 
-.gk-info {
-  flex: 1;
-  padding: 6px 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  min-width: 0;
+/* Top-left GK badge */
+.gk-top {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 2;
 }
 
 .gk-pos-badge {
@@ -352,55 +362,50 @@
   font-weight: 900;
   background: #00897b;
   color: white;
-  padding: 1px 5px;
+  padding: 2px 5px;
   border-radius: 4px;
-  width: fit-content;
   letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Bottom gradient + name + DEF */
+.gk-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.65) 60%, transparent 100%);
+  padding: 16px 6px 5px;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .gk-name {
   font-family: 'Bangers', cursive;
-  font-size: 12px;
-  letter-spacing: 1.2px;
+  font-size: 13px;
+  letter-spacing: 1px;
   color: white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.1;
-}
-
-.gk-ability {
-  font-size: 8px;
-  color: rgba(255,255,255,0.4);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gk-def-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px 0 6px;
-  background: rgba(0,0,0,0.35);
-  min-width: 44px;
-}
-
-.gk-def-label {
-  font-size: 8px;
-  font-weight: 900;
-  color: #82b1ff;
-  letter-spacing: 1px;
   line-height: 1;
+  text-shadow: 0 1px 6px rgba(0,0,0,1);
+  flex: 1;
+  min-width: 0;
 }
 
 .gk-def-val {
   font-family: 'Bangers', cursive;
-  font-size: 18px;
-  color: white;
+  font-size: 14px;
+  color: #90caf9;
   line-height: 1;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 4px rgba(0,0,0,1);
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
 .fc-goals {

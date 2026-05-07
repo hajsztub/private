@@ -162,8 +162,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 8px;
+  padding: 6px 10px;
   background: #0d1117;
   border-top: 1px solid rgba(255,255,255,0.07);
   border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -171,14 +171,14 @@
 
 .ms-stat-box {
   width: 54px;
-  height: 44px;
+  height: 90px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  gap: 0;
+  gap: 2px;
 }
 
 .ms-stat-box--atk { background: linear-gradient(135deg, #c62828, #b71c1c); }
@@ -195,10 +195,12 @@
 
 .msb-num {
   font-family: 'Bangers', cursive;
-  font-size: 22px;
+  font-size: 26px;
   color: white;
   line-height: 1;
 }
+
+.msb-num--win { color: #69f0ae; }
 
 .ms-thinking {
   position: absolute;

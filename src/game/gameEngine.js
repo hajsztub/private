@@ -672,6 +672,18 @@ export function gameReducer(state, action) {
       }
       return addLog(s, 'Mecz poddany. Przegrana 0:3.', 'warning')
     }
+    case 'REDRAW_HAND': {
+      const pl = state.players.A
+      const combined = shuffleDeck([...pl.deck, ...pl.hand])
+      const newHand = combined.slice(0, 3)
+      const newDeck = combined.slice(3)
+      let s = {
+        ...state,
+        players: { ...state.players, A: { ...pl, hand: newHand, deck: newDeck } },
+      }
+      const { state: after } = endTurn(s)
+      return addLog(after, '🔄 Przetasowano rękę. Dobrano 3 karty, tura pominięta.', 'info')
+    }
     default:
       return state
   }

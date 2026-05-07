@@ -133,15 +133,15 @@
 }
 
 .ms-stat-box {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 44px;
+  height: 40px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  gap: 1px;
+  gap: 0;
 }
 
 .ms-stat-box--atk { background: #d84315; }   /* deep orange */
@@ -158,7 +158,7 @@
 
 .msb-num {
   font-family: 'Bangers', cursive;
-  font-size: 30px;
+  font-size: 22px;
   color: white;
   line-height: 1;
 }
@@ -909,6 +909,23 @@
 .zoom-act-btn--place {
   background: linear-gradient(135deg, #1b5e20, #2e7d32);
   color: white;
+}
+
+/* ── Redraw button in action bar ────────────────────────────────────────── */
+
+.ms-redraw-btn {
+  background: rgba(33,150,243,0.18);
+  border: 1px solid rgba(33,150,243,0.35);
+  color: #90caf9;
+  font-size: 12px;
+  font-weight: 900;
+  font-family: 'Nunito', sans-serif;
+  border-radius: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 /* ── Forfeit button in action bar ───────────────────────────────────────── */

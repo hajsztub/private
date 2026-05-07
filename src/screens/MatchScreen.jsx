@@ -525,6 +525,11 @@ export default function MatchScreen({ matchParams = {} }) {
           {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="mac todo">ATK</span>}
           {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
           {isPlayerTurn && (
+            <button className="ms-redraw-btn" onClick={() => dispatch({ type: 'REDRAW_HAND' })} title="Przetasuj rękę, dobierz 3, pomiń turę">
+              🔄 +3
+            </button>
+          )}
+          {isPlayerTurn && (
             <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
           )}
         </div>

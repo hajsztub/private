@@ -173,6 +173,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [zoomCard, setZoomCard] = useState(null)           // { card, isPlayerField, sector }
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
+  const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
   const [goalsCollapsed, setGoalsCollapsed] = useState(false)
   const [handCollapsed, setHandCollapsed] = useState(false)
 
@@ -236,6 +237,19 @@ export default function MatchScreen({ matchParams = {} }) {
     else if (curr.ai > prev.ai) { setGoalAnim({ scorer: 'ai', score: curr }); SFX.goalAI() }
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
+
+  // Watch log for new ability/event messages to show as toasts
+  const prevLogLenRef = useRef(0)
+  useEffect(() => {
+    const current = matchState.log
+    if (current.length > prevLogLenRef.current) {
+      const newest = current[0]
+      if (newest && (newest.type === 'warning' || newest.type === 'special') && newest.round === matchState.round) {
+        showNotif(newest.message)
+      }
+    }
+    prevLogLenRef.current = current.length
+  }, [matchState.log.length])
 
   // ── Placement helper ──────────────────────────────────────────────────────
   const placeCard = useCallback((sector) => {
@@ -406,6 +420,11 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Field ───────────────────────────────────────────────────────── */}
       <div className="ms-field-wrap">
         <div className="ms-field-markings" aria-hidden="true" />
+        {!isPlayerTurn && phase === 'playing' && (
+          <div className="ms-turn-banner">
+            {aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika'}
+          </div>
+        )}
 
         {/* === AI GOAL (top) === */}
         <div className={`ms-goal ms-goal--ai${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
@@ -526,7 +545,7 @@ export default function MatchScreen({ matchParams = {} }) {
       </div>{/* end ms-field-wrap */}
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}`}>
+      <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
         <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
           <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
           <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
@@ -573,9 +592,9 @@ export default function MatchScreen({ matchParams = {} }) {
           {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
           {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="mac todo">ATK</span>}
           {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
-          {isPlayerTurn && (
-            <button className="ms-redraw-btn" onClick={() => dispatch({ type: 'REDRAW_HAND' })} title="Przetasuj rękę, dobierz 3, pomiń turę">
-              🔄 +3
+          {matchState.redraws < 2 && (
+            <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
+              🔄 +4 ({2 - matchState.redraws} lewe)
             </button>
           )}
           {isPlayerTurn && (
@@ -590,6 +609,24 @@ export default function MatchScreen({ matchParams = {} }) {
           {!isPlayerTurn ? (aiThinking ? '🤔 Bot...' : '⏳ Tura bota') : '→ Zakończ turę'}
         </button>
       </div>
+
+      {/* ── Redraw confirm ──────────────────────────────────────────────── */}
+      {showRedrawConfirm && (
+        <div className="ms-forfeit-confirm">
+          <div className="ms-forfeit-panel">
+            <div className="ms-forfeit-title">🔄 Przetasować rękę?</div>
+            <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Zostało przetasowań: {2 - matchState.redraws}/2</div>
+            <div className="ms-forfeit-btns">
+              <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'REDRAW_HAND' }); setShowRedrawConfirm(false) }}>
+                Tak, przetasuj
+              </button>
+              <button className="ms-forfeit-no" onClick={() => setShowRedrawConfirm(false)}>
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Forfeit confirm ──────────────────────────────────────────────── */}
       {showForfeit && (

@@ -1,3 +1,9 @@
+const TRAINING_BOT_NAMES = [
+  'AUTOBOT-9', 'ROBO-KEEPER', 'BOT-3000', 'CYBER-FC', 'MECH-STRIKER',
+  'DROID-DEF', 'ALGO-PRO', 'MATRIX-XI', 'NEURAL-FC', 'PIXEL-TEAM',
+  'CIRCUIT-GK', 'DATABOT-77', 'TURBO-AI', 'GLITCH-FC', 'SYSTEM-ERR',
+]
+
 const FIRST = [
   'Kamil','Piotr','Maciej','Tomek','Kuba','Bartek','Marek','Łukasz',
   'Filip','Michał','Paweł','Damian','Rafał','Karol','Mateusz','Wojtek',
@@ -19,11 +25,15 @@ function hash(str) {
   return Math.abs(h)
 }
 
-export function getBotName(seed = Date.now()) {
+export function getBotName(seed = Date.now(), type = 'league') {
+  if (type === 'training') {
+    const s = typeof seed === 'string' ? hash(seed) : seed
+    return TRAINING_BOT_NAMES[s % TRAINING_BOT_NAMES.length]
+  }
   const s = typeof seed === 'string' ? hash(seed) : seed
   const first = FIRST[s % FIRST.length]
-  const suf = SUFFIX[Math.floor(s / FIRST.length) % SUFFIX.length]
-  return `${first}${suf}`
+  // League: no suffix, just first name to look like a real player
+  return first
 }
 
 // Generate a deterministic leaderboard of n fake players around a given rating

@@ -49,6 +49,7 @@ export function createMatchState(matchType = 'local', playerDeckCards = null, ai
     specialCardRevealed: false,
     log: [],
     coinFlipState: null,
+    redraws: 0,
     winner: null,
   }
 }
@@ -458,6 +459,22 @@ function applyCoinEffect(state, playerId, card, effect) {
       const rounds = card.roundsOnField || 0
       return updateCardStat(state, playerId, card.instanceId, 'currentAttackStat', rounds)
     }
+    case 'buff_offense_player': {
+      const p = state.players[playerId]
+      let s = state
+      for (const c of p.offenseSector) {
+        s = updateCardStat(s, playerId, c.instanceId, 'currentAttackStat', effect.amount || 2)
+      }
+      return s
+    }
+    case 'self_sacrifice_team_buff': {
+      let s = removeCardFromBoard(state, playerId, card.instanceId)
+      const all = [...s.players[playerId].offenseSector, ...s.players[playerId].defenseSector]
+      for (const c of all) {
+        s = updateCardStat(s, playerId, c.instanceId, 'currentAttackStat', effect.amount || 5)
+      }
+      return s
+    }
     case 'none':
     default:
       return state
@@ -727,6 +744,34 @@ function applyPassiveEffects(state) {
           }
           break
         }
+        case 'count_team_type_buff': {
+          const mids = allCards().filter(c => c.type === 'midfield' && c.instanceId !== card.instanceId).length
+          const defs = allCards().filter(c => c.type === 'defense' && c.instanceId !== card.instanceId).length
+          const bonus = Math.floor((mids + defs) / 2)
+          if (bonus > 0)
+            newState = updateCardStat(newState, pid, card.instanceId, 'currentDefenseStat', pef.amount * bonus)
+          break
+        }
+        case 'swap_team_midfield_stats': {
+          const mids = allCards().filter(c => c.type === 'midfield')
+          for (const mf of mids) {
+            if (mf.instanceId === card.instanceId) continue
+            const atk = mf.currentAttackStat ?? 0
+            const def = mf.currentDefenseStat ?? 0
+            newState = {
+              ...newState,
+              players: {
+                ...newState.players,
+                [pid]: {
+                  ...newState.players[pid],
+                  offenseSector: newState.players[pid].offenseSector.map(c => c.instanceId === mf.instanceId ? { ...c, currentAttackStat: def, currentDefenseStat: atk } : c),
+                  defenseSector: newState.players[pid].defenseSector.map(c => c.instanceId === mf.instanceId ? { ...c, currentAttackStat: def, currentDefenseStat: atk } : c),
+                },
+              },
+            }
+          }
+          break
+        }
         default:
           break
       }
@@ -929,16 +974,34 @@ export function gameReducer(state, action) {
       return addLog(s, 'Mecz poddany. Przegrana 0:3.', 'warning')
     }
     case 'REDRAW_HAND': {
+      if (state.redraws >= 2) return addLog(state, '❌ Wykorzystałeś już limit 2 przetasowań.', 'error')
       const pl = state.players.A
       const combined = shuffleDeck([...pl.deck, ...pl.hand])
-      const newHand = combined.slice(0, 3)
-      const newDeck = combined.slice(3)
-      let s = {
-        ...state,
-        players: { ...state.players, A: { ...pl, hand: newHand, deck: newDeck } },
+      const newHand = combined.slice(0, 4)
+      const newDeck = combined.slice(4)
+      // -5 total DEF penalty: subtract from GK first, then from first defense card
+      let defLeft = 5
+      let updatedGK = pl.activeGoalkeeper
+      if (updatedGK && defLeft > 0) {
+        const take = Math.min(defLeft, updatedGK.currentDefenseStat ?? 0)
+        updatedGK = { ...updatedGK, currentDefenseStat: (updatedGK.currentDefenseStat ?? 0) - take }
+        defLeft -= take
       }
-      const { state: after } = endTurn(s)
-      return addLog(after, '🔄 Przetasowano rękę. Dobrano 3 karty, tura pominięta.', 'info')
+      let updatedDef = [...pl.defenseSector]
+      for (let i = 0; i < updatedDef.length && defLeft > 0; i++) {
+        const take = Math.min(defLeft, updatedDef[i].currentDefenseStat ?? 0)
+        updatedDef[i] = { ...updatedDef[i], currentDefenseStat: (updatedDef[i].currentDefenseStat ?? 0) - take }
+        defLeft -= take
+      }
+      const newState = {
+        ...state,
+        redraws: state.redraws + 1,
+        players: {
+          ...state.players,
+          A: { ...pl, hand: newHand, deck: newDeck, activeGoalkeeper: updatedGK, defenseSector: updatedDef },
+        },
+      }
+      return addLog(newState, `🔄 Przetasowanie ${state.redraws + 1}/2 — dobrano 4 karty, -5 DEF do końca meczu.`, 'warning')
     }
     default:
       return state

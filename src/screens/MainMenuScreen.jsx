@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
-import { getTier } from '../data/botNames'
+import { getTier, getBotName } from '../data/botNames'
 import './MainMenuScreen.css'
 
 const TUTORIAL_SECTIONS = [
@@ -121,13 +121,31 @@ export default function MainMenuScreen() {
   const [showTutorial, setShowTutorial] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
   const [showMissions, setShowMissions] = useState(false)
+  const [resetIn, setResetIn] = useState('')
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date()
+      const midnight = new Date(now)
+      midnight.setHours(24, 0, 0, 0)
+      const diff = midnight - now
+      const h = Math.floor(diff / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setResetIn(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const missions = profile.dailyMissions?.missions || []
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-    navigate('match', { matchType: type, matchId: Date.now() })
+    const botName = getBotName(Date.now(), 'training')
+    navigate('match', { matchType: type, matchId: Date.now(), opponentName: botName })
   }
 
   const tier = getTier(profile.rating)
@@ -282,7 +300,7 @@ export default function MainMenuScreen() {
           <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
             <div className="mm-missions-header">
               <span className="mm-missions-title">⚡ MISJE DNIA</span>
-              <span className="mm-missions-reset">Reset o północy</span>
+              <span className="mm-missions-reset">Reset za {resetIn}</span>
               <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
             </div>
             <div className="mm-missions-list">

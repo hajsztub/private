@@ -1,10 +1,22 @@
 import { useState, useCallback } from 'react'
 import { STARTER_CARDS, STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import { CARD_DEFINITIONS } from '../data/cards'
+import { getTier } from '../data/botNames'
 
 const ALL_CARD_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
 
 const STORAGE_KEY = 'football_cards_v2'
+const SHOP_REFRESH_MS = 12 * 60 * 60 * 1000
+
+function getShopCardIds(seed) {
+  const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0 && d.sellPrice > 0)
+  let s = (seed || 1) >>> 0
+  const rand = () => {
+    s ^= s << 13; s ^= s >> 17; s ^= s << 5
+    return (s >>> 0) / 0xffffffff
+  }
+  return [...pool].sort(() => rand() - 0.5).slice(0, 3).map(d => d.id)
+}
 
 // ── Daily missions ─────────────────────────────────────────────────────────
 
@@ -93,6 +105,8 @@ function defaultProfile() {
     matchHistory: [],
     injuries: {}, // { instanceId: timestampUntilHealed }
     dailyMissions: { date: '', missions: [] },
+    cardShop: { cardIds: [], refreshedAt: 0 },
+    lastTierChange: null, // { from, to, timestamp }
   }
 }
 
@@ -164,6 +178,12 @@ export function usePersistentStore() {
         ? Math.max(0, prev.rating + (result.ratingChange || 0))
         : prev.rating
 
+      const oldTier = getTier(prev.rating)
+      const newTier = getTier(newRating)
+      const lastTierChange = (result.matchType === 'league' && oldTier.id !== newTier.id)
+        ? { from: oldTier.id, to: newTier.id, timestamp: Date.now() }
+        : prev.lastTierChange
+
       const today = getTodayStr()
       const dm = (prev.dailyMissions?.date === today)
         ? prev.dailyMissions
@@ -176,6 +196,7 @@ export function usePersistentStore() {
         coins: prev.coins + result.coinsEarned,
         rating: newRating,
         dailyMissions,
+        lastTierChange,
         matchHistory: [
           { ...result, date: Date.now() },
           ...prev.matchHistory.slice(0, 19),
@@ -305,6 +326,37 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, lastFreePackAt: Date.now() }))
   }, [update])
 
+  const refreshCardShop = useCallback(() => {
+    update(prev => {
+      const now = Date.now()
+      if (now - (prev.cardShop?.refreshedAt || 0) < SHOP_REFRESH_MS && prev.cardShop?.cardIds?.length) return prev
+      return { ...prev, cardShop: { cardIds: getShopCardIds(now), refreshedAt: now } }
+    })
+  }, [update])
+
+  const buyShopCard = useCallback((cardId) => {
+    update(prev => {
+      const def = CARD_DEFINITIONS.find(d => d.id === cardId)
+      if (!def) return prev
+      const price = (def.sellPrice || 0) * 2
+      if (prev.coins < price) return prev
+      return {
+        ...prev,
+        coins: prev.coins - price,
+        ownedCards: [...prev.ownedCards, {
+          cardId: def.id,
+          instanceId: `shop_${def.id}_${Date.now()}`,
+          upgradeLevel: 0,
+          isStarter: false,
+        }],
+      }
+    })
+  }, [update])
+
+  const clearTierChange = useCallback(() => {
+    update(prev => ({ ...prev, lastTierChange: null }))
+  }, [update])
+
   const resetProfile = useCallback(() => {
     const fresh = defaultProfile()
     try {
@@ -331,6 +383,9 @@ export function usePersistentStore() {
     markProfileSetup,
     recordAdWatched,
     recordFreePackClaimed,
+    refreshCardShop,
+    buyShopCard,
+    clearTierChange,
     resetProfile,
   }
 }

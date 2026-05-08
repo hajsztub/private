@@ -316,9 +316,84 @@ function SellTab({ profile, sellCard, showNotif }) {
 
 // ── MarketScreen ───────────────────────────────────────────────────────────
 
+// ── Shop Tab ───────────────────────────────────────────────────────────────
+
+const SHOP_REFRESH_MS = 12 * 60 * 60 * 1000
+const TYPE_LABELS = { attack: 'Napastnik', defense: 'Obrońca', midfield: 'Pomocnik', goalkeeper: 'Bramkarz' }
+
+function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
+  const shop = profile.cardShop || { cardIds: [], refreshedAt: 0 }
+
+  useEffect(() => {
+    const age = Date.now() - (shop.refreshedAt || 0)
+    if (!shop.cardIds?.length || age >= SHOP_REFRESH_MS) refreshCardShop()
+  }, [])
+
+  const secsLeft = useCooldown(shop.refreshedAt, SHOP_REFRESH_MS)
+
+  const fmtTime = (s) => {
+    const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60
+    return h > 0 ? `${h}h ${m}m` : `${m}:${String(sec).padStart(2, '0')}`
+  }
+
+  const shopCards = (shop.cardIds || []).map(id => {
+    const def = CARD_DEFINITIONS.find(d => d.id === id)
+    if (!def) return null
+    return { def, card: defToCard(def), price: (def.sellPrice || 0) * 2 }
+  }).filter(Boolean)
+
+  return (
+    <div className="shop-tab">
+      <div className="shop-header">
+        <div className="shop-title">🛒 SKLEP ZAWODNIKÓW</div>
+        <div className="shop-refresh">{secsLeft > 0 ? `Odświeżenie za ${fmtTime(secsLeft)}` : 'Odświeżanie...'}</div>
+      </div>
+      {shopCards.length === 0 ? (
+        <div className="market-empty">
+          <div className="market-empty-icon">🛒</div>
+          <p>Ładowanie sklepu...</p>
+        </div>
+      ) : (
+        <div className="shop-cards-list">
+          {shopCards.map(({ def, card, price }) => {
+            const canAfford = profile.coins >= price
+            const alreadyOwned = profile.ownedCards.some(o => o.cardId === def.id)
+            return (
+              <div key={def.id} className={`shop-row ${!canAfford ? 'shop-row--locked' : ''}`}>
+                <div className="shop-row-card">
+                  <FieldCard card={card} />
+                </div>
+                <div className="shop-row-info">
+                  <div className="shop-row-name">{def.name}</div>
+                  <div className="shop-row-type">{TYPE_LABELS[def.type] || def.type}</div>
+                  <div className="shop-row-ability">{def.abilityName}</div>
+                  {alreadyOwned && <div className="shop-row-owned">Już posiadasz ✓</div>}
+                </div>
+                <div className="shop-row-buy">
+                  <div className="shop-row-price">🪙 {price}</div>
+                  <button
+                    className={`shop-buy-btn ${!canAfford ? 'shop-buy-btn--locked' : ''}`}
+                    disabled={!canAfford}
+                    onClick={() => { buyShopCard(def.id); showNotif(`🛒 ${def.name} kupiony!`) }}
+                  >
+                    KUP
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      <div className="shop-hint">💡 3 zawodników zmienia się co 12h • cena = 2× wartość sprzedaży</div>
+    </div>
+  )
+}
+
+// ── MarketScreen ───────────────────────────────────────────────────────────
+
 export default function MarketScreen() {
   const { goBack } = useRouter()
-  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched, recordFreePackClaimed } = useProfile()
+  const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched, recordFreePackClaimed, refreshCardShop, buyShopCard } = useProfile()
   const [tab, setTab] = useState('packs')
   const [openingPack, setOpeningPack] = useState(null)
   const [notification, setNotification] = useState(null)
@@ -398,12 +473,17 @@ export default function MarketScreen() {
         <button className={`market-tab ${tab === 'packs' ? 'market-tab--active' : ''}`} onClick={() => setTab('packs')}>
           📦 PACZKI
         </button>
+        <button className={`market-tab ${tab === 'shop' ? 'market-tab--active' : ''}`} onClick={() => setTab('shop')}>
+          🛒 SKLEP
+        </button>
         <button className={`market-tab ${tab === 'sell' ? 'market-tab--active' : ''}`} onClick={() => setTab('sell')}>
-          🔒 SPRZEDAJ
+          💰 SPRZEDAJ
         </button>
       </div>
 
-      {tab === 'packs' ? (
+      {tab === 'shop' ? (
+        <ShopTab profile={profile} refreshCardShop={refreshCardShop} buyShopCard={buyShopCard} showNotif={showNotif} />
+      ) : tab === 'packs' ? (
         <div className="packs-list">
 
           {/* Ad banner */}
@@ -473,6 +553,7 @@ export default function MarketScreen() {
       ) : (
         <SellTab profile={profile} sellCard={sellCard} showNotif={showNotif} />
       )}
+
 
       {openingPack && (
         <PackOpenOverlay

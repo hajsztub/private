@@ -610,6 +610,143 @@
 
 .market-empty-icon { font-size: 48px; }
 
+/* ── Shop tab ────────────────────────────────────────────────────────────── */
+
+.shop-tab {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-tab::-webkit-scrollbar { display: none; }
+
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+  flex-shrink: 0;
+}
+
+.shop-title {
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: white;
+}
+
+.shop-refresh {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+}
+
+.shop-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 12px 12px;
+}
+
+.shop-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shop-row--locked { opacity: 0.5; }
+
+.shop-row-card { flex-shrink: 0; }
+
+.shop-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.shop-row-name {
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  color: white;
+  line-height: 1;
+}
+
+.shop-row-type {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shop-row-ability {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-row-owned {
+  font-size: 10px;
+  font-weight: 800;
+  color: #66bb6a;
+}
+
+.shop-row-buy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.shop-row-price {
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffd54f;
+  white-space: nowrap;
+}
+
+.shop-buy-btn {
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.5);
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.shop-buy-btn:active { opacity: 0.8; }
+.shop-buy-btn--locked { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); box-shadow: none; cursor: not-allowed; }
+
+.shop-hint {
+  padding: 8px 16px 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
 /* ── Notification ─────────────────────────────────────────────────────────── */
 
 .market-notif {

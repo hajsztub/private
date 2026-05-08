@@ -1,5 +1,21 @@
 export const CHANGELOG = [
   {
+    version: '2.9',
+    date: '2026-05-08',
+    changes: [
+      'Sklep zawodników: 3 losowe karty do kupienia za stałą cenę (2× wartość sprzedaży), zmiana co 12 godzin',
+    ],
+  },
+  {
+    version: '2.8',
+    date: '2026-05-08',
+    changes: [
+      'System awansu i spadku ligowego: Bronze → Srebrna → Złota → Platynowa → Diamentowa',
+      'Popup z gratulacjami przy awansie i ostrzeżeniem przy spadku',
+      'Pasek postępu w lidze: strefa spadkowa (czerwona) i strefa awansu (zielona)',
+    ],
+  },
+  {
     version: '2.7',
     date: '2026-05-08',
     changes: [

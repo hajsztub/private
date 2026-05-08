@@ -6,9 +6,11 @@ import './LeagueScreen.css'
 
 export default function LeagueScreen() {
   const { navigate, goBack } = useRouter()
-  const { profile } = useProfile()
+  const { profile, clearTierChange } = useProfile()
 
   const tier = getTier(profile.rating)
+  const tierChange = profile.lastTierChange
+  const [showTierModal, setShowTierModal] = useState(!!tierChange)
   const [board, setBoard] = useState(() => generateLeaderboard(profile.rating, profile.name || 'Gracz'))
   const [flashIds, setFlashIds] = useState(new Set())
   const [opponentName, setOpponentName] = useState(() => getBotName(Date.now()))
@@ -70,23 +72,42 @@ export default function LeagueScreen() {
       </div>
 
       {/* Tier progress bar */}
-      <div className="league-progress-wrap">
-        <div className="league-tiers-row">
-          {LEAGUE_TIERS.map(t => (
-            <div
-              key={t.id}
-              className={`ltr-pip ${t.id === tier.id ? 'ltr-pip--active' : ''}`}
-              style={{ '--tc': t.color }}
-            >
-              <span className="ltr-icon">{t.icon}</span>
-              <span className="ltr-label">{t.label}</span>
-              {t.id === tier.id && (
-                <div className="ltr-range">{t.min}–{t.max === Infinity ? '∞' : t.max}</div>
-              )}
+      {(() => {
+        const tierRange = tier.max === Infinity ? 1000 : (tier.max - tier.min + 1)
+        const pos = Math.min(1, (profile.rating - tier.min) / tierRange)
+        const isDanger = pos < 0.15 && tier.id !== 'bronze'
+        const isPromo = pos > 0.85 && tier.id !== 'diamond'
+        return (
+          <div className="league-progress-wrap">
+            <div className="league-tiers-row">
+              {LEAGUE_TIERS.map(t => (
+                <div
+                  key={t.id}
+                  className={`ltr-pip ${t.id === tier.id ? 'ltr-pip--active' : ''}`}
+                  style={{ '--tc': t.color }}
+                >
+                  <span className="ltr-icon">{t.icon}</span>
+                  <span className="ltr-label">{t.label}</span>
+                  {t.id === tier.id && (
+                    <div className="ltr-range">{t.min}–{t.max === Infinity ? '∞' : t.max}</div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="tier-bar-wrap">
+              <div
+                className={`tier-bar-fill ${isDanger ? 'tier-bar-fill--danger' : ''} ${isPromo ? 'tier-bar-fill--promo' : ''}`}
+                style={{ width: `${Math.round(pos * 100)}%`, '--tc': tier.color }}
+              />
+              <div className="tier-bar-label">
+                {isDanger && <span className="tbz-danger">⚠️ Strefa spadkowa!</span>}
+                {isPromo && <span className="tbz-promo">🔥 Blisko awansu!</span>}
+                {!isDanger && !isPromo && <span>{profile.rating - tier.min} / {tier.max === Infinity ? '∞' : tierRange} pkt</span>}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Opponent preview */}
       <div className="league-opponent">
@@ -135,6 +156,37 @@ export default function LeagueScreen() {
           ⚽ Rozpocznij Mecz
         </button>
       </div>
+
+      {/* Tier change modal */}
+      {showTierModal && tierChange && (() => {
+        const fromTier = LEAGUE_TIERS.find(t => t.id === tierChange.from)
+        const toTier = LEAGUE_TIERS.find(t => t.id === tierChange.to)
+        const fromIdx = LEAGUE_TIERS.findIndex(t => t.id === tierChange.from)
+        const toIdx = LEAGUE_TIERS.findIndex(t => t.id === tierChange.to)
+        const isPromo = toIdx > fromIdx
+        const dismiss = () => { setShowTierModal(false); clearTierChange() }
+        return (
+          <div className="league-popup-overlay" onClick={dismiss}>
+            <div className={`league-popup tier-change-popup ${isPromo ? 'tcp--promo' : 'tcp--relegate'}`} onClick={e => e.stopPropagation()}>
+              <div className="tcp-icon">{isPromo ? '🎉' : '😔'}</div>
+              <div className="tcp-tier-icons">
+                <span style={{ color: fromTier?.color }}>{fromTier?.icon} {fromTier?.label}</span>
+                <span className="tcp-arrow">{isPromo ? '→' : '→'}</span>
+                <span style={{ color: toTier?.color }}>{toTier?.icon} {toTier?.label}</span>
+              </div>
+              <h2 className="tcp-title">{isPromo ? 'AWANS!' : 'SPADEK!'}</h2>
+              <p className="tcp-body">
+                {isPromo
+                  ? `Gratulacje! Awansowałeś do ligi ${toTier?.label}! Przeciwnicy będą trudniejsi, ale nagrody większe.`
+                  : `Spadłeś do ligi ${toTier?.label}. Popraw skład i wróć na wyższy poziom!`}
+              </p>
+              <button className="tcp-btn" onClick={dismiss}>
+                {isPromo ? '🚀 GRAJ DALEJ' : '💪 SPRÓBUJ PONOWNIE'}
+              </button>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* First league match confirmation popup */}
       {showFirstLeaguePopup && (

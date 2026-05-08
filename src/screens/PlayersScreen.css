@@ -275,10 +275,19 @@
 
 .psi-maxed {
   text-align: center;
-  color: var(--c-primary);
   font-weight: 800;
   font-size: 13px;
-  padding: 8px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(100,180,255,0.12), rgba(160,120,255,0.12));
+  border: 1px solid rgba(160,220,255,0.3);
+  color: #c8eaff;
+  animation: psi-maxed-glow 2.2s ease-in-out infinite;
+}
+
+@keyframes psi-maxed-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(160,220,255,0.25); }
+  50%       { box-shadow: 0 0 16px rgba(160,220,255,0.55); }
 }
 
 .psi-starter-note {
@@ -308,4 +317,9 @@
   border-radius: 6px;
   padding: 5px 8px;
   text-align: center;
+}
+
+.psi-max-bonus {
+  color: #a0d8ff;
+  font-weight: 700;
 }

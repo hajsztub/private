@@ -139,4 +139,17 @@ export const SFX = {
     playTone(80, 'sine', 0.35, 0.1, 0.14)
     playTone(60, 'sine', 0.4, 0.08, 0.22)
   },
+
+  maxUpgrade() {
+    // Triumphant shimmer + rising chord + sparkle
+    const chord = [523, 659, 784, 1047, 1319, 1568]
+    chord.forEach((f, i) => {
+      playTone(f, 'sine', 0.18, 0.22, i * 0.055)
+      playTone(f * 1.5, 'triangle', 0.06, 0.15, i * 0.055 + 0.02)
+    })
+    playNoise(0.12, 0.06, 0.05)
+    playNoise(0.08, 0.04, 0.35)
+    playTone(2093, 'sine', 0.2, 0.2, 0.38)
+    playTone(2637, 'sine', 0.15, 0.18, 0.5)
+  },
 }

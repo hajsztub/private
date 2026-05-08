@@ -114,6 +114,7 @@ export default function FieldCard({
         isNew ? 'fc--new' : '',
         `fc--${rarity}`,
         fieldSize ? 'fc--field' : '',
+        upgradeLevel >= 3 ? 'fc--maxed' : '',
       ].filter(Boolean).join(' ')}
       style={{
         '--type-c': typeColor,
@@ -131,6 +132,7 @@ export default function FieldCard({
         <AvatarArt id={card.id} color={card.color} />
         {rarity === 'legendary' && <div className="fc-legendary-shimmer" />}
         {rarity === 'rare' && <div className="fc-rare-shine" />}
+        {upgradeLevel >= 3 && <div className="fc-maxed-overlay" />}
 
         {/* Top row: position badge + rating */}
         <div className="fc-top">
@@ -152,14 +154,16 @@ export default function FieldCard({
           )}
         </div>
 
-        {/* Upgrade pips */}
-        {upgradeLevel > 0 && (
+        {/* Upgrade pips / max crown */}
+        {upgradeLevel >= 3 ? (
+          <div className="fc-maxed-crown">✦</div>
+        ) : upgradeLevel > 0 ? (
           <div className="fc-pips">
             {Array.from({ length: upgradeLevel }).map((_, i) => (
               <span key={i} className="fc-pip" />
             ))}
           </div>
-        )}
+        ) : null}
 
         {/* Destroyed / lock / new badges */}
         {card.isDestroyed && <div className="fc-destroyed-overlay" />}

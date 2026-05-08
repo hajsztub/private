@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '2.3',
+    date: '2026-05-08',
+    changes: [
+      'Karty KAPITAN i WETERAN otrzymały imiona: COSTA i MUNOZ',
+      'Maksymalny poziom ulepszenia (3/3) daje teraz dodatkowy boost statystyki (+3 dla rzadkich, +5 dla legendarnych)',
+      'Karta na maks. poziomie ma animowaną świecącą obwódkę (niebiesko-fioletowo-zielona), wirujący efekt i symbol ✦',
+      'SFX triumfalnego fanfaru przy osiągnięciu maks. poziomu',
+      'Ekran Zawodnicy pokazuje preview bonusu maks. poziomu przy każdej karcie',
+    ],
+  },
+  {
     version: '2.2',
     date: '2026-05-08',
     changes: [

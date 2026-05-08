@@ -5,6 +5,7 @@ import FieldCard from '../components/FieldCard'
 import CurrencyBar from '../components/CurrencyBar'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
+import { SFX } from '../game/soundEngine'
 import './PlayersScreen.css'
 
 const ALL_DEFS = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
@@ -21,12 +22,14 @@ function buildDisplayCard(owned, def) {
   if (!def) return null
   const level = owned.upgradeLevel || 0
   const bonus = level * (def.upgradeStatBonus || 1)
+  const maxBonus = level >= 3 ? (def.maxLevelBonus ?? (def.rarity === 'legendary' ? 5 : 3)) : 0
   const isPrimAtk = def.type === 'attack' || (def.type === 'midfield' && def.attackStat >= def.defenseStat)
+  const isDefOrGK = !isPrimAtk || def.type === 'goalkeeper' || def.type === 'defense'
   return {
     ...def,
     instanceId: owned.instanceId,
-    currentAttackStat: def.attackStat + (isPrimAtk ? bonus : 0),
-    currentDefenseStat: def.defenseStat + (!isPrimAtk || def.type === 'goalkeeper' || def.type === 'defense' ? bonus : 0),
+    currentAttackStat: def.attackStat + (isPrimAtk ? bonus + maxBonus : 0),
+    currentDefenseStat: def.defenseStat + (isDefOrGK ? bonus + maxBonus : 0),
     upgradeLevel: level,
     isStarter: owned.isStarter,
   }
@@ -58,6 +61,7 @@ export default function PlayersScreen() {
   const handleUpgrade = () => {
     if (!selected || !canUpgrade) return
     upgradeCard(selected)
+    if (upgradeLevel + 1 >= 3) SFX.maxUpgrade()
   }
 
   return (
@@ -148,9 +152,11 @@ export default function PlayersScreen() {
                     (selDef.type === 'midfield' && selDef.attackStat >= selDef.defenseStat)
                   const primaryStat = isPrimAtk ? 'ATK' : 'DEF'
                   const bonus = selDef.upgradeStatBonus
+                  const maxBonus = selDef.maxLevelBonus ?? (selDef.rarity === 'legendary' ? 5 : 3)
                   return bonus ? (
                     <div className="psi-upgrade-info">
                       Ulepszenie: +{bonus} do {primaryStat}
+                      <span className="psi-max-bonus"> · Max LVL: +{maxBonus} {primaryStat} ekstra</span>
                     </div>
                   ) : null
                 })()}
@@ -167,7 +173,7 @@ export default function PlayersScreen() {
                     )}
                   </button>
                 ) : (
-                  <div className="psi-maxed">✦ Maksymalny poziom</div>
+                  <div className="psi-maxed">✦ Maksymalny poziom — karta przebudzona!</div>
                 )}
 
                 {selOwned.isStarter && (

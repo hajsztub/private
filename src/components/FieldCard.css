@@ -508,3 +508,71 @@
   font-size: 10px;
   margin-left: 1px;
 }
+
+/* ── Max-level (LVL 3) card ──────────────────────────────────────────────── */
+
+.fc--maxed {
+  border-color: #e0f0ff !important;
+  animation: fc-maxed-border 2.2s ease-in-out infinite !important;
+}
+
+@keyframes fc-maxed-border {
+  0%   { box-shadow: 0 0 10px rgba(160,220,255,0.6), 0 0 22px rgba(100,180,255,0.35), 0 4px 12px rgba(0,0,0,0.4); }
+  33%  { box-shadow: 0 0 16px rgba(220,180,255,0.7), 0 0 32px rgba(160,120,255,0.45), 0 4px 12px rgba(0,0,0,0.4); }
+  66%  { box-shadow: 0 0 16px rgba(160,255,210,0.7), 0 0 32px rgba(80,220,160,0.45), 0 4px 12px rgba(0,0,0,0.4); }
+  100% { box-shadow: 0 0 10px rgba(160,220,255,0.6), 0 0 22px rgba(100,180,255,0.35), 0 4px 12px rgba(0,0,0,0.4); }
+}
+
+/* Rotating star-burst overlay */
+.fc-maxed-overlay {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255,255,255,0.06) 20deg,
+    transparent 40deg,
+    rgba(200,230,255,0.05) 70deg,
+    transparent 90deg,
+    rgba(255,255,255,0.06) 120deg,
+    transparent 140deg,
+    rgba(200,230,255,0.05) 170deg,
+    transparent 180deg,
+    rgba(255,255,255,0.06) 200deg,
+    transparent 220deg,
+    rgba(200,230,255,0.05) 250deg,
+    transparent 270deg,
+    rgba(255,255,255,0.06) 300deg,
+    transparent 320deg,
+    rgba(200,230,255,0.05) 350deg,
+    transparent 360deg
+  );
+  animation: fc-maxed-spin 6s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  border-radius: inherit;
+}
+
+@keyframes fc-maxed-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Crown badge replacing pips at max level */
+.fc-maxed-crown {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #e0f0ff;
+  text-shadow: 0 0 6px rgba(160,220,255,0.9), 0 0 12px rgba(100,180,255,0.7);
+  z-index: 3;
+  animation: fc-crown-pulse 2.2s ease-in-out infinite;
+  line-height: 1;
+}
+
+@keyframes fc-crown-pulse {
+  0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 1;   transform: translateX(-50%) scale(1.25); }
+}

@@ -1490,7 +1490,7 @@ const EXTENDED_CARDS = [
   },
   {
     id: 'kapitan',
-    name: 'KAPITAN',
+    name: 'COSTA',
     type: 'midfield',
     typeLabel: 'M',
     attackStat: 5,
@@ -1500,6 +1500,7 @@ const EXTENDED_CARDS = [
     sellPrice: 100,
     upgradeCost: [140, 280, 560],
     upgradeStatBonus: 1,
+    maxLevelBonus: 4,
     color: '#fff9c4',
     abilityName: 'OPASKA KAPITANA',
     abilityType: 'passive',
@@ -1510,7 +1511,7 @@ const EXTENDED_CARDS = [
   },
   {
     id: 'weteran',
-    name: 'WETERAN',
+    name: 'MUNOZ',
     type: 'defense',
     typeLabel: 'D',
     attackStat: 3,
@@ -1520,6 +1521,7 @@ const EXTENDED_CARDS = [
     sellPrice: 95,
     upgradeCost: [130, 260, 520],
     upgradeStatBonus: 1,
+    maxLevelBonus: 4,
     color: '#e8eaf6',
     abilityName: 'DOŚWIADCZENIE',
     abilityType: 'passive',
@@ -1574,18 +1576,21 @@ export function createDeckFromOwned(ownedCards, allDefs) {
   for (const owned of ownedCards) {
     const def = findDef(owned.cardId)
     if (!def) continue
-    const bonus = (owned.upgradeLevel || 0) * (def.upgradeStatBonus || 1)
+    const level = owned.upgradeLevel || 0
+    const bonus = level * (def.upgradeStatBonus || 1)
+    const maxBonus = level >= 3 ? (def.maxLevelBonus ?? (def.rarity === 'legendary' ? 5 : 3)) : 0
     const isPrimarilyAttack = def.type === 'attack' || (def.type === 'midfield' && def.attackStat >= def.defenseStat)
+    const isDefOrGK = !isPrimarilyAttack || def.type === 'goalkeeper' || def.type === 'defense'
     deck.push({
       ...def,
       instanceId: owned.instanceId,
-      currentAttackStat: def.attackStat + (isPrimarilyAttack ? bonus : 0),
-      currentDefenseStat: def.defenseStat + (!isPrimarilyAttack || def.type === 'goalkeeper' || def.type === 'defense' ? bonus : 0),
+      currentAttackStat: def.attackStat + (isPrimarilyAttack ? bonus + maxBonus : 0),
+      currentDefenseStat: def.defenseStat + (isDefOrGK ? bonus + maxBonus : 0),
       isLocked: false,
       lockedRounds: 0,
       justPlaced: false,
       faceDown: false,
-      upgradeLevel: owned.upgradeLevel || 0,
+      upgradeLevel: level,
     })
   }
   return shuffleDeck(deck)

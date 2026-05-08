@@ -8,13 +8,17 @@ import FieldCard from '../components/FieldCard'
 import './MarketScreen.css'
 
 function defToSellCard(def, owned) {
-  const bonus = (owned.upgradeLevel || 0) * (def.upgradeStatBonus || 1)
+  const level = owned.upgradeLevel || 0
+  const bonus = level * (def.upgradeStatBonus || 1)
+  const maxBonus = level >= 3 ? (def.maxLevelBonus ?? (def.rarity === 'legendary' ? 5 : 3)) : 0
+  const isPrimAtk = def.type === 'attack' || (def.type === 'midfield' && def.attackStat >= def.defenseStat)
+  const isDefOrGK = !isPrimAtk || def.type === 'goalkeeper' || def.type === 'defense'
   return {
     ...def,
     instanceId: owned.instanceId,
-    currentAttackStat: def.attackStat + bonus,
-    currentDefenseStat: def.defenseStat + bonus,
-    upgradeLevel: owned.upgradeLevel || 0,
+    currentAttackStat: def.attackStat + (isPrimAtk ? bonus + maxBonus : 0),
+    currentDefenseStat: def.defenseStat + (isDefOrGK ? bonus + maxBonus : 0),
+    upgradeLevel: level,
   }
 }
 

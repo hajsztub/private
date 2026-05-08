@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { getTier, getBotName } from '../data/botNames'
+import { CHANGELOG } from '../data/changelog'
 import './MainMenuScreen.css'
 
 const TUTORIAL_SECTIONS = [
@@ -69,6 +70,34 @@ function TutorialModal({ onClose }) {
   )
 }
 
+function ChangelogModal({ onClose }) {
+  return (
+    <div className="cl-overlay" onClick={onClose}>
+      <div className="cl-modal" onClick={e => e.stopPropagation()}>
+        <div className="cl-header">
+          <span className="cl-title">📋 CO NOWEGO?</span>
+          <button className="cl-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="cl-list">
+          {CHANGELOG.map(entry => (
+            <div key={entry.version} className="cl-entry">
+              <div className="cl-version-row">
+                <span className="cl-version">v{entry.version}</span>
+                <span className="cl-date">{entry.date}</span>
+              </div>
+              <ul className="cl-changes">
+                {entry.changes.map((c, i) => (
+                  <li key={i} className="cl-change">{c}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Logo() {
   const [failed, setFailed] = useState(false)
   if (!failed) {
@@ -119,6 +148,7 @@ export default function MainMenuScreen() {
   const { navigate } = useRouter()
   const { profile, claimMission } = useProfile()
   const [showTutorial, setShowTutorial] = useState(false)
+  const [showChangelog, setShowChangelog] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
   const [showMissions, setShowMissions] = useState(false)
   const [resetIn, setResetIn] = useState('')
@@ -338,7 +368,12 @@ export default function MainMenuScreen() {
         </div>
       )}
 
-      <div className="mm-version">GOAL TCG v1.1 — build 20260507</div>
+      <div className="mm-version">
+        <span>GOAL TCG v{CHANGELOG[0].version} — build 20260508</span>
+        <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
+      </div>
+
+      {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
     </div>
   )
 }

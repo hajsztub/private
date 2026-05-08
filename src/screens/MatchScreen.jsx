@@ -633,7 +633,7 @@ export default function MatchScreen({ matchParams = {} }) {
           onClick={handleEndTurn}
           disabled={!isPlayerTurn || !!coinFlipState?.pending}
         >
-          {!isPlayerTurn ? (aiThinking ? '🤔 Bot...' : '⏳ Tura bota') : '→ Zakończ turę'}
+          {!isPlayerTurn ? (aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika') : '→ Zakończ turę'}
         </button>
       </div>
 

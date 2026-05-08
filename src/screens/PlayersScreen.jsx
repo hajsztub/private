@@ -35,10 +35,33 @@ function buildDisplayCard(owned, def) {
   }
 }
 
+const RARITY_ORDER = { legendary: 0, rare: 1, common: 2, starter: 3 }
+
+const SORTS = [
+  { id: 'atk',    label: '⚔ ATK' },
+  { id: 'def',    label: '🛡 DEF' },
+  { id: 'rarity', label: '★ Rzadkość' },
+]
+
+function applySort(cards, sort) {
+  const s = [...cards]
+  switch (sort) {
+    case 'atk':
+      return s.sort((a, b) => (b.card.currentAttackStat ?? 0) - (a.card.currentAttackStat ?? 0))
+    case 'def':
+      return s.sort((a, b) => (b.card.currentDefenseStat ?? 0) - (a.card.currentDefenseStat ?? 0))
+    case 'rarity':
+      return s.sort((a, b) => (RARITY_ORDER[a.card.rarity] ?? 9) - (RARITY_ORDER[b.card.rarity] ?? 9))
+    default:
+      return s
+  }
+}
+
 export default function PlayersScreen() {
   const router = useRouter()
   const { profile, upgradeCard } = useProfile()
   const [filter, setFilter] = useState('all')
+  const [sort, setSort] = useState('atk')
   const [selected, setSelected] = useState(null)
 
   const allCards = profile.ownedCards
@@ -48,9 +71,10 @@ export default function PlayersScreen() {
     })
     .filter(x => x.card)
 
-  const displayed = filter === 'all'
-    ? allCards
-    : allCards.filter(x => x.def?.type === filter)
+  const displayed = applySort(
+    filter === 'all' ? allCards : allCards.filter(x => x.def?.type === filter),
+    sort,
+  )
 
   const selectedEntry = selected ? allCards.find(x => x.owned.instanceId === selected) : null
   const { owned: selOwned, def: selDef, card: selCard } = selectedEntry || {}
@@ -82,6 +106,16 @@ export default function PlayersScreen() {
             onClick={() => setFilter(f.id)}
           >
             {f.label}
+          </button>
+        ))}
+        <div className="ps-filter-divider" />
+        {SORTS.map(s => (
+          <button
+            key={s.id}
+            className={`ps-pill ps-pill--sort ${sort === s.id ? 'ps-pill--on' : ''}`}
+            onClick={() => setSort(s.id)}
+          >
+            {s.label}
           </button>
         ))}
       </div>

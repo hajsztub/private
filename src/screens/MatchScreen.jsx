@@ -554,6 +554,7 @@ export default function MatchScreen({ matchParams = {} }) {
             onDrop={() => placeCard('defense')}
             dragZoneActive={dragZone === 'defense'}
             fieldSize={true}
+            canActivate={canActivate}
           />
           <div className="ms-zone-sep" />
           <Zone
@@ -567,6 +568,7 @@ export default function MatchScreen({ matchParams = {} }) {
             onDrop={() => placeCard('offense')}
             dragZoneActive={dragZone === 'offense'}
             fieldSize={true}
+            canActivate={canActivate}
           />
         </div>
 

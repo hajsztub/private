@@ -68,6 +68,7 @@ export default function FieldCard({
   onDragStart,
   goalCount = 0,
   fieldSize = false,
+  canActivateAbility = false,
 }) {
   const longRef = useRef(null)
   const typeColor = TYPE_COLOR[card.type] || TYPE_COLOR.attack
@@ -115,6 +116,7 @@ export default function FieldCard({
         `fc--${rarity}`,
         fieldSize ? 'fc--field' : '',
         upgradeLevel >= 3 ? 'fc--maxed' : '',
+        canActivateAbility ? 'fc--can-activate' : '',
       ].filter(Boolean).join(' ')}
       style={{
         '--type-c': typeColor,
@@ -170,6 +172,7 @@ export default function FieldCard({
         {card.isDestroyed && <div className="fc-badge fc-badge--destroyed">💀</div>}
         {!card.isDestroyed && card.isLocked && <div className="fc-badge fc-badge--lock">🔒{card.lockedRounds}r</div>}
         {isNew && <div className="fc-badge fc-badge--new">NEW</div>}
+        {canActivateAbility && <div className="fc-ability-dot">⚡</div>}
       </div>
     </div>
   )

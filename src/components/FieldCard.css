@@ -282,6 +282,36 @@
 .fc-badge--lock { background: rgba(0,0,0,0.7); }
 .fc-badge--new  { background: #2e7d32; }
 
+/* ── Activatable ability indicator ────────────────────────────────────────── */
+
+.fc--can-activate {
+  border-color: #ffd600 !important;
+  box-shadow: 0 0 10px rgba(255,214,0,0.55), var(--rarity-s, 0 4px 12px rgba(0,0,0,0.4)) !important;
+  animation: fc-ability-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes fc-ability-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,214,0,0.45); }
+  50%       { box-shadow: 0 0 18px rgba(255,214,0,0.85); }
+}
+
+.fc-ability-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 11px;
+  line-height: 1;
+  z-index: 4;
+  filter: drop-shadow(0 0 4px rgba(255,214,0,0.9));
+  animation: fc-ability-bounce 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fc-ability-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-2px) scale(1.15); }
+}
+
 /* Face-down card */
 .fc--back {
   width: 80px;

@@ -5,7 +5,8 @@ const SETTINGS_KEY = 'football_cards_settings_v1'
 function defaultSettings() {
   return {
     visualEffects: true,
-    sound: false, // off by default (no audio files yet)
+    sound: false,
+    music: true,
     language: 'pl', // only Polish for now
   }
 }

@@ -85,6 +85,23 @@ export default function SettingsScreen() {
 
         <div className="settings-row">
           <div className="settings-row-info">
+            <span className="settings-row-icon">🎵</span>
+            <div className="settings-row-labels">
+              <div className="settings-row-label">Muzyka w tle</div>
+              <div className="settings-row-desc">Stadionowa muzyka ambientowa</div>
+            </div>
+          </div>
+          <button
+            className={`settings-toggle ${settings.music ? 'settings-toggle--on' : ''}`}
+            onClick={() => toggle('music')}
+            aria-label="Toggle music"
+          >
+            <div className="settings-toggle-knob" />
+          </button>
+        </div>
+
+        <div className="settings-row">
+          <div className="settings-row-info">
             <span className="settings-row-icon">🔊</span>
             <div className="settings-row-labels">
               <div className="settings-row-label">Dźwięk</div>

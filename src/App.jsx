@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useRef } from 'react'
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react'
 import AppRouter, { useRouter } from './router/AppRouter'
 import { usePersistentStore } from './store/usePersistentStore'
 import { useSettingsStore } from './store/useSettingsStore'
+import { Music } from './game/musicEngine'
 import MainMenuScreen from './screens/MainMenuScreen'
 import MatchScreen from './screens/MatchScreen'
 import PostMatchScreen from './screens/PostMatchScreen'
@@ -98,6 +99,22 @@ export default function App() {
   const persistentStore = usePersistentStore()
   const settingsStore = useSettingsStore()
   const [splash, setSplash] = useState(true)
+
+  // Init music after splash (needs user interaction context)
+  const musicInitRef = useRef(false)
+  useEffect(() => {
+    if (splash) return
+    if (!musicInitRef.current) {
+      musicInitRef.current = true
+      Music.init(settingsStore.settings.music)
+    }
+  }, [splash]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // React to music toggle in settings
+  useEffect(() => {
+    if (splash) return
+    Music.setEnabled(settingsStore.settings.music)
+  }, [settingsStore.settings.music, splash])
 
   if (splash) return <SplashScreen onDone={() => setSplash(false)} />
 

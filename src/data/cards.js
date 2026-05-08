@@ -1398,7 +1398,7 @@ const EXTENDED_CARDS = [
     color: '#fff8e1',
     abilityName: 'Rozpęd',
     abilityType: 'passive',
-    abilityDescription: 'Co rundę cały atak drużyny zyskuje +2 ATK.',
+    abilityDescription: 'Co rundę każdy zawodnik w sektorze ataku drużyny zyskuje +1 ATK.',
     noActivationDescription: '',
     passiveEffect: { type: 'per_round_team_offense_buff', amount: 1, message: 'Rozpęd! Cały atak +1 ATK.' },
     count: 1,

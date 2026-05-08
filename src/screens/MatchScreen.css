@@ -131,6 +131,17 @@
   letter-spacing: 0.5px;
 }
 
+.msb-round-of--custom {
+  color: #ff5252;
+  font-weight: 900;
+  animation: roundCustomPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes roundCustomPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
 /* ── Goal collapse tab ───────────────────────────────────────────────────── */
 
 .ms-goal-tab {

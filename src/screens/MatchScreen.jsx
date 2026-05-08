@@ -428,7 +428,9 @@ export default function MatchScreen({ matchParams = {} }) {
           </div>
           <div className="msb-round-row">
             <span className="msb-round-badge">R{round}</span>
-            <span className="msb-round-of">/10</span>
+            <span className={`msb-round-of${matchState.maxRounds !== 10 ? ' msb-round-of--custom' : ''}`}>
+              /{matchState.maxRounds ?? 10}
+            </span>
           </div>
         </div>
         <div className="msb-side msb-side--right">

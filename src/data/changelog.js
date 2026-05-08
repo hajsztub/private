@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '1.9',
+    date: '2026-05-08',
+    changes: [
+      'Licznik rund pokazuje dynamiczny limit: R12/15 zamiast R12/10 gdy aktywny Zenit lub Harvy',
+      'Zmieniony limit rund wyświetlany na czerwono z pulsowaniem',
+    ],
+  },
+  {
     version: '1.8',
     date: '2026-05-08',
     changes: [

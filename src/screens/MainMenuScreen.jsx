@@ -226,31 +226,32 @@ export default function MainMenuScreen() {
         <span className="mmr-l">{profile.losses}P</span>
       </div>
 
-      {/* ── Daily missions button ── */}
-      <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
-        <span className="mm-missions-bar-icon">⚡</span>
-        <span className="mm-missions-bar-label">MISJE DNIA</span>
-        <div className="mm-missions-bar-dots">
-          {missions.map(m => (
-            <span
-              key={m.id}
-              className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`}
-            />
-          ))}
-        </div>
-        {claimableCount > 0 && (
-          <span className="mm-missions-badge">{claimableCount}</span>
-        )}
-        <span className="mm-missions-bar-arrow">›</span>
-      </button>
+      {/* ── Missions row ── */}
+      <div className="mm-missions-row">
+        <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
+          <span className="mm-missions-bar-icon">⚡</span>
+          <span className="mm-missions-bar-label">DNIA</span>
+          <div className="mm-missions-bar-dots">
+            {missions.map(m => (
+              <span
+                key={m.id}
+                className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`}
+              />
+            ))}
+          </div>
+          {claimableCount > 0 && (
+            <span className="mm-missions-badge">{claimableCount}</span>
+          )}
+          <span className="mm-missions-bar-arrow">›</span>
+        </button>
 
-      {/* ── Weekly missions bar ── */}
-      <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
-        <span className="mm-missions-bar-icon">📅</span>
-        <span className="mm-missions-bar-label">MISJE TYGODNIOWE</span>
-        <span className="mm-weekly-lock">🔒</span>
-        <span className="mm-missions-bar-arrow">›</span>
-      </button>
+        <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
+          <span className="mm-missions-bar-icon">📅</span>
+          <span className="mm-missions-bar-label">TYGODNIOWE</span>
+          <span className="mm-weekly-lock">🔒</span>
+          <span className="mm-missions-bar-arrow">›</span>
+        </button>
+      </div>
 
       {/* ── Play buttons ── */}
       <div className="mm-play-section">

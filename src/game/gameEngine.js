@@ -800,6 +800,33 @@ function applyPassiveEffects(state) {
 
 function applySpecialCardEffect(state, card) {
   switch (card.effect.type) {
+    case 'lock_random_card': {
+      // Yellow card: lock 1 random field card per team for N rounds
+      let s = state
+      for (const pid of ['A', 'B']) {
+        const p = s.players[pid]
+        const eligible = [...p.offenseSector, ...p.defenseSector].filter(c => !c.isDestroyed && !c.isLocked)
+        if (!eligible.length) continue
+        const target = eligible[Math.floor(Math.random() * eligible.length)]
+        s = lockCard(s, pid, target.instanceId, card.effect.rounds ?? 1)
+      }
+      return s
+    }
+    case 'var_check': {
+      // VAR: for each team that has 3 cards in any sector, destroy 1 random from that sector
+      let s = state
+      for (const pid of ['A', 'B']) {
+        const p = s.players[pid]
+        for (const sectorKey of ['offenseSector', 'defenseSector']) {
+          const sector = p[sectorKey].filter(c => !c.isDestroyed)
+          if (sector.length >= 3) {
+            const target = sector[Math.floor(Math.random() * sector.length)]
+            s = destroyCard(s, pid, target.instanceId)
+          }
+        }
+      }
+      return s
+    }
     case 'global_attack_debuff': {
       let s = state
       for (const pid of ['A', 'B']) {

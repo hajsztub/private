@@ -1517,8 +1517,8 @@ export const SPECIAL_CARDS = [
   {
     id: 'var',
     name: 'VAR',
-    description: 'Weryfikacja! Każdy gracz może cofnąć jedną akcję z ostatniej rundy.',
-    effect: { type: 'undo_last_action' },
+    description: 'Weryfikacja VAR! Każda drużyna z pełnym sektorem (3 zawodników) traci 1 losowego gracza z tego sektora.',
+    effect: { type: 'var_check' },
   },
 ]
 

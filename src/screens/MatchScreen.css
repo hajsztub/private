@@ -1643,17 +1643,17 @@
 /* ── Match log button ─────────────────────────────────────────────────────── */
 
 .ms-log-btn {
-  position: fixed;
+  position: absolute;
   left: 8px;
-  top: 22%;
+  top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(15,30,20,0.85);
   border: 1px solid rgba(255,255,255,0.18);
   color: rgba(255,255,255,0.7);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 900;
   display: flex;
   align-items: center;
@@ -1663,6 +1663,7 @@
   -webkit-tap-highlight-color: transparent;
   backdrop-filter: blur(4px);
   padding: 0;
+  flex-shrink: 0;
 }
 
 .ms-log-btn:active {

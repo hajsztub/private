@@ -628,6 +628,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
         {/* === MIDFIELD LINE === */}
         <div className="ms-midfield">
+          <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
           <div className="ms-mid-line" />
           <div className="ms-mid-ball">⚽</div>
           <div className="ms-mid-line" />
@@ -695,9 +696,6 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
 
       </div>{/* end ms-field-wrap */}
-
-      {/* ── Match log button ─────────────────────────────────────────────── */}
-      <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
 
       {/* ── Match log panel ──────────────────────────────────────────────── */}
       {showLog && (

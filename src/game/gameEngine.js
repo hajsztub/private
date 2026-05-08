@@ -714,6 +714,7 @@ function applyPassiveEffects(state) {
     const allCards = () => [
       ...newState.players[pid].offenseSector,
       ...newState.players[pid].defenseSector,
+      ...(newState.players[pid].activeGoalkeeper ? [newState.players[pid].activeGoalkeeper] : []),
     ]
 
     for (const card of allCards()) {

@@ -1641,20 +1641,23 @@ export function createBalancedAIDeck(playerDeck) {
 
   const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0)
 
-  // Score each def by proximity to player avg power
   const scored = pool.map(d => ({
     def: d,
-    power: (d.attackStat || 0) + (d.defenseStat || 0),
     diff: Math.abs(((d.attackStat || 0) + (d.defenseStat || 0)) - avgPower),
   })).sort((a, b) => a.diff - b.diff)
 
   const byType = (type) => scored.filter(s => s.def.type === type)
 
+  // Pick n random cards from the closest-power candidates for this type
   const pick = (type, n) => {
-    const pool = byType(type)
-    // Spread picks across range to avoid identical cards
-    const step = Math.max(1, Math.floor(pool.length / n))
-    return Array.from({ length: n }, (_, i) => pool[Math.min(i * step, pool.length - 1)]?.def).filter(Boolean)
+    const candidates = byType(type)
+    // Take top candidates (closest to avg power), then shuffle to randomise
+    const topN = candidates.slice(0, Math.max(n * 3, 8))
+    for (let i = topN.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [topN[i], topN[j]] = [topN[j], topN[i]]
+    }
+    return topN.slice(0, n).map(s => s.def)
   }
 
   const gks  = pick('goalkeeper', 2)
@@ -1664,10 +1667,13 @@ export function createBalancedAIDeck(playerDeck) {
 
   let selected = [...gks, ...defs, ...mids, ...atks].filter(Boolean)
 
-  // Fill remaining slots if not enough cards in a type
   if (selected.length < 11) {
     const usedIds = new Set(selected.map(d => d.id))
     const extras = scored.filter(s => !usedIds.has(s.def.id)).map(s => s.def)
+    for (let i = extras.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [extras[i], extras[j]] = [extras[j], extras[i]]
+    }
     selected = [...selected, ...extras].slice(0, 11)
   }
 

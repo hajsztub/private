@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '1.5',
+    date: '2026-05-08',
+    changes: [
+      'Animacja gola: widoczna karta strzelca (imię w pigułce ⚽)',
+      'Nowe tło animacji gola: radialne rozbłyski, zielony (Ty) lub czerwony (Przeciwnik) gradient',
+      'Napis GOL! powiększony do 88px z kolorową poświatą, wynik w złotym kolorze',
+      'Czas animacji gola wydłużony z 2,4 s do 3,8 s',
+      'Ulepszone SFX gola: 5-nutowy fanfar + trzy fale okrzyków (Twój gol), niski akord żałobny (Gol przeciwnika)',
+      'Naprawa na desktopie: modalne okna (np. ulepszenie zawodnika) nie wychodzą poza okno 650×900',
+    ],
+  },
+  {
     version: '1.4',
     date: '2026-05-08',
     changes: [

@@ -136,9 +136,24 @@ export default function PlayersScreen() {
                 {selCard.abilityName && (
                   <div className="psi-ability">
                     <span className="psi-ability-name">{selCard.abilityName}</span>
-                    {selCard.abilityDesc && <span className="psi-ability-desc">{selCard.abilityDesc}</span>}
+                    {selCard.abilityDescription && <span className="psi-ability-desc">{selCard.abilityDescription}</span>}
+                    {selCard.noActivationDescription && (
+                      <span className="psi-noact"><span className="psi-noact-lbl">Brak aktywacji:</span> {selCard.noActivationDescription}</span>
+                    )}
                   </div>
                 )}
+
+                {(() => {
+                  const isPrimAtk = selDef.type === 'attack' || selDef.type === 'midfield-atk-first' ||
+                    (selDef.type === 'midfield' && selDef.attackStat >= selDef.defenseStat)
+                  const primaryStat = isPrimAtk ? 'ATK' : 'DEF'
+                  const bonus = selDef.upgradeStatBonus
+                  return bonus ? (
+                    <div className="psi-upgrade-info">
+                      Ulepszenie: +{bonus} do {primaryStat}
+                    </div>
+                  ) : null
+                })()}
 
                 {upgradeLevel < 3 ? (
                   <button

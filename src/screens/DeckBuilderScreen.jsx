@@ -104,12 +104,56 @@ function initAssignments(allCards, activeDeck, savedAssignments) {
   return result
 }
 
+// ── Card Info Modal ────────────────────────────────────────────────────────
+
+function CardInfoModal({ card, onClose }) {
+  if (!card) return null
+  const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
+  const isPrimAtk = card.type === 'attack' || card.type === 'midfield-atk-first'
+  return (
+    <div className="ci-overlay" onClick={onClose}>
+      <div className="ci-panel" onClick={e => e.stopPropagation()}>
+        <button className="ci-close" onClick={onClose}>✕</button>
+        <div className="ci-name">{card.name}</div>
+        <div className="ci-meta">
+          <span className="ci-type">{card.type}</span>
+          <span className="ci-rarity" style={{ color: RARITY_C[card.rarity] }}>
+            {card.rarity === 'legendary' ? '★★★' : card.rarity === 'rare' ? '★★' : '★'} {card.rarity}
+          </span>
+        </div>
+        <div className="ci-stats">
+          <div className="ci-stat"><span className="ci-slbl">ATK</span><span className="ci-sval ci-sval--atk">{card.currentAttackStat ?? card.attackStat ?? 0}</span></div>
+          <div className="ci-stat"><span className="ci-slbl">DEF</span><span className="ci-sval ci-sval--def">{card.currentDefenseStat ?? card.defenseStat ?? 0}</span></div>
+        </div>
+        {card.abilityName && (
+          <div className="ci-ability">
+            <div className="ci-ability-name">{card.abilityName}</div>
+            {card.abilityDescription && <div className="ci-ability-desc">{card.abilityDescription}</div>}
+          </div>
+        )}
+        {card.noActivationDescription && (
+          <div className="ci-noact">
+            <span className="ci-noact-lbl">Brak aktywacji:</span> {card.noActivationDescription}
+          </div>
+        )}
+        {card.upgradeStatBonus && (
+          <div className="ci-upgrade-info">
+            Ulepszenie: +{card.upgradeStatBonus} do {isPrimAtk ? 'ATK' : 'DEF'}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function DeckBuilderScreen() {
   const { goBack } = useRouter()
   const { profile, setActiveDeck } = useProfile()
   const [notification, setNotification] = useState(null)
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [manualFilter, setManualFilter] = useState('all')
+  const [infoCard, setInfoCard] = useState(null)
+  const [collectionSort, setCollectionSort] = useState(null) // null | 'atk' | 'def'
 
   const allCards = useMemo(() =>
     profile.ownedCards.map(o => {
@@ -146,9 +190,23 @@ export default function DeckBuilderScreen() {
   const activeSlot = selectedSlot ? FORMATION.find(s => s.id === selectedSlot) : null
   const filterType = activeSlot ? activeSlot.type : manualFilter
 
-  const filteredCards = allCards.filter(({ card }) =>
-    (FILTER_ACCEPTS[filterType] ?? FILTER_ACCEPTS.all).includes(card.type)
-  )
+  const filteredCards = useMemo(() => {
+    let cards = allCards.filter(({ card }) =>
+      (FILTER_ACCEPTS[filterType] ?? FILTER_ACCEPTS.all).includes(card.type)
+    )
+    if (collectionSort === 'atk') {
+      cards = [...cards].sort((a, b) =>
+        (b.card.currentAttackStat ?? b.card.attackStat ?? 0) -
+        (a.card.currentAttackStat ?? a.card.attackStat ?? 0)
+      )
+    } else if (collectionSort === 'def') {
+      cards = [...cards].sort((a, b) =>
+        (b.card.currentDefenseStat ?? b.card.defenseStat ?? 0) -
+        (a.card.currentDefenseStat ?? a.card.defenseStat ?? 0)
+      )
+    }
+    return cards
+  }, [allCards, filterType, collectionSort])
 
   const handleSlotClick = (slotId) => {
     if (selectedSlot === slotId) {
@@ -335,6 +393,7 @@ export default function DeckBuilderScreen() {
                   card={card}
                   selected={selectedSlot === slot.id}
                   onClick={() => handleSlotClick(slot.id)}
+                  onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
                 />
               )
             })}
@@ -358,6 +417,7 @@ export default function DeckBuilderScreen() {
                 card={card}
                 selected={selectedSlot === slot.id}
                 onClick={() => handleSlotClick(slot.id)}
+                onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
               />
             )
           })}
@@ -387,6 +447,19 @@ export default function DeckBuilderScreen() {
           <button className="db-hint-cancel" onClick={() => { setSelectedSlot(null); setManualFilter('all') }}>✕</button>
         </div>
       )}
+
+      {/* Sort buttons */}
+      <div className="db-sort-row">
+        <span className="db-sort-label">Sortuj:</span>
+        <button
+          className={`db-sort-btn ${collectionSort === 'atk' ? 'db-sort-btn--active' : ''}`}
+          onClick={() => setCollectionSort(s => s === 'atk' ? null : 'atk')}
+        >⚔ ATK</button>
+        <button
+          className={`db-sort-btn ${collectionSort === 'def' ? 'db-sort-btn--active' : ''}`}
+          onClick={() => setCollectionSort(s => s === 'def' ? null : 'def')}
+        >🛡 DEF</button>
+      </div>
 
       {/* Card picker list */}
       <div className="db-picker">
@@ -433,13 +506,15 @@ export default function DeckBuilderScreen() {
           {notification.msg}
         </div>
       )}
+
+      {infoCard && <CardInfoModal card={infoCard} onClose={() => setInfoCard(null)} />}
     </div>
   )
 }
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, selected, onClick }) {
+function FormationSlot({ slot, card, selected, onClick, onInfo }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   return (
     <div
@@ -461,6 +536,9 @@ function FormationSlot({ slot, card, selected, onClick }) {
             <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
           )}
           <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
+          {onInfo && (
+            <button className="fs-info-btn" onClick={onInfo} title="Info">ⓘ</button>
+          )}
         </>
       ) : (
         <div className="fs-slot-empty-inner">

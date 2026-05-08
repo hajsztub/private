@@ -323,13 +323,10 @@ export const STARTER_CARD_DEFINITIONS = [
     upgradeStatBonus: 1,
     color: '#e8f5e9',
     abilityName: 'PRZEBIEGŁOŚĆ',
-    abilityType: 'active',
-    abilityDescription: 'Lis dodaje +1 ataku sobie na każdą rundę którą spędził na boisku.',
-    noActivationDescription: 'Brak aktywacji: brak efektu.',
-    activationEffect: {
-      direct: { type: 'self_rounds_on_field_buff', message: 'Przebiegłość! Lis zyskuje atak za każdą rundę na boisku!' },
-    },
-    noActivationEffect: { type: 'none', message: '' },
+    abilityType: 'passive',
+    abilityDescription: 'Co rundę Lis zyskuje +1 ATK (kumuluje się tak długo jak jest na boisku).',
+    noActivationDescription: '',
+    passiveEffect: { type: 'per_round_self_stat', stat: 'currentAttackStat', amount: 1, message: 'Przebiegłość! Lis +1 ATK.' },
     count: 1,
   },
   {

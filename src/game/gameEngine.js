@@ -756,6 +756,15 @@ function applyPassiveEffects(state) {
           newState = updateCardStat(newState, pid, card.instanceId, 'currentAttackStat', pef.amount)
           newState = updateCardStat(newState, pid, card.instanceId, 'currentDefenseStat', pef.amount)
           break
+        case 'per_round_team_offense_buff': {
+          for (const ally of newState.players[pid].offenseSector) {
+            if (ally.isDestroyed) continue
+            newState = updateCardStat(newState, pid, ally.instanceId, 'currentAttackStat', pef.amount)
+          }
+          if (newState.players[pid].offenseSector.some(c => !c.isDestroyed))
+            newState = addLog(newState, pef.message || `+${pef.amount} ATK całemu atakowi!`, 'buff')
+          break
+        }
         case 'curse_trade_atk_def': {
           // Owner's attackers -1 atk, defenders +1 def each round
           for (const ally of allCards()) {

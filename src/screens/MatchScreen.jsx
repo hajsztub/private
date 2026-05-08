@@ -176,6 +176,8 @@ export default function MatchScreen({ matchParams = {} }) {
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
   const [goalsCollapsed, setGoalsCollapsed] = useState(false)
   const [handCollapsed, setHandCollapsed] = useState(false)
+  const [showDeckPopup, setShowDeckPopup] = useState(false)
+  const deckBadgeRef = useRef(null)
 
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
@@ -552,7 +554,11 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
           <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
           <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
-          <span className="ms-deck-badge-sm">🃏 {playerA.deck.length}</span>
+          <span
+            ref={deckBadgeRef}
+            className="ms-deck-badge-sm ms-deck-badge-sm--tap"
+            onClick={e => { e.stopPropagation(); setShowDeckPopup(p => !p) }}
+          >🃏 {playerA.deck.length}</span>
         </div>
         <div className="ms-hand-scroll">
           {playerA.hand.map(card => (
@@ -704,6 +710,23 @@ export default function MatchScreen({ matchParams = {} }) {
           />
         )
       })()}
+
+      {/* ── Deck popup ──────────────────────────────────────────────────── */}
+      {showDeckPopup && (
+        <div className="ms-deck-popup-backdrop" onClick={() => setShowDeckPopup(false)}>
+          <div className="ms-deck-popup" onClick={e => e.stopPropagation()}>
+            <div className="ms-deck-popup-title">Pozostało w talii: {playerA.deck.length} kart</div>
+            <div className="ms-deck-popup-list">
+              {playerA.deck.length === 0
+                ? <div className="ms-deck-popup-empty">Talia pusta</div>
+                : playerA.deck.map((card, i) => (
+                  <div key={card.instanceId || i} className="ms-deck-popup-item">{card.name}</div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {showTutorial && (

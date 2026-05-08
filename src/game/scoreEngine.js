@@ -49,9 +49,9 @@ export function computeMatchStats(state) {
 
 export function computeRewardCoins(result, matchType, scoreDiff) {
   const base =
-    matchType === 'league'           ? { win: 150, draw: 60,  loss: 30 } :
-    matchType === 'training_amateur' ? { win: 12,  draw: 4,   loss: 2  } :
-    matchType === 'training_pro'     ? { win: 80,  draw: 25,  loss: 10 } :
+    matchType === 'league'           ? { win: 200, draw: 80,  loss: 40 } :
+    matchType === 'training_amateur' ? { win: 15,  draw: 5,   loss: 2  } :
+    matchType === 'training_pro'     ? { win: 100, draw: 30,  loss: 12 } :
                                        { win: 40,  draw: 15,  loss: 8  }  // local fallback
 
   let coins = base[result] ?? 0

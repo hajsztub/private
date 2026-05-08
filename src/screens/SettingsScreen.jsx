@@ -100,6 +100,26 @@ export default function SettingsScreen() {
           </button>
         </div>
 
+        {/* ── Language ── */}
+        <div className="settings-section-label">Język / Language</div>
+
+        <div className="settings-row">
+          <div className="settings-row-info">
+            <span className="settings-row-icon">🌐</span>
+            <div className="settings-row-labels">
+              <div className="settings-row-label">Język / Language</div>
+              <div className="settings-row-desc">Język interfejsu gry</div>
+            </div>
+          </div>
+          <div className="settings-lang-select-wrap">
+            <select className="settings-lang-select" defaultValue="pl" disabled={false}>
+              <option value="pl">Polski 🇵🇱</option>
+              <option value="en" disabled>English 🇬🇧 🔒</option>
+              <option value="es" disabled>Español 🇪🇸 🔒</option>
+            </select>
+          </div>
+        </div>
+
         {/* ── Advanced ── */}
         <div className="settings-section-label">Zaawansowane</div>
 

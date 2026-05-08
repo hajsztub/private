@@ -181,6 +181,32 @@
   color: #ff8a80;
 }
 
+/* ── Language selector ───────────────────────────────────────────────────── */
+
+.settings-lang-select-wrap {
+  flex-shrink: 0;
+}
+
+.settings-lang-select {
+  background: var(--c-surface-hi);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 130px;
+  text-align: center;
+}
+
+.settings-lang-select option:disabled {
+  color: rgba(255,255,255,0.3);
+}
+
 /* ── App info ─────────────────────────────────────────────────────────────── */
 
 .settings-app-info {

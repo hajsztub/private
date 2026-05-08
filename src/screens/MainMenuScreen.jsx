@@ -151,6 +151,7 @@ export default function MainMenuScreen() {
   const [showChangelog, setShowChangelog] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
   const [showMissions, setShowMissions] = useState(false)
+  const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
   const [resetIn, setResetIn] = useState('')
 
   useEffect(() => {
@@ -243,6 +244,14 @@ export default function MainMenuScreen() {
         <span className="mm-missions-bar-arrow">›</span>
       </button>
 
+      {/* ── Weekly missions bar ── */}
+      <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
+        <span className="mm-missions-bar-icon">📅</span>
+        <span className="mm-missions-bar-label">MISJE TYGODNIOWE</span>
+        <span className="mm-weekly-lock">🔒</span>
+        <span className="mm-missions-bar-arrow">›</span>
+      </button>
+
       {/* ── Play buttons ── */}
       <div className="mm-play-section">
         <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
@@ -284,7 +293,7 @@ export default function MainMenuScreen() {
                   <span className="mm-tmode-title">AMATOR</span>
                   <span className="mm-tmode-desc">Słabsze drużyny · łatwa wygrana</span>
                 </div>
-                <span className="mm-tmode-reward">+12 🪙</span>
+                <span className="mm-tmode-reward">+15 🪙</span>
               </button>
               <button className="mm-tmode mm-tmode--pro" onClick={() => startTraining('training_pro')}>
                 <span className="mm-tmode-icon">🔴</span>
@@ -292,7 +301,7 @@ export default function MainMenuScreen() {
                   <span className="mm-tmode-title">PRO</span>
                   <span className="mm-tmode-desc">Top drużyny · 10% szans</span>
                 </div>
-                <span className="mm-tmode-reward">+80 🪙</span>
+                <span className="mm-tmode-reward">+100 🪙</span>
               </button>
             </div>
           </div>
@@ -324,6 +333,17 @@ export default function MainMenuScreen() {
       </div>
 
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+
+      {showWeeklyPopup && (
+        <div className="mm-weekly-overlay" onClick={() => setShowWeeklyPopup(false)}>
+          <div className="mm-weekly-panel" onClick={e => e.stopPropagation()}>
+            <div className="mm-weekly-icon">📅</div>
+            <div className="mm-weekly-title">Misje tygodniowe</div>
+            <div className="mm-weekly-msg">wkrótce!</div>
+            <button className="mm-weekly-close-btn" onClick={() => setShowWeeklyPopup(false)}>Zamknij</button>
+          </div>
+        </div>
+      )}
 
       {showMissions && (
         <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>

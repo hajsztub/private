@@ -287,3 +287,25 @@
   text-align: center;
   margin: 0;
 }
+
+.psi-noact {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+  line-height: 1.4;
+  display: block;
+}
+
+.psi-noact-lbl {
+  font-weight: 800;
+  color: rgba(255,200,100,0.8);
+}
+
+.psi-upgrade-info {
+  font-size: 11px;
+  color: rgba(255,215,0,0.75);
+  background: rgba(255,215,0,0.07);
+  border-radius: 6px;
+  padding: 5px 8px;
+  text-align: center;
+}

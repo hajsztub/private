@@ -178,7 +178,6 @@ function ChangelogModal({ onClose }) {
             <div key={entry.version} className="cl-entry">
               <div className="cl-version-row">
                 <span className="cl-version">v{entry.version}</span>
-                <span className="cl-date">{entry.date}</span>
               </div>
               <ul className="cl-changes">
                 {entry.changes.map((c, i) => (

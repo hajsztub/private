@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '2.4',
+    date: '2026-05-08',
+    changes: [
+      'Startowi bramkarze (Borek, Pawel) mają teraz słabsze statystyki niż bramkarze dostępni w paczkach (DEF 6 i 5)',
+    ],
+  },
+  {
     version: '2.3',
     date: '2026-05-08',
     changes: [

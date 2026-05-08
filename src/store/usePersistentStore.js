@@ -83,6 +83,7 @@ function defaultProfile() {
     coins: 600,
     gems: 5,
     hasSeenTutorial: false,
+    hasClaimedFirstWinReward: false,
     hasSetupProfile: false,
     lastAdWatchedAt: 0,
     lastFreePackAt: 0,
@@ -284,6 +285,14 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, hasSeenTutorial: true }))
   }, [update])
 
+  const claimFirstWinReward = useCallback(() => {
+    update(prev => ({
+      ...prev,
+      hasClaimedFirstWinReward: true,
+      coins: prev.coins + 200,
+    }))
+  }, [update])
+
   const markProfileSetup = useCallback((name) => {
     update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true }))
   }, [update])
@@ -318,6 +327,7 @@ export function usePersistentStore() {
     upgradeCard,
     setActiveDeck,
     markTutorialSeen,
+    claimFirstWinReward,
     markProfileSetup,
     recordAdWatched,
     recordFreePackClaimed,

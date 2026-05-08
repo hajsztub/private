@@ -205,6 +205,26 @@ export default function MainMenuScreen() {
   const [showChangelog, setShowChangelog] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
+  const [tooltip, setTooltip] = useState(null)
+  const isNewPlayer = (profile.matchHistory || []).length === 0
+
+  const TOOLTIPS = {
+    league:    { title: 'Mecz Ligowy', desc: 'Rankingowy mecz wpływający na rating. Trudniejszy — zacznij od treningu.' },
+    training:  { title: 'Trening',     desc: 'Ćwicz bez ryzyka utraty ratingu. Amator dla początkujących, PRO dla wyzwania.' },
+    deck:      { title: 'Skład',       desc: 'Buduj i edytuj swój skład 11 zawodników przed meczem.' },
+    market:    { title: 'Market',      desc: 'Kupuj paczki kart i zdobywaj nowych zawodników za monety.' },
+    players:   { title: 'Zawodnicy',   desc: 'Przeglądaj i ulepszaj swoje karty. Max poziom daje ekstra bonus statystyk.' },
+    settings:  { title: 'Ustawienia',  desc: 'Dźwięk, efekty wizualne i inne opcje.' },
+  }
+
+  let longPressTimer = null
+  const startLongPress = (id) => {
+    longPressTimer = setTimeout(() => setTooltip(id), 500)
+  }
+  const endLongPress = () => {
+    clearTimeout(longPressTimer)
+  }
+
   const [showMissions, setShowMissions] = useState(false)
   const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
   const [resetIn, setResetIn] = useState('')
@@ -311,7 +331,19 @@ export default function MainMenuScreen() {
 
       {/* ── Play buttons ── */}
       <div className="mm-play-section">
-        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
+        {isNewPlayer && !trainingOpen && (
+          <div className="mm-onboard-arrow">
+            <span className="mm-onboard-label">Zacznij tutaj!</span>
+            <span className="mm-onboard-chevron">↓</span>
+          </div>
+        )}
+        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}
+          onTouchStart={() => startLongPress('league')}
+          onTouchEnd={endLongPress}
+          onMouseDown={() => startLongPress('league')}
+          onMouseUp={endLongPress}
+          onMouseLeave={endLongPress}
+        >
           <div className="mm-btn-icon-wrap">
             <span className="mm-btn-icon">🏆</span>
           </div>
@@ -325,7 +357,15 @@ export default function MainMenuScreen() {
         </button>
 
         {!trainingOpen ? (
-          <button className="mm-btn mm-btn--training" onClick={() => setTrainingOpen(true)}>
+          <button
+            className="mm-btn mm-btn--training"
+            onClick={() => setTrainingOpen(true)}
+            onTouchStart={() => startLongPress('training')}
+            onTouchEnd={endLongPress}
+            onMouseDown={() => startLongPress('training')}
+            onMouseUp={endLongPress}
+            onMouseLeave={endLongPress}
+          >
             <div className="mm-btn-icon-wrap">
               <span className="mm-btn-icon">🚧</span>
             </div>
@@ -367,19 +407,27 @@ export default function MainMenuScreen() {
 
       {/* ── Bottom nav ── */}
       <div className="mm-nav">
-        <button className="mm-nav-btn" onClick={() => navigate('deck_builder')}>
+        <button className="mm-nav-btn" onClick={() => navigate('deck_builder')}
+          onTouchStart={() => startLongPress('deck')} onTouchEnd={endLongPress}
+          onMouseDown={() => startLongPress('deck')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
           <span className="mm-nav-icon">🃏</span>
           <span className="mm-nav-label">Skład</span>
         </button>
-        <button className="mm-nav-btn" onClick={() => navigate('market')}>
+        <button className="mm-nav-btn" onClick={() => navigate('market')}
+          onTouchStart={() => startLongPress('market')} onTouchEnd={endLongPress}
+          onMouseDown={() => startLongPress('market')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
           <span className="mm-nav-icon">🛒</span>
           <span className="mm-nav-label">Market</span>
         </button>
-        <button className="mm-nav-btn" onClick={() => navigate('players')}>
+        <button className="mm-nav-btn" onClick={() => navigate('players')}
+          onTouchStart={() => startLongPress('players')} onTouchEnd={endLongPress}
+          onMouseDown={() => startLongPress('players')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
           <span className="mm-nav-icon">👥</span>
           <span className="mm-nav-label">Karty</span>
         </button>
-        <button className="mm-nav-btn" onClick={() => navigate('settings')}>
+        <button className="mm-nav-btn" onClick={() => navigate('settings')}
+          onTouchStart={() => startLongPress('settings')} onTouchEnd={endLongPress}
+          onMouseDown={() => startLongPress('settings')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
           <span className="mm-nav-icon">⚙️</span>
           <span className="mm-nav-label">Ustawienia</span>
         </button>
@@ -452,6 +500,16 @@ export default function MainMenuScreen() {
 
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
       {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}
+
+      {tooltip && (
+        <div className="mm-tooltip-overlay" onClick={() => setTooltip(null)}>
+          <div className="mm-tooltip-box">
+            <div className="mm-tooltip-title">{TOOLTIPS[tooltip]?.title}</div>
+            <div className="mm-tooltip-desc">{TOOLTIPS[tooltip]?.desc}</div>
+            <div className="mm-tooltip-hint">Przytrzymaj przyciski aby zobaczyć opisy</div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

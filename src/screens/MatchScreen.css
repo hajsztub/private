@@ -1453,3 +1453,332 @@
   opacity: 0.45;
   pointer-events: none;
 }
+
+/* ── Interactive tutorial bar ──────────────────────────────────────────── */
+
+.tut-bar {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background: rgba(10,25,15,0.96);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 150;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,230,118,0.12);
+  animation: tut-fadein 0.3s ease;
+}
+
+@keyframes tut-fadein {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.tut-bar--done {
+  border-color: rgba(100,220,100,0.5);
+  background: rgba(10,35,15,0.97);
+}
+
+.tut-bar-content { flex: 1; min-width: 0; }
+
+.tut-bar-title {
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  color: #00e676;
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.tut-bar-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+}
+
+.tut-bar-skip {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+}
+
+.tut-bar-check {
+  flex-shrink: 0;
+  font-size: 22px;
+  color: #00e676;
+}
+
+/* ── First Win Reward overlay ──────────────────────────────────────────── */
+
+.fwr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  padding: 24px;
+}
+
+.fwr-box {
+  background: linear-gradient(160deg, #0a2010, #0d1a0d);
+  border: 1px solid rgba(0,230,118,0.3);
+  border-radius: 24px;
+  padding: 32px 24px 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0,200,80,0.15), 0 16px 48px rgba(0,0,0,0.6);
+  animation: fwr-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes fwr-pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.fwr-fireworks {
+  font-size: 52px;
+  margin-bottom: 8px;
+  animation: fwr-spin 0.6s ease 0.2s both;
+}
+
+@keyframes fwr-spin {
+  from { transform: rotate(-20deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
+}
+
+.fwr-title {
+  font-family: 'Bangers', cursive;
+  font-size: 34px;
+  letter-spacing: 2px;
+  color: #00e676;
+  text-shadow: 0 0 20px rgba(0,230,118,0.5);
+  margin-bottom: 6px;
+}
+
+.fwr-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.fwr-reward {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+}
+
+.fwr-reward-icon { font-size: 32px; }
+
+.fwr-reward-amount {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: #ffd700;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.fwr-reward-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+.fwr-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,200,83,0.35);
+  transition: opacity 0.15s;
+}
+
+.fwr-btn:active { opacity: 0.85; }
+
+/* ── Interactive tutorial bar ──────────────────────────────────────────── */
+
+.tut-bar {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background: rgba(10,25,15,0.96);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 150;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,230,118,0.12);
+  animation: tut-fadein 0.3s ease;
+}
+
+@keyframes tut-fadein {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.tut-bar--done { border-color: rgba(100,220,100,0.5); }
+
+.tut-bar-content { flex: 1; min-width: 0; }
+
+.tut-bar-title {
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  color: #00e676;
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.tut-bar-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+}
+
+.tut-bar-skip {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+}
+
+.tut-bar-check { flex-shrink: 0; font-size: 22px; color: #00e676; }
+
+/* ── First Win Reward overlay ──────────────────────────────────────────── */
+
+.fwr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  padding: 24px;
+}
+
+.fwr-box {
+  background: linear-gradient(160deg, #0a2010, #0d1a0d);
+  border: 1px solid rgba(0,230,118,0.3);
+  border-radius: 24px;
+  padding: 32px 24px 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0,200,80,0.15), 0 16px 48px rgba(0,0,0,0.6);
+  animation: fwr-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes fwr-pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.fwr-fireworks {
+  font-size: 52px;
+  margin-bottom: 8px;
+  animation: fwr-spin 0.6s ease 0.2s both;
+}
+
+@keyframes fwr-spin {
+  from { transform: rotate(-20deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
+}
+
+.fwr-title {
+  font-family: 'Bangers', cursive;
+  font-size: 34px;
+  letter-spacing: 2px;
+  color: #00e676;
+  text-shadow: 0 0 20px rgba(0,230,118,0.5);
+  margin-bottom: 6px;
+}
+
+.fwr-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.fwr-reward {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+}
+
+.fwr-reward-icon { font-size: 32px; }
+
+.fwr-reward-text { text-align: left; }
+
+.fwr-reward-amount {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: #ffd700;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.fwr-reward-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+.fwr-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,200,83,0.35);
+  transition: opacity 0.15s;
+}
+
+.fwr-btn:active { opacity: 0.85; }

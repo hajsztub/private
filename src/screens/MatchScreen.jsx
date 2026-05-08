@@ -150,7 +150,7 @@ function GoalPosts({ side }) {
 
 export default function MatchScreen({ matchParams = {} }) {
   const { replace } = useRouter()
-  const { profile, addMatchResult, addInjuries, markTutorialSeen } = useProfile()
+  const { profile, addMatchResult, addInjuries, markTutorialSeen, claimFirstWinReward } = useProfile()
   const { settings } = useSettings()
 
   const matchType = matchParams.matchType || 'local'
@@ -167,7 +167,8 @@ export default function MatchScreen({ matchParams = {} }) {
     return createMatchState(matchType, playerDeck, aiDeck)
   })
 
-  const [showTutorial, setShowTutorial] = useState(!profile.hasSeenTutorial)
+  const [tutStep, setTutStep] = useState(profile.hasSeenTutorial ? null : 0)
+  const [firstWinReward, setFirstWinReward] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
   const [selectedCard, setSelectedCard] = useState(null)   // only for drag ghost
@@ -234,10 +235,16 @@ export default function MatchScreen({ matchParams = {} }) {
       .filter(() => Math.random() < 0.08)
       .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
     if (injuredEntries.length) addInjuries(injuredEntries)
-    setTimeout(() => replace('post_match', {
-      result, score, matchType, coinsEarned: coins, ratingChange,
-      goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
-    }), 800)
+    const isFirstWin = result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
+    if (isFirstWin) {
+      claimFirstWinReward()
+      setFirstWinReward(true)
+    } else {
+      setTimeout(() => replace('post_match', {
+        result, score, matchType, coinsEarned: coins, ratingChange,
+        goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
+      }), 800)
+    }
   }, [matchState.phase])
 
   // ── Goal detection ────────────────────────────────────────────────────────
@@ -256,6 +263,19 @@ export default function MatchScreen({ matchParams = {} }) {
     }
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
+
+  // Interactive tutorial: step 0→1 when first card placed, step 1→2 after first end turn
+  const totalFieldCards = matchState.players.A.offenseSector.length + matchState.players.A.defenseSector.length
+  useEffect(() => {
+    if (tutStep === 0 && totalFieldCards > 0) setTutStep(1)
+  }, [totalFieldCards])
+
+  useEffect(() => {
+    if (tutStep === 1 && matchState.round > 1) {
+      setTutStep(2)
+      setTimeout(() => { setTutStep(null); markTutorialSeen() }, 2800)
+    }
+  }, [matchState.round])
 
   // Watch log for new ability/event messages to show as toasts
   const prevLogLenRef = useRef(0)
@@ -290,6 +310,20 @@ export default function MatchScreen({ matchParams = {} }) {
     SFX.endTurn()
     dispatch({ type: 'END_TURN' })
     setSelectedCard(null)
+  }, [matchState])
+
+  const handleFirstWinDismiss = useCallback(() => {
+    setFirstWinReward(false)
+    const score = matchState.displayScore
+    const result = score.player > score.ai ? 'win' : score.ai > score.player ? 'loss' : 'draw'
+    const coins = computeRewardCoins(result, matchType, Math.abs(score.player - score.ai))
+    const ratingChange = computeRatingChange(result, matchType)
+    const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
+      { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
+    replace('post_match', {
+      result, score, matchType, coinsEarned: coins, ratingChange,
+      goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
+    })
   }, [matchState])
 
   // ── Field card: single tap → zoom, double tap → pull to hand ──────────────
@@ -748,73 +782,68 @@ export default function MatchScreen({ matchParams = {} }) {
       )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
-      {showTutorial && (
-        <TutorialOverlay
-          onDone={() => {
-            setShowTutorial(false)
-            markTutorialSeen()
-          }}
-        />
+      {tutStep !== null && (
+        <InteractiveTutorial step={tutStep} onSkip={() => { setTutStep(null); markTutorialSeen() }} />
+      )}
+
+      {firstWinReward && (
+        <FirstWinRewardOverlay onDone={handleFirstWinDismiss} />
       )}
     </div>
   )
 }
 
-// ── Tutorial overlay ───────────────────────────────────────────────────────
+// ── Interactive tutorial bar ───────────────────────────────────────────────
 
-const TUTORIAL_STEPS = [
+const TUT_STEPS = [
   {
-    emoji: '⚽',
-    title: 'Witaj w GOAL TCG!',
-    text: 'Grasz kartami piłkarzy, by strzelać gole. Mecz trwa 10 rund — każda runda to Twoja tura i tura bota.',
+    title: 'Twoje karty są tutaj!',
+    text: 'Dotknij kartę dwa razy szybko → zawodnik trafi na boisko.',
   },
   {
-    emoji: '🃏',
-    title: 'Karty w ręce',
-    text: 'Zaczynasz z 4 kartami. Nowe karty dostajesz co 2 rundy (przed rundami 3, 5, 7, 9). Zarządzaj nimi mądrze!',
+    title: 'Wystawiłeś zawodnika!',
+    text: 'Teraz kliknij "Zakończ turę" → gole liczą się po każdej pełnej rundzie.',
   },
   {
-    emoji: '⚔',
-    title: 'Wystawianie kart',
-    text: 'Dotknij kartę → zobaczysz statystyki i umiejętność. Dotknij dwa razy szybko → karta trafia automatycznie na boisko.',
-  },
-  {
-    emoji: '🔄',
-    title: 'Zmiana zawodnika',
-    text: 'Dwa szybkie tapnięcia w wystawionego zawodnika → wraca na ławkę. Możesz wystawić innego w tej samej turze!',
-  },
-  {
-    emoji: '⚡',
-    title: 'Umiejętności',
-    text: 'Tapnij wystawionego zawodnika i naciśnij "Aktywuj". Każda tura możesz aktywować 1 umiejętność — używaj ich strategicznie!',
-  },
-  {
-    emoji: '→',
-    title: 'Zakończ turę',
-    text: 'Po wystawieniu kart naciśnij "Zakończ turę". Gole obliczane są po każdej pełnej rundzie. Przycisk 🏳 to poddanie meczu.',
+    title: '✓ Wiesz jak grać!',
+    text: 'Aktywuj umiejętności kart, zbieraj gole, wygrywaj mecze. Powodzenia!',
   },
 ]
 
-function TutorialOverlay({ onDone }) {
-  const [step, setStep] = useState(0)
-  const s = TUTORIAL_STEPS[step]
-  const isLast = step === TUTORIAL_STEPS.length - 1
-
+function InteractiveTutorial({ step, onSkip }) {
+  const s = TUT_STEPS[Math.min(step, TUT_STEPS.length - 1)]
+  const isDone = step >= 2
   return (
-    <div className="tut-backdrop">
-      <div className="tut-panel">
-        <div className="tut-emoji">{s.emoji}</div>
-        <div className="tut-title">{s.title}</div>
-        <div className="tut-text">{s.text}</div>
-        <div className="tut-dots">
-          {TUTORIAL_STEPS.map((_, i) => (
-            <div key={i} className={`tut-dot ${i === step ? 'tut-dot--active' : i < step ? 'tut-dot--done' : ''}`} />
-          ))}
+    <div className={`tut-bar${isDone ? ' tut-bar--done' : ''}`}>
+      <div className="tut-bar-content">
+        <div className="tut-bar-title">{s.title}</div>
+        <div className="tut-bar-text">{s.text}</div>
+      </div>
+      {!isDone
+        ? <button className="tut-bar-skip" onClick={onSkip}>Pomiń</button>
+        : <div className="tut-bar-check">✓</div>
+      }
+    </div>
+  )
+}
+
+// ── First win reward overlay ───────────────────────────────────────────────
+
+function FirstWinRewardOverlay({ onDone }) {
+  return (
+    <div className="fwr-overlay">
+      <div className="fwr-box">
+        <div className="fwr-fireworks">🎉</div>
+        <div className="fwr-title">Pierwsza Wygrana!</div>
+        <div className="fwr-subtitle">Świetna robota — nauczyłeś się podstaw!</div>
+        <div className="fwr-reward">
+          <div className="fwr-reward-icon">🪙</div>
+          <div className="fwr-reward-text">
+            <div className="fwr-reward-amount">+200 monet</div>
+            <div className="fwr-reward-label">Nagroda za debiut</div>
+          </div>
         </div>
-        <button className="tut-next" onClick={() => isLast ? onDone() : setStep(s => s + 1)}>
-          {isLast ? '⚽ Zaczynamy!' : 'Dalej →'}
-        </button>
-        <button className="tut-skip" onClick={onDone}>Pomiń samouczek</button>
+        <button className="fwr-btn" onClick={onDone}>Odbierz nagrodę!</button>
       </div>
     </div>
   )

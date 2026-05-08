@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '2.7',
+    date: '2026-05-08',
+    changes: [
+      'Interaktywny tutorial: podpowiedzi na żywo podczas pierwszego meczu zamiast statycznych slajdów',
+      'Strzałka onboardingowa w menu wskazuje Trening nowym graczom (znika po pierwszym meczu)',
+      'Długie przytrzymanie przycisków w menu pokazuje opis funkcji (tooltips)',
+      'Nagroda za pierwszą wygraną: +200 monet z animowanym okienkiem',
+    ],
+  },
+  {
     version: '2.6',
     date: '2026-05-08',
     changes: [

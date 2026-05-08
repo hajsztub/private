@@ -1158,3 +1158,79 @@
 .hist-rating--up   { color: #00e676; font-weight: 700; }
 .hist-rating--down { color: #ff5252; font-weight: 700; }
 .hist-mvp { color: rgba(255,255,255,0.6); }
+
+/* ── Onboarding arrow ──────────────────────────────────────────────────── */
+
+.mm-onboard-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: 4px;
+  pointer-events: none;
+}
+
+.mm-onboard-label {
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  color: #00e676;
+  text-shadow: 0 0 10px rgba(0,230,118,0.7);
+}
+
+.mm-onboard-chevron {
+  font-size: 22px;
+  color: #00e676;
+  animation: mm-bounce 0.8s ease-in-out infinite;
+  display: block;
+  text-shadow: 0 0 10px rgba(0,230,118,0.7);
+}
+
+@keyframes mm-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+/* ── Tooltip overlay ───────────────────────────────────────────────────── */
+
+.mm-tooltip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 300;
+  padding: 0 16px 32px;
+}
+
+.mm-tooltip-box {
+  background: #0f1f14;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 20px 20px 16px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.mm-tooltip-title {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #00e676;
+  margin-bottom: 8px;
+}
+
+.mm-tooltip-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.mm-tooltip-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+}

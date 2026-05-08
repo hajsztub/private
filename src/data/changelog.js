@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: '1.8',
+    date: '2026-05-08',
+    changes: [
+      'Karty w ręce zmniejszone o 15% (globalnie)',
+      'Wskaźniki ATK/DEF przeniesione do nagłówka pola ręki (wyżej)',
+      'Mobile: 3 karty w sektorze automatycznie się zmniejszają żeby nie były ucinane',
+    ],
+  },
+  {
     version: '1.7',
     date: '2026-05-08',
     changes: [

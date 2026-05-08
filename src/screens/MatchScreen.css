@@ -723,6 +723,13 @@
   border-top: 1px solid rgba(255,255,255,0.08);
 }
 
+.ms-hand-chips {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .ms-action-chips {
   display: flex;
   gap: 5px;

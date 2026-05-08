@@ -570,6 +570,11 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
           <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
           <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
+          <div className="ms-hand-chips" onClick={e => e.stopPropagation()}>
+            {turnActionsUsed.placedOffense  ? <span className="mac done">✓ ATK</span> : isPlayerTurn ? <span className="mac todo">ATK</span> : null}
+            {turnActionsUsed.placedDefense  ? <span className="mac done">✓ DEF</span> : isPlayerTurn ? <span className="mac todo">DEF</span> : null}
+            {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
+          </div>
           <span
             ref={deckBadgeRef}
             className="ms-deck-badge-sm ms-deck-badge-sm--tap"
@@ -612,11 +617,6 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Action bar ──────────────────────────────────────────────────── */}
       <div className="ms-action-bar">
         <div className="ms-action-chips">
-          {turnActionsUsed.placedOffense  && <span className="mac done">✓ ATK</span>}
-          {turnActionsUsed.placedDefense  && <span className="mac done">✓ DEF</span>}
-          {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
-          {!turnActionsUsed.placedOffense && isPlayerTurn && <span className="mac todo">ATK</span>}
-          {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
           {matchState.redraws < 2 && (
             <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
               🔄 Dobierz 4 ({2 - matchState.redraws}/2)
@@ -832,7 +832,7 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
       onClick={isDropTarget && !dragZoneActive ? onDrop : undefined}
     >
       <span className="msz-label">{label}</span>
-      <div className="msz-cards">
+      <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>
         {cards.map(card => (
           <FieldCard
             key={card.instanceId}

@@ -402,8 +402,12 @@ function applyDirectEffect(state, playerId, card) {
 function applyCoinEffect(state, playerId, card, effect) {
   const opponent = playerId === 'A' ? 'B' : 'A'
   switch (effect.type) {
-    case 'self_stat_change':
-      return updateCardStat(state, playerId, card.instanceId, effect.stat || 'currentAttackStat', effect.amount)
+    case 'self_stat_change': {
+      const key = effect.stat === 'attackStat' ? 'currentAttackStat'
+                : effect.stat === 'defenseStat' ? 'currentDefenseStat'
+                : effect.stat || 'currentAttackStat'
+      return updateCardStat(state, playerId, card.instanceId, key, effect.amount)
+    }
     case 'remove_self':
       return removeCardFromBoard(state, playerId, card.instanceId)
     case 'remove_opponent_card': {

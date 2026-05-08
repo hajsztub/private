@@ -358,10 +358,12 @@ export default function MatchScreen({ matchParams = {} }) {
     .filter(ev => ev.scorer === 'player' && ev.cardId)
     .reduce((acc, ev) => { acc[ev.cardId] = (acc[ev.cardId] || 0) + 1; return acc }, {})
 
-  // Active coin flip card
+  // Active coin flip card (check both player and AI sectors)
   const coinFlipCard = coinFlipState
-    ? [...playerA.offenseSector, ...playerA.defenseSector]
-        .find(c => c.instanceId === coinFlipState.cardInstanceId)
+    ? [
+        ...playerA.offenseSector, ...playerA.defenseSector,
+        ...matchState.players.B.offenseSector, ...matchState.players.B.defenseSector,
+      ].find(c => c.instanceId === coinFlipState.cardInstanceId)
     : null
 
   // ── GK Selection ──────────────────────────────────────────────────────────

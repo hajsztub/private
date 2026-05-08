@@ -4,20 +4,17 @@ const TRAINING_BOT_NAMES = [
   'CIRCUIT-GK', 'DATABOT-77', 'TURBO-AI', 'GLITCH-FC', 'SYSTEM-ERR',
 ]
 
-const FIRST = [
-  'Kamil','Piotr','Maciej','Tomek','Kuba','Bartek','Marek','Łukasz',
-  'Filip','Michał','Paweł','Damian','Rafał','Karol','Mateusz','Wojtek',
-  'Szymon','Adrian','Patryk','Krzysztof','Mariusz','Dariusz','Robert',
-  'Sebastian','Przemek','Grzegorz','Artur','Jakub','Adam','Marek',
+const NICK_BASE = [
+  'Kamil','Piotr','Kuba','Bartek','Łukasz','Filip','Michał','Rafał',
+  'Mateusz','Wojtek','Adrian','Patryk','Sebastian','Przemek','Artur',
   'Enrique','Lorenzo','Diego','Marco','Ivan','Rafael','Carlos','Victor',
   'Thiago','Lucas','Samuel','Oscar','Felix','Rodrigo','Alejandro',
+  'striker','keeper','eagle','wolf','dragon','falcon','lion','hawk',
+  'shadow','storm','blaze','apex','ghost','titan','raven','viper',
 ]
 
-const SUFFIX = [
-  'PL','99','FC','Pro','King','Boss','Star','Fox','Wolf','Max',
-  'XT','G','X','88','77','XD','GG','HD','2K','ACE',
-  '_PL','_EU','_GOL','_FC','_DEF','_ATK',
-]
+const NICK_PREFIX = ['x','X','el','pro','king','top','big','dr','mr','dj','real']
+const NICK_SUFFIX = ['99','77','88','07','PL','EU','FC','GG','XD','Pro','ACE','HD','2K','gg','tv']
 
 function hash(str) {
   let h = 0
@@ -31,9 +28,13 @@ export function getBotName(seed = Date.now(), type = 'league') {
     return TRAINING_BOT_NAMES[s % TRAINING_BOT_NAMES.length]
   }
   const s = typeof seed === 'string' ? hash(seed) : seed
-  const first = FIRST[s % FIRST.length]
-  // League: no suffix, just first name to look like a real player
-  return first
+  const base = NICK_BASE[s % NICK_BASE.length]
+  const pattern = s % 5
+  if (pattern === 0) return NICK_PREFIX[(s >> 3) % NICK_PREFIX.length] + base + NICK_SUFFIX[(s >> 6) % NICK_SUFFIX.length]
+  if (pattern === 1) return base + NICK_SUFFIX[(s >> 4) % NICK_SUFFIX.length]
+  if (pattern === 2) return NICK_PREFIX[(s >> 5) % NICK_PREFIX.length] + base.charAt(0).toUpperCase() + base.slice(1)
+  if (pattern === 3) return base + '_' + NICK_SUFFIX[(s >> 7) % NICK_SUFFIX.length]
+  return base + (100 + (s % 900))
 }
 
 // Generate a deterministic leaderboard of n fake players around a given rating

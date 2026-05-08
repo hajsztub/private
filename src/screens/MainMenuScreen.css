@@ -52,14 +52,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   z-index: 1;
   width: 100%;
 }
 
 .mm-logo-img {
-  max-width: 432px;
-  max-height: 230px;
+  max-width: 480px;
+  max-height: 260px;
   width: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 24px rgba(0,0,0,0.6));

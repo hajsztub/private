@@ -684,7 +684,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {notification && <div className="ms-notif">{notification}</div>}
 
       {/* ── Overlays ────────────────────────────────────────────────────── */}
-      {coinFlipState && (
+      {!goalAnim && coinFlipState && (
         <CoinFlip
           coinFlipState={coinFlipState}
           card={coinFlipCard}
@@ -692,7 +692,7 @@ export default function MatchScreen({ matchParams = {} }) {
           onDismiss={() => dispatch({ type: 'DISMISS_COIN' })}
         />
       )}
-      {phase === 'special_card' && specialCard && (
+      {!goalAnim && phase === 'special_card' && specialCard && (
         <SpecialCardModal card={specialCard} onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })} />
       )}
       {goalAnim && settings.visualEffects !== false && (

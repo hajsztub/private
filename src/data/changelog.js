@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '2.0',
+    date: '2026-05-08',
+    changes: [
+      'Animacja gola kończy się w pełni zanim pojawi się rzut monetą lub karta specjalna',
+      'Główne menu: mniejszy odstęp między logo a profilem gracza, logo w większym polu',
+    ],
+  },
+  {
     version: '1.9',
     date: '2026-05-08',
     changes: [

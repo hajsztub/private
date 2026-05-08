@@ -997,6 +997,30 @@
 .zs-val--atk { color: #ef5350; }
 .zs-val--def { color: #42a5f5; }
 
+.zs-delta {
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 5px;
+  padding: 2px 5px;
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+.zs-delta--up   { background: rgba(102,187,106,0.2); color: #66bb6a; }
+.zs-delta--down { background: rgba(239,83,80,0.2);   color: #ef5350; }
+
+.zoom-debuff-hint {
+  margin: 4px 14px 0;
+  font-size: 11px;
+  color: #ef9a9a;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 10px;
+  background: rgba(239,83,80,0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(239,83,80,0.2);
+}
+
 .zoom-ability {
   margin: 6px 14px 0;
   background: rgba(255,255,255,0.05);

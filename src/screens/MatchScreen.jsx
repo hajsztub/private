@@ -30,6 +30,10 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
   if (!card) return null
   const atkVal = card.currentAttackStat ?? card.attackStat ?? 0
   const defVal = card.currentDefenseStat ?? card.defenseStat ?? 0
+  const baseAtk = card.attackStat ?? 0
+  const baseDef = card.defenseStat ?? 0
+  const atkDelta = atkVal - baseAtk
+  const defDelta = defVal - baseDef
   const TYPE_LABEL = { attack: 'Napastnik', midfield: 'Pomocnik', defense: 'Obrońca', goalkeeper: 'Bramkarz' }
   const RARITY_LABEL = { common: 'Normalny', rare: 'Rzadki', legendary: 'Legendarny ★', starter: 'Starter' }
   const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
@@ -60,10 +64,20 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
           <div className="zoom-stat">
             <span className="zs-label">ATK</span>
             <span className="zs-val zs-val--atk">{atkVal}</span>
+            {atkDelta !== 0 && (
+              <span className={`zs-delta ${atkDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                {atkDelta > 0 ? '+' : ''}{atkDelta}
+              </span>
+            )}
           </div>
           <div className="zoom-stat">
             <span className="zs-label">DEF</span>
             <span className="zs-val zs-val--def">{defVal}</span>
+            {defDelta !== 0 && (
+              <span className={`zs-delta ${defDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                {defDelta > 0 ? '+' : ''}{defDelta}
+              </span>
+            )}
           </div>
           {card.upgradeLevel > 0 && (
             <div className="zoom-stat">
@@ -72,6 +86,11 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
             </div>
           )}
         </div>
+        {(atkDelta < 0 || defDelta < 0) && (
+          <div className="zoom-debuff-hint">
+            ⚠ Statystyki obniżone przez efekty kart — szczegóły w logu meczu
+          </div>
+        )}
 
         <div className="zoom-ability">
           <div className="zoom-ability-name">{card.abilityName}</div>

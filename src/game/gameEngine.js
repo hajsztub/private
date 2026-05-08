@@ -505,13 +505,9 @@ function applyCoinEffect(state, playerId, card, effect) {
   }
 }
 
-// Allow one stat to go negative only if the other stays positive (trade-off design).
-// Both stats can never be simultaneously below 0.
+// Stats never go below 0.
 function clampStat(card, statKey, newVal) {
-  if (newVal >= 0) return newVal
-  const otherKey = statKey === 'currentAttackStat' ? 'currentDefenseStat' : 'currentAttackStat'
-  const otherVal = card[otherKey] ?? 0
-  return otherVal > 0 ? newVal : 0
+  return Math.max(0, newVal)
 }
 
 function updateCardStat(state, playerId, instanceId, statKey, delta) {

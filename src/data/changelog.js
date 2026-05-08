@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '3.6',
+    date: '2026-05-08',
+    changes: [
+      'Kliknięcie zawodnika w meczu pokazuje teraz deltę statystyk: zielona liczba = buff, czerwona = debuff względem wartości bazowej',
+      'Naprawiono: statystyki zawodników nie mogą już spaść poniżej 0 (wcześniej możliwy ujemny ATK/DEF)',
+    ],
+  },
+  {
     version: '3.5',
     date: '2026-05-08',
     changes: [

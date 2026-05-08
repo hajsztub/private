@@ -306,7 +306,7 @@ export default function MainMenuScreen() {
       <div className="mm-missions-row">
         <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
           <span className="mm-missions-bar-icon">⚡</span>
-          <span className="mm-missions-bar-label">DNIA</span>
+          <span className="mm-missions-bar-label">DZIENNE</span>
           <div className="mm-missions-bar-dots">
             {missions.map(m => (
               <span
@@ -350,15 +350,9 @@ export default function MainMenuScreen() {
           </div>
         </button>
 
-        {isNewPlayer && !trainingOpen && (
-          <div className="mm-onboard-arrow">
-            <span className="mm-onboard-chevron">↑</span>
-            <span className="mm-onboard-label">Zacznij tutaj!</span>
-          </div>
-        )}
         {!trainingOpen ? (
           <button
-            className="mm-btn mm-btn--training"
+            className={`mm-btn mm-btn--training${isNewPlayer ? ' mm-btn--onboard' : ''}`}
             onClick={() => setTrainingOpen(true)}
             onTouchStart={() => startLongPress('training')}
             onTouchEnd={endLongPress}
@@ -372,6 +366,7 @@ export default function MainMenuScreen() {
             <div className="mm-btn-body">
               <span className="mm-btn-title">TRENING</span>
               <span className="mm-btn-desc">Bez rankingu · Wybierz poziom</span>
+              {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
             </div>
             <div className="mm-btn-right">
               <span className="mm-btn-arrow">›</span>
@@ -454,7 +449,7 @@ export default function MainMenuScreen() {
         <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
           <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
             <div className="mm-missions-header">
-              <span className="mm-missions-title">⚡ MISJE DNIA</span>
+              <span className="mm-missions-title">⚡ MISJE DZIENNE</span>
               <span className="mm-missions-reset">Reset za {resetIn}</span>
               <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
             </div>

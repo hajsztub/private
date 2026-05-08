@@ -123,7 +123,7 @@ function migrateProfile(profile) {
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return defaultProfile()
+    if (!raw) return ensureDailyMissions(defaultProfile())
     const parsed = JSON.parse(raw)
     return ensureDailyMissions(migrateProfile({ ...defaultProfile(), ...parsed }))
   } catch {

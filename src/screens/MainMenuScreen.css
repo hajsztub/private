@@ -1159,36 +1159,32 @@
 .hist-rating--down { color: #ff5252; font-weight: 700; }
 .hist-mvp { color: rgba(255,255,255,0.6); }
 
-/* ── Onboarding arrow ──────────────────────────────────────────────────── */
+/* ── Onboarding highlight on Trening button ────────────────────────────── */
 
-.mm-onboard-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding-bottom: 4px;
-  pointer-events: none;
+.mm-btn--onboard {
+  box-shadow: 0 0 0 2px #00e676, 0 6px 28px rgba(0,230,118,0.45);
+  animation: onboard-pulse 1.6s ease-in-out infinite;
 }
 
-.mm-onboard-label {
-  font-family: 'Bangers', cursive;
-  font-size: 15px;
-  letter-spacing: 1.5px;
+@keyframes onboard-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px #00e676, 0 6px 24px rgba(0,230,118,0.4); }
+  50%       { box-shadow: 0 0 0 3px #00e676, 0 8px 32px rgba(0,230,118,0.7); }
+}
+
+.mm-onboard-chip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 900;
   color: #00e676;
-  text-shadow: 0 0 10px rgba(0,230,118,0.7);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(0,230,118,0.6);
+  line-height: 1;
+  animation: chip-fade 1.6s ease-in-out infinite;
 }
 
-.mm-onboard-chevron {
-  font-size: 22px;
-  color: #00e676;
-  animation: mm-bounce 0.8s ease-in-out infinite;
-  display: block;
-  text-shadow: 0 0 10px rgba(0,230,118,0.7);
-}
-
-@keyframes mm-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+@keyframes chip-fade {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
 }
 
 /* ── Tooltip overlay ───────────────────────────────────────────────────── */

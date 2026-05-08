@@ -331,12 +331,6 @@ export default function MainMenuScreen() {
 
       {/* ── Play buttons ── */}
       <div className="mm-play-section">
-        {isNewPlayer && !trainingOpen && (
-          <div className="mm-onboard-arrow">
-            <span className="mm-onboard-label">Zacznij tutaj!</span>
-            <span className="mm-onboard-chevron">↓</span>
-          </div>
-        )}
         <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}
           onTouchStart={() => startLongPress('league')}
           onTouchEnd={endLongPress}
@@ -356,6 +350,12 @@ export default function MainMenuScreen() {
           </div>
         </button>
 
+        {isNewPlayer && !trainingOpen && (
+          <div className="mm-onboard-arrow">
+            <span className="mm-onboard-chevron">↑</span>
+            <span className="mm-onboard-label">Zacznij tutaj!</span>
+          </div>
+        )}
         {!trainingOpen ? (
           <button
             className="mm-btn mm-btn--training"

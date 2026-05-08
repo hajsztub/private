@@ -357,12 +357,14 @@ export default function MainMenuScreen() {
 
       <Logo />
 
+      {/* ── Bell (top-right corner) ── */}
+      <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
+        🔔
+        {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
+      </button>
+
       {/* ── Profile card ── */}
       <div className="mm-profile-card">
-        <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
-          🔔
-          {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
-        </button>
         <div className="mm-profile-left">
           <div className="mm-avatar-wrap">
             <ProfileAvatar name={profile.name} />

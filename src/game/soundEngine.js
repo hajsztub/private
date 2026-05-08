@@ -127,4 +127,13 @@ export const SFX = {
     playTone(450, 'sine', 0.08, 0.1, 0.06)
     playTone(550, 'sine', 0.06, 0.1, 0.12)
   },
+
+  cardDestroy() {
+    // Heavy crunch — low descending tones + burst of noise
+    playNoise(0.18, 0.12)
+    playTone(180, 'sawtooth', 0.25, 0.18)
+    playTone(120, 'sawtooth', 0.3, 0.14, 0.06)
+    playTone(80, 'sine', 0.35, 0.1, 0.14)
+    playTone(60, 'sine', 0.4, 0.08, 0.22)
+  },
 }

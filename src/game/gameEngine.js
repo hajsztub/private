@@ -282,7 +282,7 @@ function applyOnPlacementPassive(state, playerId, card, sector) {
       break
     }
     case 'absorb_sector_cards': {
-      // Gain sum of ATK/DEF of other cards in same sector
+      // Gain sum of ATK/DEF of other cards in same sector, then destroy them
       const sArr = newState.players[playerId][sector === 'offense' ? 'offenseSector' : 'defenseSector']
       const others = sArr.filter(c => c.instanceId !== card.instanceId)
       if (others.length) {
@@ -290,7 +290,10 @@ function applyOnPlacementPassive(state, playerId, card, sector) {
         const sumDef = others.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0)
         newState = updateCardStat(newState, playerId, card.instanceId, 'currentAttackStat', sumAtk)
         newState = updateCardStat(newState, playerId, card.instanceId, 'currentDefenseStat', sumDef)
-        newState = addLog(newState, `${card.name}: ${pef.message}`, 'action')
+        for (const c of others) {
+          newState = destroyCard(newState, playerId, c.instanceId)
+        }
+        newState = addLog(newState, `${card.name}: ${pef.message}`, 'destroy')
       }
       break
     }
@@ -637,7 +640,7 @@ function applyNoActivationEffects(state, playerId) {
   let newState = state
   const allCards = [...player.offenseSector, ...player.defenseSector]
   for (const card of allCards) {
-    if (!card.noActivationEffect || card.justPlaced) continue
+    if (!card.noActivationEffect || card.justPlaced || card.isDestroyed) continue
     const effect = card.noActivationEffect
     if (effect.type === 'none') continue
     switch (effect.type) {
@@ -694,7 +697,7 @@ function applyPassiveEffects(state) {
     ]
 
     for (const card of allCards()) {
-      if (card.justPlaced) continue
+      if (card.justPlaced || card.isDestroyed) continue
       const pef = card.passiveEffect
       if (!pef) continue
 
@@ -867,13 +870,33 @@ function tickLockedCards(state) {
   const tick = player => ({
     ...player,
     offenseSector: player.offenseSector.map(c =>
-      c.isLocked ? { ...c, lockedRounds: Math.max(0, c.lockedRounds - 1), isLocked: c.lockedRounds > 1 } : c
+      c.isLocked && !c.isDestroyed ? { ...c, lockedRounds: Math.max(0, c.lockedRounds - 1), isLocked: c.lockedRounds > 1 } : c
     ),
     defenseSector: player.defenseSector.map(c =>
-      c.isLocked ? { ...c, lockedRounds: Math.max(0, c.lockedRounds - 1), isLocked: c.lockedRounds > 1 } : c
+      c.isLocked && !c.isDestroyed ? { ...c, lockedRounds: Math.max(0, c.lockedRounds - 1), isLocked: c.lockedRounds > 1 } : c
     ),
   })
   return { ...state, players: { A: tick(state.players.A), B: tick(state.players.B) } }
+}
+
+function destroyCard(state, playerId, instanceId) {
+  const player = state.players[playerId]
+  const mark = arr => arr.map(c =>
+    c.instanceId === instanceId
+      ? { ...c, isDestroyed: true, isLocked: true, lockedRounds: 9999, currentAttackStat: 0, currentDefenseStat: 0 }
+      : c
+  )
+  return {
+    ...state,
+    players: {
+      ...state.players,
+      [playerId]: {
+        ...player,
+        offenseSector: mark(player.offenseSector),
+        defenseSector: mark(player.defenseSector),
+      },
+    },
+  }
 }
 
 function tickRoundsOnField(state, playerId) {

@@ -110,7 +110,7 @@ export default function FieldCard({
         'fc',
         selected ? 'fc--selected' : '',
         dimmed ? 'fc--dim' : '',
-        card.isLocked ? 'fc--locked' : '',
+        card.isDestroyed ? 'fc--destroyed' : card.isLocked ? 'fc--locked' : '',
         isNew ? 'fc--new' : '',
         `fc--${rarity}`,
         fieldSize ? 'fc--field' : '',
@@ -161,8 +161,10 @@ export default function FieldCard({
           </div>
         )}
 
-        {/* Lock / new badges */}
-        {card.isLocked && <div className="fc-badge fc-badge--lock">🔒{card.lockedRounds}r</div>}
+        {/* Destroyed / lock / new badges */}
+        {card.isDestroyed && <div className="fc-destroyed-overlay" />}
+        {card.isDestroyed && <div className="fc-badge fc-badge--destroyed">💀</div>}
+        {!card.isDestroyed && card.isLocked && <div className="fc-badge fc-badge--lock">🔒{card.lockedRounds}r</div>}
         {isNew && <div className="fc-badge fc-badge--new">NEW</div>}
       </div>
     </div>

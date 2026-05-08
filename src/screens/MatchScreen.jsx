@@ -244,8 +244,9 @@ export default function MatchScreen({ matchParams = {} }) {
     const current = matchState.log
     if (current.length > prevLogLenRef.current) {
       const newest = current[0]
-      if (newest && (newest.type === 'warning' || newest.type === 'special') && newest.round === matchState.round) {
-        showNotif(newest.message)
+      if (newest && newest.round === matchState.round) {
+        if (newest.type === 'warning' || newest.type === 'special') showNotif(newest.message)
+        if (newest.type === 'destroy') { SFX.cardDestroy(); showNotif(newest.message) }
       }
     }
     prevLogLenRef.current = current.length

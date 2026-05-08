@@ -255,6 +255,29 @@
 .ms-goal--ai   { flex-direction: column; }
 .ms-goal--player { flex-direction: column-reverse; }
 
+/* Colour-coded goal panels matching coin-flip theme */
+.ms-goal--ai .ms-goal-inner {
+  background: linear-gradient(90deg,
+    rgba(127,0,0,0.22) 0%,
+    rgba(45,15,15,0.85) 25%,
+    rgba(45,15,15,0.85) 75%,
+    rgba(229,57,53,0.18) 100%
+  );
+  border-top: 1px solid rgba(229,57,53,0.25);
+  border-bottom: 1px solid rgba(229,57,53,0.25);
+}
+
+.ms-goal--player .ms-goal-inner {
+  background: linear-gradient(90deg,
+    rgba(13,71,161,0.22) 0%,
+    rgba(10,22,40,0.9) 25%,
+    rgba(10,22,40,0.9) 75%,
+    rgba(66,165,245,0.18) 100%
+  );
+  border-top: 1px solid rgba(66,165,245,0.25);
+  border-bottom: 1px solid rgba(66,165,245,0.25);
+}
+
 .goal-posts {
   width: 100%;
   height: 14px;
@@ -272,15 +295,6 @@
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
-  background: linear-gradient(
-    90deg,
-    rgba(127,0,0,0.18) 0%,
-    #0d1117 25%,
-    #0d1117 75%,
-    rgba(13,71,161,0.18) 100%
-  );
-  border-top: 1px solid rgba(255,255,255,0.07);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
   overflow: hidden;
   max-height: 160px;
   transition: max-height 0.28s ease, padding 0.28s ease;

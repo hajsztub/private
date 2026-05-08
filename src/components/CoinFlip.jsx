@@ -5,6 +5,8 @@ export default function CoinFlip({ coinFlipState, card, onFlip, onDismiss }) {
   const [animating, setAnimating] = useState(false)
   const [showResult, setShowResult] = useState(false)
 
+  const isPlayer = coinFlipState?.player === 'A'
+
   useEffect(() => {
     if (coinFlipState?.result && !showResult) {
       setAnimating(true)
@@ -24,7 +26,11 @@ export default function CoinFlip({ coinFlipState, card, onFlip, onDismiss }) {
 
   return (
     <div className="coin-flip-overlay">
-      <div className="coin-flip-modal">
+      <div className={`coin-flip-modal ${isPlayer ? 'coin-flip-modal--player' : 'coin-flip-modal--opponent'}`}>
+        <div className={`coin-flip-owner ${isPlayer ? 'coin-flip-owner--player' : 'coin-flip-owner--opponent'}`}>
+          {isPlayer ? '🎯 TWÓJ RZUT' : '⚡ RZUT PRZECIWNIKA'}
+        </div>
+
         {card && <div className="coin-card-name">⚡ {card.abilityName}</div>}
 
         {/* Show outcomes before flip */}
@@ -68,11 +74,18 @@ export default function CoinFlip({ coinFlipState, card, onFlip, onDismiss }) {
         )}
 
         <div className="coin-flip-actions">
-          {pending && !result && (
+          {/* Only player can press the flip button */}
+          {isPlayer && pending && !result && (
             <button className="coin-btn coin-btn--flip" onClick={onFlip}>Rzuć Żetonem!</button>
           )}
-          {showResult && (
+          {!isPlayer && pending && !result && (
+            <div className="coin-waiting">Przeciwnik rzuca...</div>
+          )}
+          {showResult && isPlayer && (
             <button className="coin-btn coin-btn--ok" onClick={onDismiss}>OK</button>
+          )}
+          {showResult && !isPlayer && (
+            <div className="coin-waiting coin-waiting--done">Zamykanie...</div>
           )}
         </div>
       </div>

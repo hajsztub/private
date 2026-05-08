@@ -10,16 +10,50 @@
 }
 
 .coin-flip-modal {
-  background: linear-gradient(135deg, #0d1b2a, #1a2a3a);
   border-radius: 24px;
-  padding: 32px 40px;
+  padding: 24px 36px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-  border: 2px solid rgba(255,255,255,0.12);
   min-width: 280px;
+}
+
+/* Player flip — blue theme */
+.coin-flip-modal--player {
+  background: linear-gradient(160deg, #0a1628, #0d2247, #0a1628);
+  border: 2px solid rgba(66,165,245,0.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 32px rgba(66,165,245,0.18);
+}
+
+/* Opponent flip — red theme */
+.coin-flip-modal--opponent {
+  background: linear-gradient(160deg, #1a0a0a, #2d0f0f, #1a0a0a);
+  border: 2px solid rgba(229,57,53,0.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 32px rgba(229,57,53,0.18);
+}
+
+/* Owner label */
+.coin-flip-owner {
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 3px;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: -4px;
+}
+
+.coin-flip-owner--player {
+  background: rgba(66,165,245,0.15);
+  color: #90caf9;
+  border: 1px solid rgba(66,165,245,0.35);
+}
+
+.coin-flip-owner--opponent {
+  background: rgba(229,57,53,0.15);
+  color: #ef9a9a;
+  border: 1px solid rgba(229,57,53,0.35);
 }
 
 .coin-flip-title {
@@ -128,6 +162,25 @@
 @keyframes popIn {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+.coin-waiting {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1px;
+  animation: waitPulse 1.2s ease-in-out infinite;
+}
+
+.coin-waiting--done {
+  animation: none;
+  opacity: 0.3;
+}
+
+@keyframes waitPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
 }
 
 .coin-flip-actions {

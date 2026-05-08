@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '2.2',
+    date: '2026-05-08',
+    changes: [
+      'Naprawiono: po animacji gola nie pojawia się już błędne okienko rzutu monetą przeciwnika',
+    ],
+  },
+  {
     version: '2.1',
     date: '2026-05-08',
     changes: [

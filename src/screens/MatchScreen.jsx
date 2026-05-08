@@ -684,7 +684,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {notification && <div className="ms-notif">{notification}</div>}
 
       {/* ── Overlays ────────────────────────────────────────────────────── */}
-      {!goalAnim && coinFlipState && (
+      {!goalAnim && coinFlipState?.player === 'A' && (
         <CoinFlip
           coinFlipState={coinFlipState}
           card={coinFlipCard}

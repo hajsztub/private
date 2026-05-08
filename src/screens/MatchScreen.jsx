@@ -851,7 +851,7 @@ function FirstWinRewardOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate }) {
   return (
     <div
       className={[
@@ -865,17 +865,21 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
     >
       <span className="msz-label">{label}</span>
       <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>
-        {cards.map(card => (
-          <FieldCard
-            key={card.instanceId}
-            card={card}
-            faceDown={side === 'ai' && card.faceDown}
-            isNew={card.justPlaced}
-            goalCount={goalCounts?.[card.instanceId] || 0}
-            onTap={() => onCardTap?.(card)}
-            fieldSize={fieldSize}
-          />
-        ))}
+        {cards.map(card => {
+          const canActivateAbility = !!(canActivate && card.abilityType !== 'passive' && !card.isDestroyed && !card.isLocked && !card.justPlaced)
+          return (
+            <FieldCard
+              key={card.instanceId}
+              card={card}
+              faceDown={side === 'ai' && card.faceDown}
+              isNew={card.justPlaced}
+              goalCount={goalCounts?.[card.instanceId] || 0}
+              onTap={() => onCardTap?.(card)}
+              fieldSize={fieldSize}
+              canActivateAbility={canActivateAbility}
+            />
+          )
+        })}
         {cards.length === 0 && !isDropTarget && (
           <div className="msz-empty">—</div>
         )}

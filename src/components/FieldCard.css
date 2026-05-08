@@ -352,6 +352,34 @@
   }
 }
 
+/* ── Phone-only: 20% smaller cards (nie dotyczy desktop 650×900) ─────────── */
+/* Na desktopie viewport jest ≥700px szeroki — reguła nie pasuje             */
+
+@media (max-width: 699px) {
+  /* Karty na boisku */
+  .fc--field {
+    width: 80px;
+    height: 112px;
+  }
+  .fc--field .fc-rating    { font-size: 21px; }
+  .fc--field .fc-name      { font-size: 10px; }
+  .fc--field .fc-mini-stat { font-size: 9px; }
+
+  /* Karty w ręce / na ławce */
+  .fc:not(.fc--field) {
+    width: 64px;
+    height: 90px;
+  }
+  .fc:not(.fc--field) .fc-rating    { font-size: 19px; }
+  .fc:not(.fc--field) .fc-name      { font-size: 10px; }
+  .fc:not(.fc--field) .fc-mini-stat { font-size: 8px; }
+
+  .fc--back {
+    width: 64px;
+    height: 90px;
+  }
+}
+
 /* ── Portrait GK Card ────────────────────────────────────────────────────── */
 
 .gk-card {

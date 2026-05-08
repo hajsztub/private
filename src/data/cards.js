@@ -1400,7 +1400,7 @@ const EXTENDED_CARDS = [
     abilityType: 'passive',
     abilityDescription: 'Co rundę cały atak drużyny zyskuje +2 ATK.',
     noActivationDescription: '',
-    passiveEffect: { type: 'per_round_team_offense_buff', amount: 2, message: 'Rozpęd! Cały atak +2 ATK.' },
+    passiveEffect: { type: 'per_round_team_offense_buff', amount: 1, message: 'Rozpęd! Cały atak +1 ATK.' },
     count: 1,
   },
   {

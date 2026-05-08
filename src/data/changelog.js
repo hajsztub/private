@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '1.7',
+    date: '2026-05-08',
+    changes: [
+      'Logo w głównym menu powiększone o 20%',
+    ],
+  },
+  {
     version: '1.6',
     date: '2026-05-08',
     changes: [

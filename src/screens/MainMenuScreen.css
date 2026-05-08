@@ -58,15 +58,15 @@
 }
 
 .mm-logo-img {
-  max-width: 360px;
-  max-height: 192px;
-  width: 92%;
+  max-width: 432px;
+  max-height: 230px;
+  width: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 24px rgba(0,0,0,0.6));
 }
 
 .mm-logo-ball {
-  font-size: 64px;
+  font-size: 77px;
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
 }
 
@@ -78,7 +78,7 @@
 
 .mm-logo-goal {
   font-family: 'Bangers', cursive;
-  font-size: 56px;
+  font-size: 67px;
   letter-spacing: 5px;
   color: white;
   text-shadow: 0 2px 16px rgba(0,0,0,0.8);
@@ -86,7 +86,7 @@
 
 .mm-logo-tcg {
   font-family: 'Bangers', cursive;
-  font-size: 28px;
+  font-size: 34px;
   letter-spacing: 10px;
   color: #f9a825;
 }

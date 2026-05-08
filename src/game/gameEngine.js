@@ -409,7 +409,15 @@ function applyCoinEffect(state, playerId, card, effect) {
       const key = effect.stat === 'attackStat' ? 'currentAttackStat'
                 : effect.stat === 'defenseStat' ? 'currentDefenseStat'
                 : effect.stat || 'currentAttackStat'
-      return updateCardStat(state, playerId, card.instanceId, key, effect.amount)
+      const buffKey = key === 'currentAttackStat' ? 'roundBuffAtk' : 'roundBuffDef'
+      let ns = updateCardStat(state, playerId, card.instanceId, key, effect.amount)
+      // Record the buff so it can be cleared at round end
+      const markBuff = arr => arr.map(c =>
+        c.instanceId === card.instanceId ? { ...c, [buffKey]: (c[buffKey] || 0) + effect.amount } : c
+      )
+      const p = ns.players[playerId]
+      ns = { ...ns, players: { ...ns.players, [playerId]: { ...p, offenseSector: markBuff(p.offenseSector), defenseSector: markBuff(p.defenseSector) } } }
+      return ns
     }
     case 'remove_self':
       return removeCardFromBoard(state, playerId, card.instanceId)
@@ -603,6 +611,9 @@ export function endTurn(state) {
   // Clear justPlaced and tick locks
   newState = clearJustPlaced(newState)
   newState = tickLockedCards(newState)
+
+  // Round buffs (e.g. Rodrigo coin flip) expire when the round advances
+  if (state.currentPlayer === 'B') newState = clearRoundBuffs(newState)
 
   // Advance turn
   const nextPlayer = state.currentPlayer === 'A' ? 'B' : 'A'
@@ -855,6 +866,33 @@ function drawCard(state, playerId) {
       [playerId]: { ...player, hand: [...player.hand, player.deck[0]], deck: player.deck.slice(1) },
     },
   }
+}
+
+function clearRoundBuffs(state) {
+  const clear = player => ({
+    ...player,
+    offenseSector: player.offenseSector.map(c => {
+      if (!c.roundBuffAtk && !c.roundBuffDef) return c
+      return {
+        ...c,
+        currentAttackStat: Math.max(0, (c.currentAttackStat || 0) - (c.roundBuffAtk || 0)),
+        currentDefenseStat: Math.max(0, (c.currentDefenseStat || 0) - (c.roundBuffDef || 0)),
+        roundBuffAtk: 0,
+        roundBuffDef: 0,
+      }
+    }),
+    defenseSector: player.defenseSector.map(c => {
+      if (!c.roundBuffAtk && !c.roundBuffDef) return c
+      return {
+        ...c,
+        currentAttackStat: Math.max(0, (c.currentAttackStat || 0) - (c.roundBuffAtk || 0)),
+        currentDefenseStat: Math.max(0, (c.currentDefenseStat || 0) - (c.roundBuffDef || 0)),
+        roundBuffAtk: 0,
+        roundBuffDef: 0,
+      }
+    }),
+  })
+  return { ...state, players: { A: clear(state.players.A), B: clear(state.players.B) } }
 }
 
 function clearJustPlaced(state) {

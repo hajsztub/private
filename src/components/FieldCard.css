@@ -297,27 +297,27 @@
 
 .fc-ability-dot {
   position: absolute;
-  top: 3px;
+  top: 50%;
   right: 3px;
   font-size: 11px;
   line-height: 1;
   z-index: 4;
-  background: #ffd600;
-  color: #1a1000;
+  background: rgba(0,0,0,0.82);
+  color: #ffd600;
   border-radius: 4px;
   width: 18px;
   height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.7);
   animation: fc-ability-bounce 1.4s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes fc-ability-bounce {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.15); }
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50%       { transform: translateY(-50%) scale(1.15); }
 }
 
 /* Face-down card */

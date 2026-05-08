@@ -1639,3 +1639,140 @@
 }
 
 .fwr-btn:active { opacity: 0.85; }
+
+/* ── Match log button ─────────────────────────────────────────────────────── */
+
+.ms-log-btn {
+  position: fixed;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15,30,20,0.85);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 40;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+  padding: 0;
+}
+
+.ms-log-btn:active {
+  background: rgba(0,200,83,0.25);
+  color: #fff;
+}
+
+/* ── Match log panel ─────────────────────────────────────────────────────── */
+
+.mlog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8px;
+}
+
+.mlog-panel {
+  background: #0d1a12;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  width: min(88vw, 340px);
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  overflow: hidden;
+  animation: mlog-in 0.2s ease-out;
+}
+
+@keyframes mlog-in {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.mlog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 9px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.mlog-title {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.mlog-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  font-size: 17px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.mlog-body {
+  overflow-y: auto;
+  padding: 8px 0 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.mlog-section-label {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #00c853;
+  padding: 6px 14px 4px;
+}
+
+.mlog-section-label--old {
+  color: rgba(255,255,255,0.3);
+  margin-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+}
+
+.mlog-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 14px;
+}
+
+.mlog-icon {
+  font-size: 12px;
+  font-weight: 900;
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 12px;
+  text-align: center;
+}
+
+.mlog-msg {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mlog-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+}

@@ -88,7 +88,7 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
         </div>
         {(atkDelta < 0 || defDelta < 0) && (
           <div className="zoom-debuff-hint">
-            ⚠ Statystyki obniżone przez efekty kart — szczegóły w logu meczu
+            ⚠ Statystyki obniżone przez efekty kart — sprawdź dziennik (ℹ)
           </div>
         )}
 
@@ -145,6 +145,61 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
   )
 }
 
+// ── Match Log Panel ────────────────────────────────────────────────────────
+
+const LOG_TYPE_META = {
+  buff:    { color: '#66bb6a', icon: '⬆' },
+  warning: { color: '#ef5350', icon: '⬇' },
+  special: { color: '#ffd54f', icon: '✦' },
+  action:  { color: '#64b5f6', icon: '▸' },
+  info:    { color: 'rgba(255,255,255,0.4)', icon: '·' },
+}
+
+function MatchLogPanel({ log, round, onClose }) {
+  const currentRound = log.filter(e => e.round === round)
+  const previous = log.filter(e => e.round !== round)
+
+  const renderEntry = (entry, i) => {
+    const meta = LOG_TYPE_META[entry.type] || LOG_TYPE_META.info
+    return (
+      <div key={i} className="mlog-entry">
+        <span className="mlog-icon" style={{ color: meta.color }}>{meta.icon}</span>
+        <span className="mlog-msg" style={{ color: entry.type === 'info' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)' }}>
+          {entry.message}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mlog-overlay" onClick={onClose}>
+      <div className="mlog-panel" onClick={e => e.stopPropagation()}>
+        <div className="mlog-header">
+          <span className="mlog-title">📋 Dziennik meczu</span>
+          <button className="mlog-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="mlog-body">
+          {currentRound.length > 0 && (
+            <>
+              <div className="mlog-section-label">Runda {round} (aktualnie)</div>
+              {currentRound.map(renderEntry)}
+            </>
+          )}
+          {previous.length > 0 && (
+            <>
+              <div className="mlog-section-label mlog-section-label--old">Wcześniejsze rundy</div>
+              {previous.map(renderEntry)}
+            </>
+          )}
+          {log.length === 0 && (
+            <div className="mlog-empty">Brak wpisów — gra właśnie się zaczęła.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Goal Posts decoration ──────────────────────────────────────────────────
 
 function GoalPosts({ side }) {
@@ -192,6 +247,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [goalAnim, setGoalAnim] = useState(null)
   const [selectedCard, setSelectedCard] = useState(null)   // only for drag ghost
   const [zoomCard, setZoomCard] = useState(null)           // { card, isPlayerField, sector }
+  const [showLog, setShowLog] = useState(false)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
@@ -639,6 +695,18 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
 
       </div>{/* end ms-field-wrap */}
+
+      {/* ── Match log button ─────────────────────────────────────────────── */}
+      <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
+
+      {/* ── Match log panel ──────────────────────────────────────────────── */}
+      {showLog && (
+        <MatchLogPanel
+          log={matchState.log}
+          round={round}
+          onClose={() => setShowLog(false)}
+        />
+      )}
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
       <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>

@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '2.5',
+    date: '2026-05-08',
+    changes: [
+      'Przed pierwszym meczem ligowym pojawia się popup z pytaniem czy gracz chce zagrać trening — mecze rankingowe są trwałe',
+    ],
+  },
+  {
     version: '2.4',
     date: '2026-05-08',
     changes: [

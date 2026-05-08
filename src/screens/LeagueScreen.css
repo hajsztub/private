@@ -290,3 +290,92 @@
 }
 
 .league-start-btn:active { opacity: 0.85; }
+
+/* ── First league match popup ──────────────────────────────────────────── */
+
+.league-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.league-popup {
+  background: #0f1f14;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 28px 24px 22px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+}
+
+.league-popup-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.league-popup-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 1.5px;
+  color: #ffd54f;
+  margin: 0 0 12px;
+}
+
+.league-popup-body {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.league-popup-body strong {
+  color: #ffb300;
+}
+
+.league-popup-hint {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 20px;
+}
+
+.league-popup-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.league-popup-btn {
+  flex: 1;
+  padding: 13px 8px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.league-popup-btn:active { opacity: 0.8; }
+
+.league-popup-btn--cancel {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.league-popup-btn--confirm {
+  background: linear-gradient(135deg, #e65100, #bf360c);
+  color: white;
+  box-shadow: 0 4px 14px rgba(230,81,0,0.35);
+}

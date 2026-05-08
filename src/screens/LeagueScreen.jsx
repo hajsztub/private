@@ -41,13 +41,18 @@ export default function LeagueScreen() {
   const playerPos = board.findIndex(r => r.isPlayer) + 1
   const tierPlayers = board.filter(r => r.isPlayer || r.isBot)
 
+  const hasPlayedLeague = (profile.matchHistory || []).some(m => m.matchType === 'league')
+  const [showFirstLeaguePopup, setShowFirstLeaguePopup] = useState(false)
+
   const handleStartMatch = () => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-    navigate('match', {
-      matchType: 'league',
-      matchId: Date.now(),
-      opponentName,
-    })
+    if (!hasPlayedLeague) { setShowFirstLeaguePopup(true); return }
+    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
+  }
+
+  const confirmLeagueStart = () => {
+    setShowFirstLeaguePopup(false)
+    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
   }
 
   return (
@@ -130,6 +135,30 @@ export default function LeagueScreen() {
           ⚽ Rozpocznij Mecz
         </button>
       </div>
+
+      {/* First league match confirmation popup */}
+      {showFirstLeaguePopup && (
+        <div className="league-popup-overlay" onClick={() => setShowFirstLeaguePopup(false)}>
+          <div className="league-popup" onClick={e => e.stopPropagation()}>
+            <div className="league-popup-icon">🏆</div>
+            <h2 className="league-popup-title">Gry rankingowe</h2>
+            <p className="league-popup-body">
+              Mecze ligowe wpływają na Twój <strong>ranking</strong> i są trudniejsze niż trening.
+            </p>
+            <p className="league-popup-hint">
+              💡 Jeśli dopiero zaczynasz — rozegraj najpierw kilka treningów, żeby poznać zasady i zebrać monety na lepsze karty.
+            </p>
+            <div className="league-popup-actions">
+              <button className="league-popup-btn league-popup-btn--cancel" onClick={() => setShowFirstLeaguePopup(false)}>
+                Najpierw trening
+              </button>
+              <button className="league-popup-btn league-popup-btn--confirm" onClick={confirmLeagueStart}>
+                Gram w ligę!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

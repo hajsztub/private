@@ -4,7 +4,7 @@
   height: 100dvh;
   background: radial-gradient(ellipse at 50% 20%, #0d2a18 0%, #07090e 70%);
   color: var(--c-text);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -241,7 +241,7 @@
   color: var(--c-text-2);
   border-radius: 20px;
   padding: 5px 14px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
@@ -448,7 +448,7 @@
   border: none;
   border-radius: var(--r-md);
   padding: 11px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 13px;
   letter-spacing: 0.5px;
@@ -464,7 +464,7 @@
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--r-md);
   padding: 11px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 13px;
   letter-spacing: 0.5px;
@@ -479,7 +479,7 @@
   border: none;
   border-radius: var(--r-md);
   padding: 14px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 15px;
   cursor: pointer;

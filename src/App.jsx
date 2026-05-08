@@ -31,7 +31,7 @@ function ProfileNamePopup({ onDone }) {
     <div style={{
       position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 9999, padding: '24px', fontFamily: "'Nunito', sans-serif",
+      zIndex: 9999, padding: '24px', fontFamily: "'Outfit', sans-serif",
     }}>
       <div style={{
         background: '#161b2e', border: '1px solid rgba(255,255,255,0.12)',
@@ -57,7 +57,7 @@ function ProfileNamePopup({ onDone }) {
           style={{
             width: '100%', padding: '12px 16px', borderRadius: '12px',
             background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.18)',
-            color: 'white', fontSize: '16px', fontFamily: "'Nunito', sans-serif",
+            color: 'white', fontSize: '16px', fontFamily: "'Outfit', sans-serif",
             fontWeight: 700, outline: 'none', boxSizing: 'border-box',
           }}
         />

@@ -165,7 +165,7 @@
 }
 
 .coin-waiting {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 700;
   font-size: 14px;
   color: rgba(255,255,255,0.45);
@@ -192,7 +192,7 @@
   padding: 12px 28px;
   border: none;
   border-radius: 14px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 16px;
   cursor: pointer;

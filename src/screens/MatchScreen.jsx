@@ -597,7 +597,7 @@ export default function MatchScreen({ matchParams = {} }) {
           {!turnActionsUsed.placedDefense && isPlayerTurn && <span className="mac todo">DEF</span>}
           {matchState.redraws < 2 && (
             <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
-              🔄 +4 ({2 - matchState.redraws} lewe)
+              🔄 Dobierz 4 ({2 - matchState.redraws}/2)
             </button>
           )}
           {isPlayerTurn && (

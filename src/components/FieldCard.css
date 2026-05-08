@@ -12,7 +12,7 @@
   flex-shrink: 0;
   cursor: pointer;
   position: relative;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -339,7 +339,7 @@
   border: 2px solid var(--rarity-b, rgba(255,255,255,0.25));
   box-shadow: var(--rarity-s, 0 3px 10px rgba(0,0,0,0.4));
   cursor: pointer;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   position: relative;
   background: linear-gradient(160deg, var(--gk-color, #0d1f12), #07090e);
 }

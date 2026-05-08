@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   position: relative;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -588,7 +588,7 @@
   border-radius: 8px;
   font-size: 10px;
   font-weight: 900;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   padding: 4px 10px;
   cursor: pointer;
   flex-shrink: 0;
@@ -682,7 +682,7 @@
   border-radius: 14px;
   background: linear-gradient(135deg, #f9a825, #f57f17);
   color: #1a0900;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.5px;
@@ -743,7 +743,7 @@
 .msfp-btn {
   border: none;
   border-radius: 10px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 11px;
   font-weight: 900;
   padding: 6px 12px;
@@ -953,7 +953,7 @@
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.65);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 900;
   border-radius: 12px;
@@ -1034,7 +1034,7 @@
   border: none;
   border-radius: 14px;
   padding: 13px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 15px;
   font-weight: 900;
   cursor: pointer;
@@ -1045,7 +1045,7 @@
   background: none;
   border: none;
   color: rgba(255,255,255,0.3);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -1064,7 +1064,7 @@
   justify-content: center;
   gap: 28px;
   padding: 24px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 .ms-gk-header {
@@ -1104,7 +1104,7 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 900;
   padding: 8px 20px;
@@ -1149,7 +1149,7 @@
   width: 100%;
   border: none;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 900;
   padding: 12px;
@@ -1181,7 +1181,7 @@
   color: #90caf9;
   font-size: 12px;
   font-weight: 900;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   border-radius: 10px;
   padding: 4px 8px;
   cursor: pointer;
@@ -1193,15 +1193,20 @@
 /* ── Forfeit button in action bar ───────────────────────────────────────── */
 
 .ms-forfeit-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.55);
+  background: rgba(200,30,30,0.18);
+  border: 1px solid rgba(220,50,50,0.45);
+  color: rgba(255,110,110,0.9);
   font-size: 14px;
   border-radius: 10px;
   padding: 4px 9px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.4;
+  transition: background 0.15s;
+}
+
+.ms-forfeit-btn:hover {
+  background: rgba(200,30,30,0.32);
 }
 
 /* ── Mobile scaling ──────────────────────────────────────────────────────── */
@@ -1315,7 +1320,7 @@
   flex: 1;
   border: none;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 900;
   padding: 11px;

@@ -9,7 +9,7 @@
   align-items: center;
   padding: 0 16px calc(24px + env(safe-area-inset-bottom));
   padding-top: max(24px, env(safe-area-inset-top));
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Outfit', sans-serif;
   color: white;
   overflow-y: auto;
   position: relative;

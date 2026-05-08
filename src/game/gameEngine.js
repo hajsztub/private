@@ -197,6 +197,15 @@ function applyOnPlacementPassive(state, playerId, card, sector) {
       if (allOpp.length) newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
       break
     }
+    case 'opponent_all_debuff_both': {
+      const allOppBoth = [...oppPlayer.offenseSector, ...oppPlayer.defenseSector]
+      for (const c of allOppBoth) {
+        newState = updateCardStat(newState, opp, c.instanceId, 'currentAttackStat', pef.atkAmount)
+        newState = updateCardStat(newState, opp, c.instanceId, 'currentDefenseStat', pef.defAmount)
+      }
+      if (allOppBoth.length) newState = addLog(newState, `${card.name}: ${pef.message}`, 'warning')
+      break
+    }
     case 'remove_random_opponent': {
       const allOpp = [...oppPlayer.offenseSector, ...oppPlayer.defenseSector]
       if (allOpp.length) {

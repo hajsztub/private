@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '2.1',
+    date: '2026-05-08',
+    changes: [
+      'Balans kart: bramkarze o ~40% słabsi (DEF 17-25 → 10-15), mecze bardziej wyrównane',
+      'Balans kart: obrońcy lekko osłabieni (DEF -1 do -10 w zależności od karty i pasywki)',
+      'Balans kart: atakujący Hugo +1 ATK, Thiago +2 ATK, Bardo +4 ATK',
+      'Silas: najdroższa karta w grze (2000🪙), nowy efekt Mastermind — wszyscy przeciwnicy -5 ATK i -5 DEF',
+      'Claus (legendarny bramkarz): pasywka zmniejszona z +2 DEF do +1 DEF na rundę',
+    ],
+  },
+  {
     version: '2.0',
     date: '2026-05-08',
     changes: [

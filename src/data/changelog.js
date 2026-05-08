@@ -9,6 +9,7 @@ export const CHANGELOG = [
       'Efekt holograficzny na kartach Rzadkich i Legendarnych (tęczowy shimmer)',
       'Legendarne karty w paczkach: paczka Premium gwarantuje Legendarną, pozostałe 5% szans na Legendarną, 30% na Rzadką',
       'Specjalna animacja otwarcia paczki przy trafieniu Legendarnej karty',
+      'Mobile: karty na boisku i w ręce są o 20% mniejsze (tylko telefon, web bez zmian)',
     ],
   },
   {

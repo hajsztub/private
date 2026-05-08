@@ -235,8 +235,15 @@ export default function MatchScreen({ matchParams = {} }) {
   useEffect(() => {
     const prev = prevScoreRef.current
     const curr = matchState.displayScore
-    if (curr.player > prev.player) { setGoalAnim({ scorer: 'player', score: curr }); SFX.goalPlayer() }
-    else if (curr.ai > prev.ai) { setGoalAnim({ scorer: 'ai', score: curr }); SFX.goalAI() }
+    if (curr.player > prev.player) {
+      const ev = [...matchState.goalEvents].reverse().find(e => e.scorer === 'player')
+      setGoalAnim({ scorer: 'player', score: curr, cardName: ev?.cardName || null })
+      SFX.goalPlayer()
+    } else if (curr.ai > prev.ai) {
+      const ev = [...matchState.goalEvents].reverse().find(e => e.scorer === 'ai')
+      setGoalAnim({ scorer: 'ai', score: curr, cardName: ev?.cardName || null })
+      SFX.goalAI()
+    }
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
@@ -678,7 +685,7 @@ export default function MatchScreen({ matchParams = {} }) {
         <SpecialCardModal card={specialCard} onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })} />
       )}
       {goalAnim && settings.visualEffects !== false && (
-        <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} onDone={() => setGoalAnim(null)} />
+        <GoalAnimation scorer={goalAnim.scorer} score={goalAnim.score} cardName={goalAnim.cardName} onDone={() => setGoalAnim(null)} />
       )}
       {zoomCard && (() => {
         const zc = zoomCard.card

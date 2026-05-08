@@ -57,23 +57,26 @@ export const SFX = {
   },
 
   goalPlayer() {
-    // Ascending triumphant arpeggio
-    const notes = [523, 659, 784, 1047]
-    notes.forEach((f, i) => {
-      playTone(f, 'square', 0.18, 0.12, i * 0.07)
-      playTone(f * 0.5, 'sine', 0.18, 0.08, i * 0.07)
+    // Rising fanfare + crowd roar
+    const fanfare = [523, 659, 784, 1047, 1319]
+    fanfare.forEach((f, i) => {
+      playTone(f, 'square', 0.18, 0.18, i * 0.07)
+      playTone(f * 0.5, 'sine', 0.22, 0.12, i * 0.07)
     })
-    // crowd noise
-    playNoise(0.6, 0.04, 0.1)
+    playTone(2093, 'sine', 0.25, 0.12, 0.45)
+    playNoise(0.8, 0.07, 0.05)
+    playNoise(0.6, 0.05, 0.5)
+    playNoise(0.5, 0.04, 1.0)
   },
 
   goalAI() {
-    // Descending sad tone
-    const notes = [400, 320, 250, 200]
+    // Sad descending with low thud
+    const notes = [440, 350, 280, 220, 165]
     notes.forEach((f, i) => {
-      playTone(f, 'sawtooth', 0.2, 0.08, i * 0.08)
+      playTone(f, 'sawtooth', 0.22, 0.12, i * 0.09)
     })
-    playNoise(0.3, 0.02)
+    playTone(80, 'sine', 0.3, 0.2, 0.05)
+    playNoise(0.4, 0.04, 0.1)
   },
 
   coinFlip() {

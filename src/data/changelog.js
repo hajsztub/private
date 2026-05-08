@@ -1,5 +1,27 @@
 export const CHANGELOG = [
   {
+    version: '3.5',
+    date: '2026-05-08',
+    changes: [
+      'Mecz ligowy: przeciwnik ma teraz losowy skład każdą rozgrywkę (wcześniej często ten sam lineup)',
+    ],
+  },
+  {
+    version: '3.4',
+    date: '2026-05-08',
+    changes: [
+      'Nathan: pasywka DETERMINACJA zmieniona z +3 DEF → +1 DEF co rundę',
+    ],
+  },
+  {
+    version: '3.3',
+    date: '2026-05-08',
+    changes: [
+      'Jim: pasywka ROZPĘD zmieniona z +2 → +1 ATK całemu atakowi co rundę',
+      'Naprawiono opis umiejętności Jima — teraz poprawnie wskazuje że buff dotyczy drużyny, nie Jima',
+    ],
+  },
+  {
     version: '3.2',
     date: '2026-05-08',
     changes: [

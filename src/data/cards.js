@@ -755,9 +755,9 @@ const EXTENDED_CARDS = [
     color: '#cfd8dc',
     abilityName: 'Determinacja',
     abilityType: 'passive',
-    abilityDescription: 'Każdą rundę na boisku Nathan zyskuje +3 DEF.',
+    abilityDescription: 'Każdą rundę na boisku Nathan zyskuje +1 DEF.',
     noActivationDescription: '',
-    passiveEffect: { type: 'per_round_self_stat', stat: 'defenseStat', amount: 3, message: 'Determinacja! Nathan +3 DEF.' },
+    passiveEffect: { type: 'per_round_self_stat', stat: 'defenseStat', amount: 1, message: 'Determinacja! Nathan +1 DEF.' },
     count: 2,
   },
   {

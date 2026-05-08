@@ -1,5 +1,29 @@
 export const CHANGELOG = [
   {
+    version: '3.2',
+    date: '2026-05-08',
+    changes: [
+      'JIM (legendarny bramkarz): DEF 5→8, pasywka zmieniona — co rundę cały atak drużyny +2 ATK',
+    ],
+  },
+  {
+    version: '3.1',
+    date: '2026-05-08',
+    changes: [
+      'Wskaźnik aktywnej umiejętności na kartach w meczu: czarny kwadracik z ⚡ sygnalizuje że karta ma umiejętność do aktywowania',
+      'Naprawiono: LIS (starter) — umiejętność PRZEBIEGŁOŚĆ działa teraz jako pasywka (+1 ATK co rundę automatycznie)',
+    ],
+  },
+  {
+    version: '3.0',
+    date: '2026-05-08',
+    changes: [
+      'Podświetlenie przycisku TRENING dla nowych graczy — pulsująca zielona obwódka zamiast strzałki rozjeżdżającej layout',
+      'Naprawiono: misje dzienne nie wyświetlały się dla nowych graczy przy pierwszym uruchomieniu',
+      'Zmieniono nazwę "Misje dnia" na "Misje dzienne"',
+    ],
+  },
+  {
     version: '2.9',
     date: '2026-05-08',
     changes: [

@@ -68,16 +68,18 @@ function buildCard(owned, def) {
   }
 }
 
-function initAssignments(allCards, activeDeck, savedAssignments) {
+function initAssignments(allCards, activeDeck, savedAssignments, injuries) {
   const result = {}
   FORMATION.forEach(s => { result[s.id] = null })
+  const now = Date.now()
+  const isInjured = (id) => injuries && id && injuries[id] && injuries[id] > now
 
-  // Use saved layout if available, just validate cards still exist
+  // Use saved layout if available, just validate cards still exist and aren't injured
   if (savedAssignments) {
     const ownedIds = new Set(allCards.map(({ owned }) => owned.instanceId))
     for (const slot of FORMATION) {
       const id = savedAssignments[slot.id]
-      result[slot.id] = id && ownedIds.has(id) ? id : null
+      result[slot.id] = id && ownedIds.has(id) && !isInjured(id) ? id : null
     }
     return result
   }
@@ -177,7 +179,7 @@ export default function DeckBuilderScreen() {
   , [profile.ownedCards])
 
   const [assignments, setAssignments] = useState(() =>
-    initAssignments(allCards, profile.activeDeck, profile.deckAssignments)
+    initAssignments(allCards, profile.activeDeck, profile.deckAssignments, profile.injuries || {})
   )
 
   const assignedIds = useMemo(
@@ -347,6 +349,8 @@ export default function DeckBuilderScreen() {
           .filter(({ owned, card }) => {
             if (usedIds.has(owned.instanceId)) return false
             if (!accepts.includes(card.type)) return false
+            const injuredUntil = injuries[owned.instanceId]
+            if (injuredUntil && injuredUntil > Date.now()) return false
             // Disallow same card id already placed in another slot
             const alreadyPlaced = Object.values(next).some(id => {
               if (!id) return false
@@ -406,12 +410,17 @@ export default function DeckBuilderScreen() {
               const card = assignments[slot.id]
                 ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
                 : null
+              const slotInstanceId = assignments[slot.id]
+              const isSlotInjured = slotInstanceId
+                ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
+                : false
               return (
                 <FormationSlot
                   key={slot.id}
                   slot={slot}
                   card={card}
                   selected={selectedSlot === slot.id}
+                  injured={isSlotInjured}
                   onClick={() => handleSlotClick(slot.id)}
                   onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
                 />
@@ -430,12 +439,17 @@ export default function DeckBuilderScreen() {
             const card = assignments[slot.id]
               ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
               : null
+            const slotInstanceId = assignments[slot.id]
+            const isSlotInjured = slotInstanceId
+              ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
+              : false
             return (
               <FormationSlot
                 key={slot.id}
                 slot={slot}
                 card={card}
                 selected={selectedSlot === slot.id}
+                injured={isSlotInjured}
                 onClick={() => handleSlotClick(slot.id)}
                 onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
               />
@@ -538,11 +552,11 @@ export default function DeckBuilderScreen() {
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, selected, onClick, onInfo }) {
+function FormationSlot({ slot, card, selected, onClick, onInfo, injured }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   return (
     <div
-      className={`fs-slot ${selected ? 'fs-slot--selected' : ''} ${card ? 'fs-slot--filled' : 'fs-slot--empty'}`}
+      className={`fs-slot ${selected ? 'fs-slot--selected' : ''} ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
       style={{ '--slot-c': TYPE_COLOR[slot.type] }}
       onClick={onClick}
     >
@@ -560,6 +574,7 @@ function FormationSlot({ slot, card, selected, onClick, onInfo }) {
             <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
           )}
           <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
+          {injured && <div className="fs-slot-injury">🩹</div>}
           {onInfo && (
             <button className="fs-info-btn" onClick={onInfo} title="Info">ⓘ</button>
           )}

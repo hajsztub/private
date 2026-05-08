@@ -1,9 +1,50 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { getTier, getBotName } from '../data/botNames'
 import { CHANGELOG } from '../data/changelog'
+import { CARD_DEFINITIONS } from '../data/cards'
+import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import './MainMenuScreen.css'
+
+const ALL_DEFS_MM = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
+const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
+
+function fmtRelTime(ts) {
+  const diff = Date.now() - ts
+  if (diff < 60000) return 'przed chwilą'
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} min temu`
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)} godz. temu`
+  return `${Math.floor(diff / 86400000)} dni temu`
+}
+
+function NotificationPanel({ notifications, onDismiss, onClose }) {
+  return (
+    <div className="mm-notif-overlay" onClick={onClose}>
+      <div className="mm-notif-panel" onClick={e => e.stopPropagation()}>
+        <div className="mm-notif-header">
+          <span className="mm-notif-title">🔔 Powiadomienia</span>
+          <button className="mm-notif-close" onClick={onClose}>✕</button>
+        </div>
+        {notifications.length === 0 ? (
+          <div className="mm-notif-empty">Brak nowych powiadomień</div>
+        ) : (
+          <div className="mm-notif-list">
+            {notifications.map(n => (
+              <div key={n.id} className={`mm-notif-item mm-notif-item--${n.type} ${n.read ? 'mm-notif-item--read' : ''}`}>
+                <div className="mm-notif-msg">{n.message}</div>
+                <div className="mm-notif-footer">
+                  <span className="mm-notif-time">{fmtRelTime(n.timestamp)}</span>
+                  <button className="mm-notif-dismiss" onClick={() => onDismiss(n.id)}>✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 const TUTORIAL_SECTIONS = [
   {
@@ -200,13 +241,66 @@ function ProfileAvatar({ name }) {
 
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
-  const { profile, claimMission } = useProfile()
+  const { profile, claimMission, addNotifications, markNotificationsRead, dismissNotification } = useProfile()
   const [showTutorial, setShowTutorial] = useState(false)
   const [showChangelog, setShowChangelog] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [showNotifs, setShowNotifs] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
   const [tooltip, setTooltip] = useState(null)
   const isNewPlayer = (profile.matchHistory || []).length === 0
+  const notifications = profile.notifications || []
+  const unreadCount = notifications.filter(n => !n.read).length
+  const didCheckRef = useRef(false)
+
+  // Check for recoveries and free pack availability on mount
+  useEffect(() => {
+    if (didCheckRef.current) return
+    didCheckRef.current = true
+    const now = Date.now()
+    const injuries = profile.injuries || {}
+    const newNotifs = []
+
+    for (const [instanceId, until] of Object.entries(injuries)) {
+      if (until < now) {
+        const notifId = `recovery_${instanceId}_${until}`
+        if (!notifications.some(n => n.id === notifId)) {
+          const owned = profile.ownedCards.find(c => c.instanceId === instanceId)
+          if (owned) {
+            const def = ALL_DEFS_MM.find(d => d.id === owned.cardId)
+            newNotifs.push({
+              id: notifId,
+              type: 'recovery',
+              message: `💪 ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`,
+              timestamp: now,
+              read: false,
+            })
+          }
+        }
+      }
+    }
+
+    const freePackAvailable = (now - (profile.lastFreePackAt || 0)) >= FREE_PACK_COOLDOWN_MS
+    if (freePackAvailable) {
+      const notifId = `free_pack_${Math.floor((profile.lastFreePackAt || 0) / 1000)}`
+      if (!notifications.some(n => n.id === notifId)) {
+        newNotifs.push({
+          id: notifId,
+          type: 'free_pack',
+          message: '📦 Darmowa paczka jest dostępna w Markecie!',
+          timestamp: now,
+          read: false,
+        })
+      }
+    }
+
+    if (newNotifs.length) addNotifications(newNotifs)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openNotifs = () => {
+    setShowNotifs(true)
+    markNotificationsRead()
+  }
 
   const TOOLTIPS = {
     league:    { title: 'Mecz Ligowy', desc: 'Rankingowy mecz wpływający na rating. Trudniejszy — zacznij od treningu.' },
@@ -265,6 +359,10 @@ export default function MainMenuScreen() {
 
       {/* ── Profile card ── */}
       <div className="mm-profile-card">
+        <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
+          🔔
+          {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
+        </button>
         <div className="mm-profile-left">
           <div className="mm-avatar-wrap">
             <ProfileAvatar name={profile.name} />
@@ -495,6 +593,13 @@ export default function MainMenuScreen() {
 
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
       {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}
+      {showNotifs && (
+        <NotificationPanel
+          notifications={notifications}
+          onDismiss={dismissNotification}
+          onClose={() => setShowNotifs(false)}
+        />
+      )}
 
       {tooltip && (
         <div className="mm-tooltip-overlay" onClick={() => setTooltip(null)}>

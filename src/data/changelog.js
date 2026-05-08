@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: '3.7',
+    date: '2026-05-08',
+    changes: [
+      'Powiadomienia (dzwoneczek 🔔 w profilu): kontuzja zawodnika, powrót po kontuzji, dostępna darmowa paczka',
+      'Kontuzjowani zawodnicy nie mogą być wybrani do składu — AUTO i ładowanie zapisanego składu automatycznie ich pomija',
+      'Kontuzjowany zawodnik w formacji oznaczony 🩹 i czerwoną obwódką',
+    ],
+  },
+  {
     version: '3.6',
     date: '2026-05-08',
     changes: [

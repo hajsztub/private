@@ -136,6 +136,20 @@
   border-style: dashed;
 }
 
+.fs-slot--injured {
+  border-color: #ef9a9a !important;
+  opacity: 0.65;
+}
+
+.fs-slot-injury {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .fs-slot-img {
   position: absolute;
   inset: 0;

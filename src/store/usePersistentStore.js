@@ -107,6 +107,7 @@ function defaultProfile() {
     dailyMissions: { date: '', missions: [] },
     cardShop: { cardIds: [], refreshedAt: 0 },
     lastTierChange: null, // { from, to, timestamp }
+    notifications: [], // [{ id, type, message, timestamp, read }]
   }
 }
 
@@ -357,6 +358,32 @@ export function usePersistentStore() {
     update(prev => ({ ...prev, lastTierChange: null }))
   }, [update])
 
+  const addNotifications = useCallback((notifs) => {
+    update(prev => {
+      const existingIds = new Set((prev.notifications || []).map(n => n.id))
+      const fresh = notifs.filter(n => !existingIds.has(n.id))
+      if (!fresh.length) return prev
+      return {
+        ...prev,
+        notifications: [...fresh, ...(prev.notifications || [])].slice(0, 50),
+      }
+    })
+  }, [update])
+
+  const markNotificationsRead = useCallback(() => {
+    update(prev => ({
+      ...prev,
+      notifications: (prev.notifications || []).map(n => ({ ...n, read: true })),
+    }))
+  }, [update])
+
+  const dismissNotification = useCallback((id) => {
+    update(prev => ({
+      ...prev,
+      notifications: (prev.notifications || []).filter(n => n.id !== id),
+    }))
+  }, [update])
+
   const resetProfile = useCallback(() => {
     const fresh = defaultProfile()
     try {
@@ -386,6 +413,9 @@ export function usePersistentStore() {
     refreshCardShop,
     buyShopCard,
     clearTierChange,
+    addNotifications,
+    markNotificationsRead,
+    dismissNotification,
     resetProfile,
   }
 }

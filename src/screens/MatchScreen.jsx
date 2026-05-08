@@ -169,7 +169,7 @@ function GoalPosts({ side }) {
 
 export default function MatchScreen({ matchParams = {} }) {
   const { replace } = useRouter()
-  const { profile, addMatchResult, addInjuries, markTutorialSeen, claimFirstWinReward } = useProfile()
+  const { profile, addMatchResult, addInjuries, addNotifications, markTutorialSeen, claimFirstWinReward } = useProfile()
   const { settings } = useSettings()
 
   const matchType = matchParams.matchType || 'local'
@@ -253,7 +253,24 @@ export default function MatchScreen({ matchParams = {} }) {
     const injuredEntries = fieldCards
       .filter(() => Math.random() < 0.08)
       .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
-    if (injuredEntries.length) addInjuries(injuredEntries)
+    if (injuredEntries.length) {
+      addInjuries(injuredEntries)
+      const now = Date.now()
+      addNotifications(injuredEntries.map(e => {
+        const fc = fieldCards.find(c => c.instanceId === e.instanceId)
+        const ms = e.until - now
+        const h = Math.floor(ms / 3600000)
+        const m = Math.floor((ms % 3600000) / 60000)
+        const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
+        return {
+          id: `injury_${e.instanceId}_${e.until}`,
+          type: 'injury',
+          message: `🩹 ${fc?.name || 'Zawodnik'} jest kontuzjowany — niedostępny przez ${timeStr}`,
+          timestamp: now,
+          read: false,
+        }
+      }))
+    }
     const isFirstWin = result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
     if (isFirstWin) {
       claimFirstWinReward()

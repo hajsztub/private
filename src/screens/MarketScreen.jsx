@@ -100,9 +100,29 @@ const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
 function drawCards(pack, count = 3) {
   const pool = CARD_DEFINITIONS.filter(pack.filter)
   if (pool.length === 0) return []
+  const legendaries = pool.filter(c => c.rarity === 'legendary')
+  const rares = pool.filter(c => c.rarity === 'rare')
+  const commons = pool.filter(c => c.rarity !== 'legendary' && c.rarity !== 'rare')
+
+  const isPremium = pack.id === 'premium'
+  const legChance = isPremium ? 1.0 : 0.05
+  const rareChance = isPremium ? 1.0 : 0.30
+
+  function pickOne() {
+    const roll = Math.random()
+    if (roll < legChance && legendaries.length) return legendaries[Math.floor(Math.random() * legendaries.length)]
+    if (roll < rareChance && rares.length)      return rares[Math.floor(Math.random() * rares.length)]
+    if (commons.length)                          return commons[Math.floor(Math.random() * commons.length)]
+    return pool[Math.floor(Math.random() * pool.length)]
+  }
+
+  // Premium pack: guarantee at least 1 legendary
   const drawn = []
-  for (let i = 0; i < count; i++) {
-    drawn.push(pool[Math.floor(Math.random() * pool.length)])
+  if (isPremium && legendaries.length) {
+    drawn.push(legendaries[Math.floor(Math.random() * legendaries.length)])
+    for (let i = 1; i < count; i++) drawn.push(pickOne())
+  } else {
+    for (let i = 0; i < count; i++) drawn.push(pickOne())
   }
   return drawn
 }
@@ -146,10 +166,15 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   const [revealed, setRevealed] = useState(0)
   const [picked, setPicked] = useState(null)
   const [done, setDone] = useState(false)
+  const [legendaryFlash, setLegendaryFlash] = useState(false)
 
   useEffect(() => {
     if (revealed < drawnCards.length) {
-      const t = setTimeout(() => setRevealed(r => r + 1), 480)
+      const delay = drawnCards[revealed]?.rarity === 'legendary' ? 750 : 480
+      const t = setTimeout(() => {
+        if (drawnCards[revealed]?.rarity === 'legendary') setLegendaryFlash(true)
+        setRevealed(r => r + 1)
+      }, delay)
       return () => clearTimeout(t)
     }
   }, [revealed, drawnCards.length])
@@ -168,7 +193,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   }
 
   return (
-    <div className="pack-overlay">
+    <div className={`pack-overlay ${legendaryFlash ? 'pack-overlay--legendary-flash' : ''}`}>
       <div className="pack-overlay-panel">
         <div className="pack-overlay-header" style={{ background: pack.iconBg }}>
           <span className="poh-icon">{pack.icon}</span>
@@ -180,10 +205,11 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
           {drawnCards.map((def, i) => {
             const card = defToCard(def)
             const isSelected = picked === def
+            const isLegendary = def.rarity === 'legendary'
             return (
               <div
                 key={i}
-                className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'} ${isSelected ? 'pack-card-slot--picked' : ''}`}
+                className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'} ${isSelected ? 'pack-card-slot--picked' : ''} ${i < revealed && isLegendary ? 'pack-card-slot--legendary' : ''}`}
                 style={{ transitionDelay: `${i * 0.06}s` }}
                 onClick={() => i < revealed && handlePick(def)}
               >

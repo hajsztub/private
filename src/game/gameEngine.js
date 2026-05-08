@@ -725,6 +725,21 @@ function applyPassiveEffects(state) {
           }
           break
         }
+        case 'adjacent_buff': {
+          // Buff cards immediately adjacent (prev/next) in same sector
+          const secCards = newState.players[pid][sectorKey].filter(c => !c.isDestroyed)
+          const idx = secCards.findIndex(c => c.instanceId === card.instanceId)
+          const neighbors = []
+          if (idx > 0) neighbors.push(secCards[idx - 1])
+          if (idx < secCards.length - 1) neighbors.push(secCards[idx + 1])
+          for (const nb of neighbors) {
+            newState = updateCardStat(newState, pid, nb.instanceId, 'currentAttackStat', pef.amount)
+          }
+          break
+        }
+        case 'var_immune':
+          // Handled in var_check — no per-round effect needed
+          break
         case 'per_round_self_stat':
           newState = updateCardStat(newState, pid, card.instanceId, statKey(pef.stat), pef.amount)
           break
@@ -813,14 +828,16 @@ function applySpecialCardEffect(state, card) {
       return s
     }
     case 'var_check': {
-      // VAR: for each team that has 3 cards in any sector, destroy 1 random from that sector
+      // VAR: for each team that has 3 cards in any sector, destroy 1 random (var_immune cards are safe)
       let s = state
       for (const pid of ['A', 'B']) {
         const p = s.players[pid]
         for (const sectorKey of ['offenseSector', 'defenseSector']) {
           const sector = p[sectorKey].filter(c => !c.isDestroyed)
           if (sector.length >= 3) {
-            const target = sector[Math.floor(Math.random() * sector.length)]
+            const eligible = sector.filter(c => c.passiveEffect?.type !== 'var_immune')
+            if (!eligible.length) continue
+            const target = eligible[Math.floor(Math.random() * eligible.length)]
             s = destroyCard(s, pid, target.instanceId)
           }
         }

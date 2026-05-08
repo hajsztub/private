@@ -202,6 +202,20 @@
   letter-spacing: 0.5px;
 }
 
+.mm-history-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.5);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 14px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.mm-history-btn:active { background: rgba(255,255,255,0.15); }
+
 .mmr-w { color: #00e676; }
 .mmr-d { color: #fff176; }
 .mmr-l { color: #ef5350; }
@@ -1082,3 +1096,65 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ── History Modal ────────────────────────────────────────────────────────── */
+
+.hist-modal { max-height: 65vh; }
+
+.hist-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+}
+
+.hist-list { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px 16px; }
+
+.hist-entry {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hist-entry--win  { border-color: rgba(0,230,118,0.3); }
+.hist-entry--loss { border-color: rgba(255,82,82,0.3); }
+.hist-entry--draw { border-color: rgba(255,241,118,0.25); }
+
+.hist-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hist-result-icon { font-size: 18px; }
+.hist-score {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: #fff;
+}
+.hist-type {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+.hist-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+.hist-entry-bot {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+.hist-coins { color: #ffd600; font-weight: 700; }
+.hist-rating--up   { color: #00e676; font-weight: 700; }
+.hist-rating--down { color: #ff5252; font-weight: 700; }
+.hist-mvp { color: rgba(255,255,255,0.6); }

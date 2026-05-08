@@ -90,6 +90,7 @@ function defaultProfile() {
     activeDeck: STARTER_CARDS.map(c => c.instanceId),
     deckAssignments: null, // { slotId: instanceId } — exact formation layout
     matchHistory: [],
+    injuries: {}, // { instanceId: timestampUntilHealed }
     dailyMissions: { date: '', missions: [] },
   }
 }
@@ -141,8 +142,19 @@ export function usePersistentStore() {
     })
   }, [update])
 
+  const addInjuries = useCallback((entries) => {
+    // entries: [{ instanceId, until }]
+    update(prev => ({
+      ...prev,
+      injuries: {
+        ...prev.injuries,
+        ...Object.fromEntries(entries.map(e => [e.instanceId, e.until])),
+      },
+    }))
+  }, [update])
+
   const addMatchResult = useCallback((result) => {
-    // result: { type, matchType, score, coinsEarned, ratingChange, playerGoals }
+    // result: { type, matchType, score, coinsEarned, ratingChange, playerGoals, mvpName }
     update(prev => {
       const wins = prev.wins + (result.type === 'win' ? 1 : 0)
       const draws = prev.draws + (result.type === 'draw' ? 1 : 0)
@@ -298,6 +310,7 @@ export function usePersistentStore() {
     addCoins,
     spendCoins,
     addMatchResult,
+    addInjuries,
     claimMission,
     buyCard,
     claimPackCard,

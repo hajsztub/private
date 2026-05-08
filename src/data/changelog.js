@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '1.6',
+    date: '2026-05-08',
+    changes: [
+      'Nowe karty: KAPITAN (pasywna: +2 ATK sąsiednim kartom co rundę) i WETERAN (immunitet na VAR)',
+      'Kontuzje: 8% szans na kontuzję karty po meczu — kontuzjowani gracze niedostępni przez 2-4 godziny (widoczne w Składzie)',
+      'Historia meczów: ostatnie 3 mecze dostępne z ekranu głównego (przycisk 📋 obok bilansu W/R/P)',
+      'Efekt holograficzny na kartach Rzadkich i Legendarnych (tęczowy shimmer)',
+      'Legendarne karty w paczkach: paczka Premium gwarantuje Legendarną, pozostałe 5% szans na Legendarną, 30% na Rzadką',
+      'Specjalna animacja otwarcia paczki przy trafieniu Legendarnej karty',
+    ],
+  },
+  {
     version: '1.5',
     date: '2026-05-08',
     changes: [

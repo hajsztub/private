@@ -146,9 +146,18 @@ function CardInfoModal({ card, onClose }) {
   )
 }
 
+function injuryTimeLeft(until) {
+  const ms = until - Date.now()
+  if (ms <= 0) return null
+  const h = Math.floor(ms / 3600000)
+  const m = Math.floor((ms % 3600000) / 60000)
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
+}
+
 export default function DeckBuilderScreen() {
   const { goBack } = useRouter()
   const { profile, setActiveDeck } = useProfile()
+  const injuries = profile.injuries || {}
   const [notification, setNotification] = useState(null)
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [manualFilter, setManualFilter] = useState('all')
@@ -226,6 +235,13 @@ export default function DeckBuilderScreen() {
     const entry = allCards.find(({ owned }) => owned.instanceId === instanceId)
     if (!entry) return
     const { card } = entry
+
+    // Block injured cards
+    const injuredUntil = injuries[instanceId]
+    if (injuredUntil && injuredUntil > Date.now()) {
+      showNotif(`${card.name} jest kontuzjowany! (${injuryTimeLeft(injuredUntil)})`, false)
+      return
+    }
 
     // Prevent duplicate cardId in deck
     const alreadyInDeck = Object.values(assignments).some(id => {
@@ -468,6 +484,8 @@ export default function DeckBuilderScreen() {
           const slotLabel = isAssigned
             ? FORMATION.find(s => assignments[s.id] === owned.instanceId)?.pos
             : null
+          const injuredUntil = injuries[owned.instanceId]
+          const isInjured = injuredUntil && injuredUntil > Date.now()
           return (
             <CardPickerRow
               key={owned.instanceId}
@@ -475,6 +493,8 @@ export default function DeckBuilderScreen() {
               assigned={isAssigned}
               slotLabel={slotLabel}
               hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
+              injured={isInjured}
+              injuryLeft={isInjured ? injuryTimeLeft(injuredUntil) : null}
               onClick={() => handleCardPick(owned.instanceId)}
             />
           )
@@ -552,14 +572,14 @@ function FormationSlot({ slot, card, selected, onClick, onInfo }) {
 
 // ── Card picker row ────────────────────────────────────────────────────────
 
-function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, onClick }) {
+function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injuryLeft, onClick }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card.currentAttackStat ?? card.attackStat ?? 0
   const def = card.currentDefenseStat ?? card.defenseStat ?? 0
   const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
 
   return (
-    <div className={`cp-row ${assigned ? 'cp-row--assigned' : ''} ${hasDuplicate ? 'cp-row--duplicate' : ''}`} onClick={onClick}>
+    <div className={`cp-row ${assigned ? 'cp-row--assigned' : ''} ${hasDuplicate ? 'cp-row--duplicate' : ''} ${injured ? 'cp-row--injured' : ''}`} onClick={onClick}>
       <div className="cp-avatar">
         {!imgFailed ? (
           <img
@@ -590,10 +610,11 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, onClick }) {
             {card.rarity === 'legendary' ? '★★★' : card.rarity === 'rare' ? '★★' : '★'}
           </span>
           {hasDuplicate && <span className="cp-dup-badge" title="Masz duplikat - możliwy upgrade">🔄</span>}
+          {injured && <span className="cp-injury-badge">🩹 {injuryLeft}</span>}
         </div>
       </div>
       <div className={`cp-badge ${assigned ? 'cp-badge--on' : ''}`}>
-        {assigned ? slotLabel : '+'}
+        {injured ? '🩹' : assigned ? slotLabel : '+'}
       </div>
     </div>
   )

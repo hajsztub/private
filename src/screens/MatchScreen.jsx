@@ -150,7 +150,7 @@ function GoalPosts({ side }) {
 
 export default function MatchScreen({ matchParams = {} }) {
   const { replace } = useRouter()
-  const { profile, addMatchResult, markTutorialSeen } = useProfile()
+  const { profile, addMatchResult, addInjuries, markTutorialSeen } = useProfile()
   const { settings } = useSettings()
 
   const matchType = matchParams.matchType || 'local'
@@ -223,7 +223,16 @@ export default function MatchScreen({ matchParams = {} }) {
     const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
-    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player })
+    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null })
+    // Injury roll: 8% chance per field card
+    const fieldCards = [
+      ...matchState.players.A.offenseSector,
+      ...matchState.players.A.defenseSector,
+    ].filter(c => !c.isDestroyed && c.instanceId)
+    const injuredEntries = fieldCards
+      .filter(() => Math.random() < 0.08)
+      .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
+    if (injuredEntries.length) addInjuries(injuredEntries)
     setTimeout(() => replace('post_match', {
       result, score, matchType, coinsEarned: coins, ratingChange,
       goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,

@@ -516,6 +516,16 @@
 .cp-row--duplicate { border-color: rgba(255, 215, 0, 0.4); }
 .cp-dup-badge { font-size: 10px; cursor: help; }
 
+.cp-row--injured { opacity: 0.55; border-color: rgba(255,100,100,0.5); }
+.cp-injury-badge {
+  font-size: 10px;
+  color: #ff6b6b;
+  background: rgba(255,80,80,0.15);
+  border: 1px solid rgba(255,80,80,0.3);
+  border-radius: 8px;
+  padding: 1px 5px;
+}
+
 /* ── Info button on formation slot ──────────────────────────────────────────── */
 
 .fs-info-btn {

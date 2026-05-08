@@ -70,6 +70,60 @@ function TutorialModal({ onClose }) {
   )
 }
 
+function matchTypeLabel(mt) {
+  if (mt === 'league') return 'Liga'
+  if (mt === 'training_amateur') return 'Trening Amator'
+  if (mt === 'training_pro') return 'Trening PRO'
+  return 'Mecz'
+}
+
+function fmtMatchDate(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  return `${d.getDate()}.${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+function HistoryModal({ history, onClose }) {
+  const last3 = (history || []).slice(0, 3)
+  return (
+    <div className="cl-overlay" onClick={onClose}>
+      <div className="cl-modal hist-modal" onClick={e => e.stopPropagation()}>
+        <div className="cl-header">
+          <span className="cl-title">📋 OSTATNIE MECZE</span>
+          <button className="cl-close" onClick={onClose}>✕</button>
+        </div>
+        {last3.length === 0 ? (
+          <div className="hist-empty">Nie rozegrałeś jeszcze żadnego meczu.</div>
+        ) : (
+          <div className="hist-list">
+            {last3.map((m, i) => (
+              <div key={i} className={`hist-entry hist-entry--${m.type}`}>
+                <div className="hist-entry-top">
+                  <span className="hist-result-icon">
+                    {m.type === 'win' ? '🏆' : m.type === 'loss' ? '❌' : '🤝'}
+                  </span>
+                  <span className="hist-score">{m.score?.player ?? 0} : {m.score?.ai ?? 0}</span>
+                  <span className="hist-type">{matchTypeLabel(m.matchType)}</span>
+                  <span className="hist-date">{fmtMatchDate(m.date)}</span>
+                </div>
+                <div className="hist-entry-bot">
+                  {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} 🪙</span>}
+                  {m.ratingChange !== 0 && m.matchType === 'league' && (
+                    <span className={`hist-rating ${m.ratingChange > 0 ? 'hist-rating--up' : 'hist-rating--down'}`}>
+                      {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ⭐
+                    </span>
+                  )}
+                  {m.mvpName && <span className="hist-mvp">⭐ MVP: {m.mvpName}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ChangelogModal({ onClose }) {
   return (
     <div className="cl-overlay" onClick={onClose}>
@@ -149,6 +203,7 @@ export default function MainMenuScreen() {
   const { profile, claimMission } = useProfile()
   const [showTutorial, setShowTutorial] = useState(false)
   const [showChangelog, setShowChangelog] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
   const [trainingOpen, setTrainingOpen] = useState(false)
   const [showMissions, setShowMissions] = useState(false)
   const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
@@ -224,6 +279,7 @@ export default function MainMenuScreen() {
         <span className="mmr-d">{profile.draws}R</span>
         <span className="mmr-sep">|</span>
         <span className="mmr-l">{profile.losses}P</span>
+        <button className="mm-history-btn" onClick={() => setShowHistory(true)}>📋</button>
       </div>
 
       {/* ── Missions row ── */}
@@ -395,6 +451,7 @@ export default function MainMenuScreen() {
       </div>
 
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
+      {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}
     </div>
   )
 }

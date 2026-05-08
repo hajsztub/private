@@ -119,33 +119,58 @@
   justify-content: center;
 }
 
-/* Legendary shimmer sweep */
+/* Legendary holographic shimmer */
 .fc-legendary-shimmer {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     115deg,
-    transparent 30%,
-    rgba(255,215,0,0.18) 50%,
-    transparent 70%
+    transparent 15%,
+    rgba(255,100,200,0.15) 28%,
+    rgba(255,215,0,0.22) 38%,
+    rgba(100,255,180,0.18) 48%,
+    rgba(100,180,255,0.18) 58%,
+    rgba(200,100,255,0.15) 68%,
+    transparent 80%
   );
-  background-size: 200% 100%;
-  animation: fc-shimmer 2.8s linear infinite;
+  background-size: 220% 100%;
+  animation: fc-shimmer 3s linear infinite;
   pointer-events: none;
   z-index: 1;
+  mix-blend-mode: screen;
 }
 @keyframes fc-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0%   { background-position: 220% 0; }
+  100% { background-position: -220% 0; }
+}
+
+/* Legendary border pulse */
+.fc--legendary {
+  animation: legendaryBorderPulse 3s ease-in-out infinite;
+}
+@keyframes legendaryBorderPulse {
+  0%, 100% { box-shadow: var(--rarity-s); }
+  50%       { box-shadow: 0 0 28px rgba(255,215,0,0.95), 0 4px 16px rgba(0,0,0,0.5); }
 }
 
 /* Rare shine */
 .fc-rare-shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,152,0,0.12) 0%, transparent 55%);
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255,152,0,0.14) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: fc-rare-sweep 4s linear infinite;
   pointer-events: none;
   z-index: 1;
+}
+@keyframes fc-rare-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* Top overlay: position badge (left) + primary rating (right) */

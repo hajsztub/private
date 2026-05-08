@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '2.6',
+    date: '2026-05-08',
+    changes: [
+      'Pierwsze 2 mecze w Treningu Amatorskim: przeciwnik gra startowymi kartami (Borek, Kowal itd.) — łatwiej wygrać na początku',
+    ],
+  },
+  {
     version: '2.5',
     date: '2026-05-08',
     changes: [

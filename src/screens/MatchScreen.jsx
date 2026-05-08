@@ -8,7 +8,7 @@ import {
 import { runAITurn, pickAIGoalkeeper } from '../game/aiEngine'
 import { computeRewardCoins, computeRatingChange, determinePlayerOfMatch } from '../game/scoreEngine'
 import { createDeckFromOwned, CARD_DEFINITIONS, createDefaultDeck, createBalancedAIDeck, createWeakerAIDeck, createEliteAIDeck } from '../data/cards'
-import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
+import { STARTER_CARD_DEFINITIONS, createStarterAIDeck } from '../data/starterRoster'
 import { SFX } from '../game/soundEngine'
 import FieldCard, { GKCard } from '../components/FieldCard'
 import GoalAnimation from '../components/GoalAnimation'
@@ -158,9 +158,10 @@ export default function MatchScreen({ matchParams = {} }) {
 
   const [matchState, dispatch] = useReducer(gameReducer, null, () => {
     const playerDeck = buildPlayerDeck(profile)
+    const amateurMatchesPlayed = (profile.matchHistory || []).filter(m => m.matchType === 'training_amateur').length
     const aiDeck =
       matchType === 'league'           ? createBalancedAIDeck(playerDeck) :
-      matchType === 'training_amateur' ? createWeakerAIDeck(playerDeck) :
+      matchType === 'training_amateur' ? (amateurMatchesPlayed < 2 ? createStarterAIDeck() : createWeakerAIDeck(playerDeck)) :
       matchType === 'training_pro'     ? createEliteAIDeck() :
                                          createDefaultDeck('B')
     return createMatchState(matchType, playerDeck, aiDeck)

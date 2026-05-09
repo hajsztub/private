@@ -336,6 +336,7 @@ export default function MatchScreen({ matchParams = {} }) {
       setTimeout(() => replace('post_match', {
         result, score, matchType, coinsEarned: coins, ratingChange,
         goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
+        opponentName,
       }), 800)
     }
   }, [matchState.phase])
@@ -416,6 +417,7 @@ export default function MatchScreen({ matchParams = {} }) {
     replace('post_match', {
       result, score, matchType, coinsEarned: coins, ratingChange,
       goalEvents: matchState.goalEvents, playerOfMatch, log: matchState.log,
+      opponentName,
     })
   }, [matchState])
 

@@ -319,6 +319,7 @@ export default function MainMenuScreen() {
   }
 
   const [showMissions, setShowMissions] = useState(false)
+  const [showStadion, setShowStadion] = useState(false)
   const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
   const [resetIn, setResetIn] = useState('')
 
@@ -499,6 +500,20 @@ export default function MainMenuScreen() {
         )}
       </div>
 
+      {/* ── Stadion button ── */}
+      <button className="mm-btn mm-btn--stadion" onClick={() => setShowStadion(true)}>
+        <div className="mm-btn-icon-wrap">
+          <span className="mm-btn-icon">🏟️</span>
+        </div>
+        <div className="mm-btn-body">
+          <span className="mm-btn-title">STADION</span>
+          <span className="mm-btn-desc">Stroje · Herb · Sponsorzy · Ulepszenia</span>
+        </div>
+        <div className="mm-btn-right">
+          <span className="mm-stadion-soon">wkrótce</span>
+        </div>
+      </button>
+
       {/* ── Bottom nav ── */}
       <div className="mm-nav">
         <button className="mm-nav-btn" onClick={() => navigate('deck_builder')}
@@ -591,6 +606,23 @@ export default function MainMenuScreen() {
         <span>GOAL TCG v{CHANGELOG[0].version} — build 20260508</span>
         <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
       </div>
+
+      {showStadion && (
+        <div className="mm-stadion-overlay" onClick={() => setShowStadion(false)}>
+          <div className="mm-stadion-panel" onClick={e => e.stopPropagation()}>
+            <div className="mm-stadion-icon">🏟️</div>
+            <div className="mm-stadion-title">STADION</div>
+            <div className="mm-stadion-features">
+              <div className="mm-stadion-feat">🎽 Edytor strojów</div>
+              <div className="mm-stadion-feat">🛡️ Herb i kolory klubu</div>
+              <div className="mm-stadion-feat">🏗️ Ulepszenia stadionu</div>
+              <div className="mm-stadion-feat">🤝 Kontrakty sponsorów</div>
+            </div>
+            <div className="mm-stadion-soon-msg">wkrótce!</div>
+            <button className="mm-weekly-close-btn" onClick={() => setShowStadion(false)}>Zamknij</button>
+          </div>
+        </div>
+      )}
 
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
       {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}

@@ -249,6 +249,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [zoomCard, setZoomCard] = useState(null)
   const [showLog, setShowLog] = useState(false)
   const [prematchLoading, setPrematchLoading] = useState(false)
+  const [incompleteMsg, setIncompleteMsg] = useState(null)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
@@ -608,13 +609,19 @@ export default function MatchScreen({ matchParams = {} }) {
     )
 
     const fieldSlots = ['atk1','atk2','mid1','mid2','mid3','mid4','def1','def2','def3','def4']
-    const outfieldCount = fieldSlots.filter(s => getCard(s)).length
-    const canPlay = primaryGk && outfieldCount >= 4
+    const benchSlots = ['res1','res2','res3']
+    const missingField = fieldSlots.filter(s => !getCard(s)).length
+    const missingBench = benchSlots.filter(s => !getCard(s)).length
+    const canPlay = primaryGk && missingField === 0 && missingBench === 0
 
     const handlePlay = () => {
       if (prematchLoading) return
       if (!canPlay) {
-        navigate('deck_builder')
+        const parts = []
+        if (!primaryGk) parts.push('bramkarz')
+        if (missingField > 0) parts.push(`${missingField} ${missingField === 1 ? 'zawodnik w polu' : 'zawodników w polu'}`)
+        if (missingBench > 0) parts.push(`${missingBench} ${missingBench === 1 ? 'miejsce na ławce' : 'miejsc na ławce'}`)
+        setIncompleteMsg(`Brakuje: ${parts.join(', ')}.`)
         return
       }
       setPrematchLoading(true)
@@ -712,6 +719,20 @@ export default function MatchScreen({ matchParams = {} }) {
             </button>
           </div>
         </div>
+
+        {/* ── Incomplete squad popup ── */}
+        {incompleteMsg && (
+          <div className="ms-incomplete-backdrop" onClick={() => { setIncompleteMsg(null); navigate('deck_builder') }}>
+            <div className="ms-incomplete-modal" onClick={e => e.stopPropagation()}>
+              <div className="ms-incomplete-icon">⚠️</div>
+              <div className="ms-incomplete-title">Uzupełnij skład</div>
+              <div className="ms-incomplete-body">{incompleteMsg}</div>
+              <button className="ms-incomplete-btn" onClick={() => { setIncompleteMsg(null); navigate('deck_builder') }}>
+                Przejdź do składu
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     )
   }

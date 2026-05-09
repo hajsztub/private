@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '4.2',
+    date: '2026-05-09',
+    changes: [
+      'Główne menu: tło stadionu pokrywa cały ekran (nie tylko górny panel)',
+      'Logo pomniejszone o 15%, mniejsze odstępy między elementami nagłówka',
+      'Niepełny skład: popup "Uzupełnij skład" z listą brakujących pozycji, przycisk przenosi do Składu',
+      'Walidacja składu: wymaga wszystkich 11 pozycji w polu ORAZ 3 miejsc na ławce',
+    ],
+  },
+  {
     version: '4.1',
     date: '2026-05-09',
     changes: [

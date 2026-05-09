@@ -245,9 +245,10 @@ export default function MatchScreen({ matchParams = {} }) {
   const [firstWinReward, setFirstWinReward] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
-  const [selectedCard, setSelectedCard] = useState(null)   // only for drag ghost
-  const [zoomCard, setZoomCard] = useState(null)           // { card, isPlayerField, sector }
+  const [selectedCard, setSelectedCard] = useState(null)
+  const [zoomCard, setZoomCard] = useState(null)
   const [showLog, setShowLog] = useState(false)
+  const [prematchLoading, setPrematchLoading] = useState(false)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
@@ -512,26 +513,61 @@ export default function MatchScreen({ matchParams = {} }) {
       ].find(c => c.instanceId === coinFlipState.cardInstanceId)
     : null
 
-  // ── GK Selection ──────────────────────────────────────────────────────────
+  // ── Pre-match screen ──────────────────────────────────────────────────────
   if (phase === 'goalkeeper_selection') {
+    const primaryGkId = profile.deckAssignments?.gk1
+    const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
+    const allSquadCards = [...playerA.goalkeepers, ...playerA.deck]
+    const MATCH_TYPE_LABEL = { league: '🏆 MECZ LIGOWY', training_amateur: '🟢 TRENING AMATOR', training_pro: '🔴 TRENING PRO' }
+    const TYPE_COLOR = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#00acc1' }
+
+    const handlePlay = () => {
+      if (prematchLoading) return
+      setPrematchLoading(true)
+      SFX.matchStart()
+      setTimeout(() => {
+        dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'A', gkInstanceId: primaryGk.instanceId })
+      }, 900)
+    }
+
     return (
-      <div className="ms-gk-select">
-        <div className="ms-gk-header">
-          <h2>Wybierz Bramkarza</h2>
-          <p>Drugi trafi do rezerwy</p>
+      <div className="ms-prematch">
+        <div className="ms-pm-header">
+          <div className="ms-pm-match-type">{MATCH_TYPE_LABEL[matchType] || 'MECZ'}</div>
+          <div className="ms-pm-vs">
+            <span className="ms-pm-you">TY</span>
+            <span className="ms-pm-vs-sep">vs</span>
+            <span className="ms-pm-opp">{opponentName}</span>
+          </div>
         </div>
-        <div className="ms-gk-cards">
-          {playerA.goalkeepers.map(gk => (
-            <div key={gk.instanceId} className="ms-gk-option">
-              <FieldCard card={gk} onTap={() => {}} />
-              <button
-                className="ms-gk-pick-btn"
-                onClick={() => dispatch({ type: 'SELECT_GOALKEEPER', playerId: 'A', gkInstanceId: gk.instanceId })}
-              >
-                Wybierz
-              </button>
-            </div>
-          ))}
+
+        <div className="ms-pm-section-label">Twój skład</div>
+        <div className="ms-pm-squad">
+          {allSquadCards.map(card => {
+            const isGk = card.type === 'goalkeeper'
+            const stat = isGk
+              ? (card.currentDefenseStat ?? card.defenseStat ?? 0)
+              : (card.currentAttackStat ?? card.attackStat ?? 0)
+            return (
+              <div key={card.instanceId} className={`ms-pm-card ${isGk && card.instanceId === primaryGk?.instanceId ? 'ms-pm-card--gk' : ''}`}>
+                <div className="ms-pm-card-img-wrap" style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #070c0a)` }}>
+                  <img src={`/avatars/${card.id}.png`} alt="" className="ms-pm-card-img" onError={e => { e.target.style.display = 'none' }} draggable={false} />
+                  <span className="ms-pm-card-badge" style={{ background: TYPE_COLOR[card.type] || '#555' }}>
+                    {card.typeLabel || card.type.slice(0,3).toUpperCase()}
+                  </span>
+                  <span className="ms-pm-card-stat">{stat}</span>
+                </div>
+                <div className="ms-pm-card-name">{card.name.split(' ')[0]}</div>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="ms-pm-actions">
+          <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← Powrót</button>
+          <button className="ms-pm-play" onClick={handlePlay} disabled={prematchLoading}>
+            {prematchLoading ? <span className="ms-pm-loading-dots"><span /><span /><span /></span> : '▶ GRAJ'}
+          </button>
         </div>
       </div>
     )

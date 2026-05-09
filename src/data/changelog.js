@@ -4,9 +4,10 @@ export const CHANGELOG = [
     date: '2026-05-09',
     changes: [
       'Główne menu: stadionowe tło z reflektorami, dwie duże karty MECZ LIGOWY / TRENING',
-      'Pasek statystyk pod logo: liga, bilans W/R/P, RANK #xxx',
-      'Misje dzienne: poziome karty z paskiem postępu zamiast paska nawigacyjnego',
-      'Nawigacja dolna: siatka 3×2 (SKŁAD, ZAWODNICY, MARKET, STADION, USTAWIENIA, JAK GRAĆ?)',
+      'Wybór trybu treningu pojawia się bezpośrednio w kafelku — bez osobnego panelu',
+      'Misje dzienne: poziome karty z paskiem postępu; automatycznie się zwijają gdy wszystkie ukończone',
+      'Logo powiększone; liga i bilans tylko w pasku statystyk (usunięte z avatar baru)',
+      'Nawigacja: SKŁAD, ZAWODNICY, MARKET, STADION, USTAWIENIA, JAK GRAĆ?',
     ],
   },
   {

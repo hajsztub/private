@@ -52,7 +52,7 @@ const TUTORIAL_SECTIONS = [
   { icon: '🗂️', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
   { icon: '✨', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
   { icon: '🏆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
-  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Obejrzyj reklamę raz na godzinę po darmowe nagrody!' },
+  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 45 minut!' },
 ]
 
 function TutorialModal({ onClose }) {
@@ -201,11 +201,19 @@ export default function MainMenuScreen() {
   const [showChangelog, setShowChangelog] = useState(false)
   const [showHistory, setShowHistory]     = useState(false)
   const [showNotifs, setShowNotifs]       = useState(false)
-  const [showMissions, setShowMissions]   = useState(false)
   const [showStadion, setShowStadion]     = useState(false)
   const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
   const [trainingOpen, setTrainingOpen]   = useState(false)
   const [resetIn, setResetIn]             = useState('')
+
+  const missions = profile.dailyMissions?.missions || []
+  const allMissionsDone = missions.length > 0 && missions.every(m => m.claimed)
+  const [missionsExpanded, setMissionsExpanded] = useState(!allMissionsDone)
+
+  // Auto-collapse when last mission is claimed
+  useEffect(() => {
+    if (allMissionsDone) setMissionsExpanded(false)
+  }, [allMissionsDone])
 
   const isNewPlayer   = (profile.matchHistory || []).length === 0
   const notifications = profile.notifications || []
@@ -260,8 +268,6 @@ export default function MainMenuScreen() {
   }, [])
 
   const openNotifs = () => { setShowNotifs(true); markNotificationsRead() }
-
-  const missions = profile.dailyMissions?.missions || []
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
 
   const startTraining = (type) => {
@@ -277,16 +283,14 @@ export default function MainMenuScreen() {
 
       {/* ── Stadium hero ── */}
       <div className="mm-stadium-hero">
-        <div className="mm-stadium-lights" />
+        <div className="mm-stadium-floodlights" />
+        <div className="mm-stadium-pitch" />
 
-        {/* Top bar */}
+        {/* Top bar — only avatar + name + currencies + bell (no tier here) */}
         <div className="mm-topbar">
           <div className="mm-tp-profile">
             <ProfileAvatar name={profile.name} />
-            <div className="mm-tp-info">
-              <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
-              <span className="mm-tp-tier" style={{ color: tier.color }}>{tier.icon} {tier.label}</span>
-            </div>
+            <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
           </div>
 
           <div className="mm-tp-currencies">
@@ -311,10 +315,7 @@ export default function MainMenuScreen() {
 
         {/* Stats bar */}
         <div className="mm-stats-bar">
-          <div className="mm-stats-tier" style={{ color: tier.color }}>
-            <span>{tier.icon}</span>
-            <span>{tier.label.toUpperCase()}</span>
-          </div>
+          <span className="mm-stats-tier" style={{ color: tier.color }}>{tier.icon} {tier.label.toUpperCase()}</span>
           <div className="mm-stats-sep" />
           <div className="mm-stats-record">
             <span className="mmr-w">{profile.wins}W</span>
@@ -325,108 +326,108 @@ export default function MainMenuScreen() {
           </div>
           <div className="mm-stats-sep" />
           <button className="mm-stats-rank" onClick={() => setShowHistory(true)}>
-            <span className="mm-stats-rank-icon">📊</span>
-            <span>RANK #{profile.rating}</span>
+            📊 RANK #{profile.rating}
           </button>
         </div>
       </div>
 
       {/* ── Play cards ── */}
       <div className="mm-play-row">
+
+        {/* League */}
         <button className="mm-play-card mm-play-card--league" onClick={() => navigate('league')}>
           <div className="mm-play-card-bg mm-play-card-bg--league" />
           <div className="mm-play-card-body">
             <span className="mm-play-card-title">MECZ<br/>LIGOWY</span>
-            <span className="mm-play-card-desc">Wejdź do gry<br/>i walcz o zwycięstwo!</span>
+            <span className="mm-play-card-desc">Wejdź do gry i walcz o zwycięstwo!</span>
             <span className="mm-play-card-icon">⚽</span>
           </div>
         </button>
 
+        {/* Training — expands inline */}
         <button
-          className={`mm-play-card mm-play-card--training${isNewPlayer ? ' mm-play-card--onboard' : ''}`}
-          onClick={() => setTrainingOpen(o => !o)}
+          className={`mm-play-card mm-play-card--training${trainingOpen ? ' mm-play-card--open' : ''}${isNewPlayer && !trainingOpen ? ' mm-play-card--onboard' : ''}`}
+          onClick={() => !trainingOpen && setTrainingOpen(true)}
         >
           <div className="mm-play-card-bg mm-play-card-bg--training" />
-          <div className="mm-play-card-body">
-            <span className="mm-play-card-title">TRENING</span>
-            <span className="mm-play-card-desc">Rozwijaj zespół<br/>i zdobywaj nagrody!</span>
-            <span className="mm-play-card-icon">🏋️</span>
-            {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
-          </div>
+          {!trainingOpen ? (
+            <div className="mm-play-card-body">
+              <span className="mm-play-card-title">TRENING</span>
+              <span className="mm-play-card-desc">Rozwijaj zespół i zdobywaj nagrody!</span>
+              <span className="mm-play-card-icon">🏋️</span>
+              {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
+            </div>
+          ) : (
+            <div className="mm-training-inline" onClick={e => e.stopPropagation()}>
+              <div className="mm-training-inline-hdr">
+                <span className="mm-training-inline-title">TRENING</span>
+                <button className="mm-training-inline-close" onClick={e => { e.stopPropagation(); setTrainingOpen(false) }}>✕</button>
+              </div>
+              <button className="mm-tmode-inline mm-tmode-inline--amateur" onClick={() => startTraining('training_amateur')}>
+                <div className="mm-tmode-inline-body">
+                  <span className="mm-tmode-inline-name">🟢 AMATOR</span>
+                  <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
+                </div>
+                <span className="mm-tmode-inline-reward">+15🪙</span>
+              </button>
+              <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
+                <div className="mm-tmode-inline-body">
+                  <span className="mm-tmode-inline-name">🔴 PRO</span>
+                  <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
+                </div>
+                <span className="mm-tmode-inline-reward">+100🪙</span>
+              </button>
+            </div>
+          )}
         </button>
       </div>
 
-      {/* Training mode selector */}
-      {trainingOpen && (
-        <div className="mm-training-panel">
-          <div className="mm-training-header">
-            <span className="mm-training-label">🚧 TRENING — wybierz tryb</span>
-            <button className="mm-training-close" onClick={() => setTrainingOpen(false)}>✕</button>
+      {/* ── Missions ── */}
+      {allMissionsDone && !missionsExpanded ? (
+        <button className="mm-missions-done-bar" onClick={() => setMissionsExpanded(true)}>
+          <span>✅ Misje dzienne ukończone</span>
+          <span className="mm-missions-done-bar-arrow">›</span>
+        </button>
+      ) : (
+        <div className="mm-missions-section">
+          <div className="mm-missions-hdr">
+            <span className="mm-missions-hdr-title">🎯 MISJE</span>
+            <div className="mm-missions-tabs">
+              <span className="mm-mtab mm-mtab--active">
+                DZIENNE {claimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
+              </span>
+              <button className="mm-mtab" onClick={() => setShowWeeklyPopup(true)}>TYGODNIOWE 🔒</button>
+            </div>
           </div>
-          <div className="mm-training-modes">
-            <button className="mm-tmode mm-tmode--amateur" onClick={() => startTraining('training_amateur')}>
-              <span className="mm-tmode-icon">🟢</span>
-              <div className="mm-tmode-body">
-                <span className="mm-tmode-title">AMATOR</span>
-                <span className="mm-tmode-desc">Słabsze drużyny · łatwa wygrana</span>
-              </div>
-              <span className="mm-tmode-reward">+15 🪙</span>
-            </button>
-            <button className="mm-tmode mm-tmode--pro" onClick={() => startTraining('training_pro')}>
-              <span className="mm-tmode-icon">🔴</span>
-              <div className="mm-tmode-body">
-                <span className="mm-tmode-title">PRO</span>
-                <span className="mm-tmode-desc">Top drużyny · 10% szans</span>
-              </div>
-              <span className="mm-tmode-reward">+100 🪙</span>
-            </button>
+          <div className="mm-missions-cards">
+            {missions.length === 0 && (
+              <div className="mm-mc mm-mc--empty">Brak misji</div>
+            )}
+            {missions.map(m => {
+              const pct = Math.min(100, (m.progress / m.target) * 100)
+              const ready = !m.claimed && m.progress >= m.target
+              return (
+                <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
+                  <div className="mm-mc-top">
+                    <span className="mm-mc-icon">{m.icon}</span>
+                    {m.claimed
+                      ? <span className="mm-mc-check">✓</span>
+                      : <button
+                          className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`}
+                          onClick={() => ready && claimMission(m.id)}
+                          disabled={!ready}
+                        >+{m.reward}🪙</button>
+                    }
+                  </div>
+                  <div className="mm-mc-label">{m.label}</div>
+                  <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
+                  <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
-
-      {/* ── Missions section ── */}
-      <div className="mm-missions-section">
-        <div className="mm-missions-hdr">
-          <span className="mm-missions-hdr-title">🎯 MISJE</span>
-          <button className="mm-missions-see-all" onClick={() => setShowMissions(true)}>Zobacz wszystkie ›</button>
-        </div>
-        <div className="mm-missions-tabs">
-          <button className="mm-mtab mm-mtab--active">
-            DZIENNE {claimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
-            {claimableCount === 0 && <span className="mm-mtab-dot" />}
-          </button>
-          <button className="mm-mtab" onClick={() => setShowWeeklyPopup(true)}>
-            TYGODNIOWE 🔒
-          </button>
-        </div>
-        <div className="mm-missions-cards">
-          {missions.length === 0 && (
-            <div className="mm-mc mm-mc--empty">Brak misji — wróć jutro!</div>
-          )}
-          {missions.map(m => {
-            const pct = Math.min(100, (m.progress / m.target) * 100)
-            const ready = !m.claimed && m.progress >= m.target
-            return (
-              <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
-                <div className="mm-mc-icon">{m.icon}</div>
-                <div className="mm-mc-label">{m.label}</div>
-                <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
-                <div className="mm-mc-footer">
-                  <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
-                  {m.claimed
-                    ? <span className="mm-mc-check">✓</span>
-                    : <button
-                        className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`}
-                        onClick={() => ready && claimMission(m.id)}
-                        disabled={!ready}
-                      >+{m.reward} 🪙</button>
-                  }
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
 
       {/* ── Grid navigation ── */}
       <div className="mm-grid">
@@ -473,49 +474,6 @@ export default function MainMenuScreen() {
             <div className="mm-weekly-title">Misje tygodniowe</div>
             <div className="mm-weekly-msg">wkrótce!</div>
             <button className="mm-weekly-close-btn" onClick={() => setShowWeeklyPopup(false)}>Zamknij</button>
-          </div>
-        </div>
-      )}
-
-      {showMissions && (
-        <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
-          <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
-            <div className="mm-missions-header">
-              <span className="mm-missions-title">⚡ MISJE DZIENNE</span>
-              <span className="mm-missions-reset">Reset za {resetIn}</span>
-              <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
-            </div>
-            <div className="mm-missions-list">
-              {missions.map(m => {
-                const pct = Math.min(100, (m.progress / m.target) * 100)
-                const ready = !m.claimed && m.progress >= m.target
-                return (
-                  <div key={m.id} className={`mm-mission ${m.claimed ? 'mm-mission--done' : ready ? 'mm-mission--ready' : ''}`}>
-                    <span className="mm-mission-icon">{m.icon}</span>
-                    <div className="mm-mission-body">
-                      <span className="mm-mission-label">{m.label}</span>
-                      <div className="mm-mission-track">
-                        <div className="mm-mission-fill" style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="mm-mission-count">{Math.min(m.progress, m.target)}/{m.target}</span>
-                    </div>
-                    <div className="mm-mission-right">
-                      {m.claimed ? (
-                        <span className="mm-mission-check">✓</span>
-                      ) : (
-                        <button
-                          className={`mm-mission-claim ${ready ? 'mm-mission-claim--ready' : ''}`}
-                          onClick={() => ready && claimMission(m.id)}
-                          disabled={!ready}
-                        >
-                          +{m.reward} 🪙
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
           </div>
         </div>
       )}

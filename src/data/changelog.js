@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '4.8',
+    date: '2026-05-09',
+    changes: [
+      'Naprawiono: baner "Obejrzyj reklamę" niewidoczny na PC (błąd stacking context w przeglądarce desktopowej)',
+    ],
+  },
+  {
     version: '4.7',
     date: '2026-05-09',
     changes: [

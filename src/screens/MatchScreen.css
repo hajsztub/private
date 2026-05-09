@@ -1173,96 +1173,146 @@
 .ms-prematch {
   width: 100%;
   min-height: 100dvh;
-  background: linear-gradient(160deg, #08150a, #0f2218);
+  background: linear-gradient(170deg, #07120a 0%, #0d2217 60%, #091a0d 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px 32px;
+  padding: max(28px, env(safe-area-inset-top)) 16px 24px;
   font-family: 'Outfit', sans-serif;
-  gap: 0;
   overflow-y: auto;
 }
 
+/* Header */
 .ms-pm-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
 .ms-pm-match-type {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 1px;
-  margin-bottom: 8px;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
 
 .ms-pm-vs {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 14px;
 }
 
 .ms-pm-you {
   font-family: 'Bangers', cursive;
-  font-size: 26px;
-  letter-spacing: 2px;
+  font-size: 28px;
+  letter-spacing: 3px;
   color: #64b5f6;
 }
 
 .ms-pm-vs-sep {
-  font-size: 15px;
-  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
   font-weight: 700;
+  letter-spacing: 2px;
 }
 
 .ms-pm-opp {
   font-family: 'Bangers', cursive;
-  font-size: 26px;
-  letter-spacing: 2px;
+  font-size: 28px;
+  letter-spacing: 3px;
   color: #ef9a9a;
 }
 
-.ms-pm-section-label {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  align-self: flex-start;
+/* Pitch */
+.ms-pm-pitch {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  background: linear-gradient(180deg, #0f2d14 0%, #1a4020 40%, #1a4020 60%, #0f2d14 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 12px 8px 16px;
   margin-bottom: 10px;
 }
 
-.ms-pm-squad {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  width: 100%;
-  max-width: 440px;
-  margin-bottom: 32px;
+.pm-pitch-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.ms-pm-card {
+.pm-pitch-line--mid {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+.pm-pitch-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+/* Formation */
+.pm-formation {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.pm-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pm-row--res {
+  gap: 14px;
+}
+
+/* Player dot */
+.pm-dot {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  min-width: 58px;
 }
 
-.ms-pm-card--gk .ms-pm-card-img-wrap {
-  border: 2px solid #00e5ff;
-  box-shadow: 0 0 10px rgba(0,229,255,0.35);
+.pm-dot--empty {
+  min-width: 58px;
+  height: 74px;
 }
 
-.ms-pm-card-img-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3/4;
-  border-radius: 10px;
+.pm-dot-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+  flex-shrink: 0;
 }
 
-.ms-pm-card-img {
+.pm-dot-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1270,55 +1320,72 @@
   display: block;
 }
 
-.ms-pm-card-badge {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  font-size: 8px;
-  font-weight: 900;
-  padding: 2px 5px;
-  border-radius: 4px;
-  color: #fff;
-  letter-spacing: 0.5px;
+.pm-dot-init {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  color: rgba(255,255,255,0.6);
 }
 
-.ms-pm-card-stat {
+.pm-dot-stat {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  bottom: 0;
+  right: 0;
   font-family: 'Bangers', cursive;
-  font-size: 18px;
+  font-size: 13px;
   color: #fff;
   line-height: 1;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  padding: 1px 4px;
+  border-radius: 4px 0 0 0;
 }
 
-.ms-pm-card-name {
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.7);
+.pm-dot-name {
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.75);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
+  max-width: 58px;
+  letter-spacing: 0.3px;
 }
 
+/* Reserves */
+.ms-pm-reserves {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.ms-pm-res-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.22);
+  text-transform: uppercase;
+}
+
+/* Buttons */
 .ms-pm-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   margin-top: auto;
+  padding-top: 8px;
 }
 
 .ms-pm-back {
   flex: 1;
   padding: 14px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
   font-family: 'Outfit', sans-serif;
   font-size: 15px;
   font-weight: 700;
@@ -1330,24 +1397,21 @@
   flex: 2;
   padding: 14px;
   border-radius: 14px;
-  background: linear-gradient(110deg, #1b5e20, #2e7d32);
+  background: linear-gradient(110deg, #1b5e20, #388e3c);
   border: none;
   color: #fff;
   font-family: 'Bangers', cursive;
   font-size: 22px;
   letter-spacing: 2px;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(0,200,83,0.4);
+  box-shadow: 0 4px 18px rgba(0,200,83,0.35);
   -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.ms-pm-play:disabled {
-  opacity: 0.7;
-  cursor: default;
-}
+.ms-pm-play:disabled { opacity: 0.7; cursor: default; }
 
 .ms-pm-loading-dots {
   display: flex;

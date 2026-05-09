@@ -528,30 +528,32 @@ export default function MatchScreen({ matchParams = {} }) {
       return id ? cardByInstance[id] : null
     }
 
-    const PlayerDot = ({ card, isGk }) => {
+    const PlayerCard = ({ card, isGk, small }) => {
       const [imgFailed, setImgFailed] = React.useState(false)
-      if (!card) return <div className="pm-dot pm-dot--empty" />
+      if (!card) return <div className={`pm-card pm-card--empty${small ? ' pm-card--small' : ''}`} />
       const stat = isGk
         ? (card.currentDefenseStat ?? card.defenseStat ?? 0)
         : (card.currentAttackStat ?? card.attackStat ?? 0)
       const tc = TYPE_C[card.type] || '#888'
+      const pos = card.typeLabel || card.type.slice(0,3).toUpperCase()
       return (
-        <div className="pm-dot">
-          <div className="pm-dot-circle" style={{ borderColor: tc, background: card.color ? `linear-gradient(145deg, ${card.color}88, #0a150a)` : '#1a2a1a' }}>
+        <div className={`pm-card${small ? ' pm-card--small' : ''}`}>
+          <div className="pm-card-inner" style={{ background: card.color ? `linear-gradient(170deg, ${card.color}cc 0%, #081008 100%)` : 'linear-gradient(170deg,#1a2e1a,#081008)', borderColor: tc }}>
             {!imgFailed
-              ? <img src={`/avatars/${card.id}.png`} alt="" className="pm-dot-img" onError={() => setImgFailed(true)} draggable={false} />
-              : <span className="pm-dot-init">{(card.name || '?')[0]}</span>
+              ? <img src={`/avatars/${card.id}.png`} alt="" className="pm-card-img" onError={() => setImgFailed(true)} draggable={false} />
+              : <span className="pm-card-init">{(card.name || '?')[0]}</span>
             }
-            <span className="pm-dot-stat" style={{ background: tc }}>{stat}</span>
+            <span className="pm-card-pos" style={{ background: tc }}>{pos}</span>
+            <span className="pm-card-stat">{stat}</span>
+            <div className="pm-card-name">{card.name.split(' ')[0]}</div>
           </div>
-          <div className="pm-dot-name">{card.name.split(' ')[0]}</div>
         </div>
       )
     }
 
-    const FormRow = ({ slots, isGk }) => (
+    const FormRow = ({ slots, isGk, small }) => (
       <div className="pm-row">
-        {slots.map(slotId => <PlayerDot key={slotId} card={getCard(slotId)} isGk={isGk} />)}
+        {slots.map(slotId => <PlayerCard key={slotId} card={getCard(slotId)} isGk={isGk} small={small} />)}
       </div>
     )
 
@@ -597,8 +599,8 @@ export default function MatchScreen({ matchParams = {} }) {
         {resCards.length > 0 && (
           <div className="ms-pm-reserves">
             <span className="ms-pm-res-label">REZERWA</span>
-            <div className="pm-row pm-row--res">
-              {resCards.map(card => <PlayerDot key={card.instanceId} card={card} />)}
+            <div className="pm-row">
+              {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
             </div>
           </div>
         )}

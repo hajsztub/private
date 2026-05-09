@@ -274,158 +274,192 @@ export default function MainMenuScreen() {
 
   return (
     <div className="main-menu">
-      <div className="mm-bg" />
 
-      {/* ── Top bar ── */}
-      <div className="mm-topbar">
-        <div className="mm-tp-profile">
-          <ProfileAvatar name={profile.name} />
-          <div className="mm-tp-info">
-            <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
-            <span className="mm-tp-tier" style={{ color: tier.color }}>{tier.icon} {tier.label}</span>
-          </div>
-        </div>
+      {/* ── Stadium hero ── */}
+      <div className="mm-stadium-hero">
+        <div className="mm-stadium-lights" />
 
-        <div className="mm-tp-currencies">
-          <div className="mm-tp-cur">
-            <span className="mm-tp-cur-icon">⭐</span>
-            <span className="mm-tp-cur-val">{profile.rating}</span>
-          </div>
-          <div className="mm-tp-cur">
-            <span className="mm-tp-cur-icon">🪙</span>
-            <span className="mm-tp-cur-val">{profile.coins}</span>
-          </div>
-          <div className="mm-tp-cur">
-            <span className="mm-tp-cur-icon">💎</span>
-            <span className="mm-tp-cur-val">{gems}</span>
-          </div>
-        </div>
-
-        <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
-          🔔
-          {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
-        </button>
-      </div>
-
-      {/* ── Logo ── */}
-      <Logo />
-
-      {/* ── W/D/L record ── */}
-      <div className="mm-record">
-        <span className="mmr-w">{profile.wins}W</span>
-        <span className="mmr-sep">·</span>
-        <span className="mmr-d">{profile.draws}R</span>
-        <span className="mmr-sep">·</span>
-        <span className="mmr-l">{profile.losses}P</span>
-        <button className="mm-history-btn" onClick={() => setShowHistory(true)}>📋</button>
-      </div>
-
-      {/* ── Play section ── */}
-      <div className="mm-play-section">
-        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
-          <span className="mm-btn-icon">🏆</span>
-          <div className="mm-btn-body">
-            <span className="mm-btn-title">MECZ LIGOWY</span>
-            <span className="mm-btn-desc">Rankingowy · Więcej nagród</span>
-          </div>
-          <span className="mm-btn-ball">⚽</span>
-        </button>
-
-        {!trainingOpen ? (
-          <button
-            className={`mm-btn mm-btn--training${isNewPlayer ? ' mm-btn--onboard' : ''}`}
-            onClick={() => setTrainingOpen(true)}
-          >
-            <span className="mm-btn-icon">🚧</span>
-            <div className="mm-btn-body">
-              <span className="mm-btn-title">TRENING</span>
-              <span className="mm-btn-desc">Bez rankingu · Wybierz poziom</span>
-              {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
+        {/* Top bar */}
+        <div className="mm-topbar">
+          <div className="mm-tp-profile">
+            <ProfileAvatar name={profile.name} />
+            <div className="mm-tp-info">
+              <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+              <span className="mm-tp-tier" style={{ color: tier.color }}>{tier.icon} {tier.label}</span>
             </div>
-            <span className="mm-btn-arrow">›</span>
+          </div>
+
+          <div className="mm-tp-currencies">
+            <div className="mm-tp-cur">
+              <span className="mm-tp-cur-icon">🪙</span>
+              <span className="mm-tp-cur-val">{profile.coins}</span>
+            </div>
+            <div className="mm-tp-cur">
+              <span className="mm-tp-cur-icon">💎</span>
+              <span className="mm-tp-cur-val">{gems}</span>
+            </div>
+          </div>
+
+          <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
+            🔔
+            {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
           </button>
-        ) : (
-          <div className="mm-training-panel">
-            <div className="mm-training-header">
-              <span className="mm-training-label">🚧 TRENING — wybierz tryb</span>
-              <button className="mm-training-close" onClick={() => setTrainingOpen(false)}>✕</button>
-            </div>
-            <div className="mm-training-modes">
-              <button className="mm-tmode mm-tmode--amateur" onClick={() => startTraining('training_amateur')}>
-                <span className="mm-tmode-icon">🟢</span>
-                <div className="mm-tmode-body">
-                  <span className="mm-tmode-title">AMATOR</span>
-                  <span className="mm-tmode-desc">Słabsze drużyny · łatwa wygrana</span>
-                </div>
-                <span className="mm-tmode-reward">+15 🪙</span>
-              </button>
-              <button className="mm-tmode mm-tmode--pro" onClick={() => startTraining('training_pro')}>
-                <span className="mm-tmode-icon">🔴</span>
-                <div className="mm-tmode-body">
-                  <span className="mm-tmode-title">PRO</span>
-                  <span className="mm-tmode-desc">Top drużyny · 10% szans</span>
-                </div>
-                <span className="mm-tmode-reward">+100 🪙</span>
-              </button>
-            </div>
+        </div>
+
+        {/* Logo */}
+        <Logo />
+
+        {/* Stats bar */}
+        <div className="mm-stats-bar">
+          <div className="mm-stats-tier" style={{ color: tier.color }}>
+            <span>{tier.icon}</span>
+            <span>{tier.label.toUpperCase()}</span>
           </div>
-        )}
+          <div className="mm-stats-sep" />
+          <div className="mm-stats-record">
+            <span className="mmr-w">{profile.wins}W</span>
+            <span className="mmr-sep">·</span>
+            <span className="mmr-d">{profile.draws}R</span>
+            <span className="mmr-sep">·</span>
+            <span className="mmr-l">{profile.losses}P</span>
+          </div>
+          <div className="mm-stats-sep" />
+          <button className="mm-stats-rank" onClick={() => setShowHistory(true)}>
+            <span className="mm-stats-rank-icon">📊</span>
+            <span>RANK #{profile.rating}</span>
+          </button>
+        </div>
       </div>
 
-      {/* ── Missions strip ── */}
-      <div className="mm-missions-row">
-        <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
-          <span className="mm-missions-bar-icon">⚡</span>
-          <span className="mm-missions-bar-label">DZIENNE</span>
-          <div className="mm-missions-bar-dots">
-            {missions.map(m => (
-              <span key={m.id} className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`} />
-            ))}
+      {/* ── Play cards ── */}
+      <div className="mm-play-row">
+        <button className="mm-play-card mm-play-card--league" onClick={() => navigate('league')}>
+          <div className="mm-play-card-bg mm-play-card-bg--league" />
+          <div className="mm-play-card-body">
+            <span className="mm-play-card-title">MECZ<br/>LIGOWY</span>
+            <span className="mm-play-card-desc">Wejdź do gry<br/>i walcz o zwycięstwo!</span>
+            <span className="mm-play-card-icon">⚽</span>
           </div>
-          {claimableCount > 0 && <span className="mm-missions-badge">{claimableCount}</span>}
-          <span className="mm-missions-bar-arrow">›</span>
         </button>
 
-        <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
-          <span className="mm-missions-bar-icon">📅</span>
-          <span className="mm-missions-bar-label">TYGODNIOWE</span>
-          <span className="mm-weekly-lock">🔒</span>
-          <span className="mm-missions-bar-arrow">›</span>
+        <button
+          className={`mm-play-card mm-play-card--training${isNewPlayer ? ' mm-play-card--onboard' : ''}`}
+          onClick={() => setTrainingOpen(o => !o)}
+        >
+          <div className="mm-play-card-bg mm-play-card-bg--training" />
+          <div className="mm-play-card-body">
+            <span className="mm-play-card-title">TRENING</span>
+            <span className="mm-play-card-desc">Rozwijaj zespół<br/>i zdobywaj nagrody!</span>
+            <span className="mm-play-card-icon">🏋️</span>
+            {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
+          </div>
         </button>
+      </div>
+
+      {/* Training mode selector */}
+      {trainingOpen && (
+        <div className="mm-training-panel">
+          <div className="mm-training-header">
+            <span className="mm-training-label">🚧 TRENING — wybierz tryb</span>
+            <button className="mm-training-close" onClick={() => setTrainingOpen(false)}>✕</button>
+          </div>
+          <div className="mm-training-modes">
+            <button className="mm-tmode mm-tmode--amateur" onClick={() => startTraining('training_amateur')}>
+              <span className="mm-tmode-icon">🟢</span>
+              <div className="mm-tmode-body">
+                <span className="mm-tmode-title">AMATOR</span>
+                <span className="mm-tmode-desc">Słabsze drużyny · łatwa wygrana</span>
+              </div>
+              <span className="mm-tmode-reward">+15 🪙</span>
+            </button>
+            <button className="mm-tmode mm-tmode--pro" onClick={() => startTraining('training_pro')}>
+              <span className="mm-tmode-icon">🔴</span>
+              <div className="mm-tmode-body">
+                <span className="mm-tmode-title">PRO</span>
+                <span className="mm-tmode-desc">Top drużyny · 10% szans</span>
+              </div>
+              <span className="mm-tmode-reward">+100 🪙</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Missions section ── */}
+      <div className="mm-missions-section">
+        <div className="mm-missions-hdr">
+          <span className="mm-missions-hdr-title">🎯 MISJE</span>
+          <button className="mm-missions-see-all" onClick={() => setShowMissions(true)}>Zobacz wszystkie ›</button>
+        </div>
+        <div className="mm-missions-tabs">
+          <button className="mm-mtab mm-mtab--active">
+            DZIENNE {claimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
+            {claimableCount === 0 && <span className="mm-mtab-dot" />}
+          </button>
+          <button className="mm-mtab" onClick={() => setShowWeeklyPopup(true)}>
+            TYGODNIOWE 🔒
+          </button>
+        </div>
+        <div className="mm-missions-cards">
+          {missions.length === 0 && (
+            <div className="mm-mc mm-mc--empty">Brak misji — wróć jutro!</div>
+          )}
+          {missions.map(m => {
+            const pct = Math.min(100, (m.progress / m.target) * 100)
+            const ready = !m.claimed && m.progress >= m.target
+            return (
+              <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
+                <div className="mm-mc-icon">{m.icon}</div>
+                <div className="mm-mc-label">{m.label}</div>
+                <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
+                <div className="mm-mc-footer">
+                  <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                  {m.claimed
+                    ? <span className="mm-mc-check">✓</span>
+                    : <button
+                        className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`}
+                        onClick={() => ready && claimMission(m.id)}
+                        disabled={!ready}
+                      >+{m.reward} 🪙</button>
+                  }
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* ── Grid navigation ── */}
       <div className="mm-grid">
         <button className="mm-grid-btn" onClick={() => navigate('deck_builder')}>
           <span className="mm-grid-icon">🃏</span>
-          <span className="mm-grid-label">Skład</span>
-        </button>
-        <button className="mm-grid-btn" onClick={() => navigate('market')}>
-          <span className="mm-grid-icon">🛒</span>
-          <span className="mm-grid-label">Market</span>
+          <span className="mm-grid-label">SKŁAD</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('players')}>
           <span className="mm-grid-icon">👥</span>
-          <span className="mm-grid-label">Zawodnicy</span>
+          <span className="mm-grid-label">ZAWODNICY</span>
+        </button>
+        <button className="mm-grid-btn" onClick={() => navigate('market')}>
+          <span className="mm-grid-icon">🛒</span>
+          <span className="mm-grid-label">MARKET</span>
         </button>
         <button className="mm-grid-btn mm-grid-btn--soon" onClick={() => setShowStadion(true)}>
           <span className="mm-grid-icon">🏟️</span>
-          <span className="mm-grid-label">Stadion</span>
+          <span className="mm-grid-label">STADION</span>
           <span className="mm-grid-soon-badge">wkrótce</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('settings')}>
           <span className="mm-grid-icon">⚙️</span>
-          <span className="mm-grid-label">Ustawienia</span>
+          <span className="mm-grid-label">USTAWIENIA</span>
         </button>
         <button className="mm-grid-btn" onClick={() => setShowTutorial(true)}>
-          <span className="mm-grid-icon">📖</span>
-          <span className="mm-grid-label">Jak grać?</span>
+          <span className="mm-grid-icon">❓</span>
+          <span className="mm-grid-label">JAK GRAĆ?</span>
         </button>
       </div>
 
       {/* ── Version ── */}
       <div className="mm-version">
-        <span>GOAL TCG v{CHANGELOG[0].version} — build 20260508</span>
+        <span>GOAL TCG v{CHANGELOG[0].version}</span>
         <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
       </div>
 

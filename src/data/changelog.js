@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '3.9',
+    date: '2026-05-09',
+    changes: [
+      'Główne menu: stadionowe tło z reflektorami, dwie duże karty MECZ LIGOWY / TRENING',
+      'Pasek statystyk pod logo: liga, bilans W/R/P, RANK #xxx',
+      'Misje dzienne: poziome karty z paskiem postępu zamiast paska nawigacyjnego',
+      'Nawigacja dolna: siatka 3×2 (SKŁAD, ZAWODNICY, MARKET, STADION, USTAWIENIA, JAK GRAĆ?)',
+    ],
+  },
+  {
     version: '3.8',
     date: '2026-05-09',
     changes: [

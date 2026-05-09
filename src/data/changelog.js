@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '4.0',
+    date: '2026-05-09',
+    changes: [
+      'Naprawiono: pierwsze uruchomienie — pre-match pokazuje auto-przydzielony skład zamiast pustych slotów',
+      'Naprawiono: nie można już rozpocząć meczu z niepełnym składem — przycisk GRAJ przekierowuje do Składu gdy brakuje bramkarza lub min. 4 zawodników',
+    ],
+  },
+  {
     version: '3.9',
     date: '2026-05-09',
     changes: [

@@ -517,11 +517,48 @@ export default function MatchScreen({ matchParams = {} }) {
 
   // ── Pre-match screen ──────────────────────────────────────────────────────
   if (phase === 'goalkeeper_selection') {
-    const assignments = profile.deckAssignments || {}
-    const primaryGkId = assignments.gk1
-    const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
     const allSquadCards = [...playerA.goalkeepers, ...playerA.deck]
     const cardByInstance = Object.fromEntries(allSquadCards.map(c => [c.instanceId, c]))
+
+    // Use saved assignments if available; otherwise auto-assign by card type from activeDeck
+    const assignments = (() => {
+      if (profile.deckAssignments) {
+        const ownedSet = new Set(allSquadCards.map(c => c.instanceId))
+        const result = {}
+        for (const [slot, id] of Object.entries(profile.deckAssignments)) {
+          result[slot] = id && ownedSet.has(id) ? id : null
+        }
+        return result
+      }
+      const SLOT_ORDER = [
+        { id: 'atk1', type: 'attack'     }, { id: 'atk2', type: 'attack'     },
+        { id: 'mid1', type: 'midfield'   }, { id: 'mid2', type: 'midfield'   },
+        { id: 'mid3', type: 'midfield'   }, { id: 'mid4', type: 'midfield'   },
+        { id: 'def1', type: 'defense'    }, { id: 'def2', type: 'defense'    },
+        { id: 'def3', type: 'defense'    }, { id: 'def4', type: 'defense'    },
+        { id: 'gk1',  type: 'goalkeeper' },
+        { id: 'res1', type: null }, { id: 'res2', type: null }, { id: 'res3', type: null },
+      ]
+      const deckSet = new Set(profile.activeDeck || [])
+      const queues = { attack: [], midfield: [], defense: [], goalkeeper: [] }
+      for (const c of allSquadCards) {
+        if (deckSet.has(c.instanceId) && queues[c.type]) queues[c.type].push(c.instanceId)
+      }
+      const result = {}
+      const assigned = new Set()
+      for (const { id, type } of SLOT_ORDER) {
+        if (!type) { result[id] = null; continue }
+        const q = queues[type]
+        if (q?.length) { result[id] = q.shift(); assigned.add(result[id]) }
+        else result[id] = null
+      }
+      const rem = allSquadCards.filter(c => deckSet.has(c.instanceId) && !assigned.has(c.instanceId))
+      ;['res1','res2','res3'].forEach((s, i) => { result[s] = rem[i]?.instanceId ?? null })
+      return result
+    })()
+
+    const primaryGkId = assignments.gk1
+    const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
     const MATCH_TYPE_LABEL = { league: '🏆 MECZ LIGOWY', training_amateur: '🟢 TRENING AMATOR', training_pro: '🔴 TRENING PRO' }
     const TYPE_C = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#26c6da' }
     const TYPE_L = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'B' }
@@ -570,8 +607,16 @@ export default function MatchScreen({ matchParams = {} }) {
       </div>
     )
 
+    const fieldSlots = ['atk1','atk2','mid1','mid2','mid3','mid4','def1','def2','def3','def4']
+    const outfieldCount = fieldSlots.filter(s => getCard(s)).length
+    const canPlay = primaryGk && outfieldCount >= 4
+
     const handlePlay = () => {
       if (prematchLoading) return
+      if (!canPlay) {
+        navigate('deck_builder')
+        return
+      }
       setPrematchLoading(true)
       SFX.matchStart()
       setTimeout(() => {
@@ -656,10 +701,14 @@ export default function MatchScreen({ matchParams = {} }) {
           <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>⇄ Zmień skład</button>
           <div className="ms-pm-actions">
             <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← POWRÓT</button>
-            <button className="ms-pm-play" onClick={handlePlay} disabled={prematchLoading}>
+            <button
+              className={`ms-pm-play${!canPlay ? ' ms-pm-play--invalid' : ''}`}
+              onClick={handlePlay}
+              disabled={prematchLoading}
+            >
               {prematchLoading
                 ? <span className="ms-pm-loading-dots"><span /><span /><span /></span>
-                : '▶ GRAJ'}
+                : !canPlay ? '⚠ UZUPEŁNIJ SKŁAD' : '▶ GRAJ'}
             </button>
           </div>
         </div>

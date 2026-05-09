@@ -99,6 +99,14 @@ const PACK_REFUND = 60
 const AD_COOLDOWN_MS = 60 * 60 * 1000
 const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
 
+const FREE_PACK_META = {
+  id: 'free',
+  label: 'Darmowa Paczka',
+  desc: '1 losowa karta + 50 monet',
+  icon: '🎁',
+  iconBg: 'linear-gradient(160deg, #1a4a10, #2d6e1a)',
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function drawCards(pack, count = 3) {
@@ -193,7 +201,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   const handleCoins = () => {
     if (done) return
     setDone(true)
-    setTimeout(() => onTakeCoins(), 400)
+    setTimeout(() => onTakeCoins?.(), 400)
   }
 
   return (
@@ -233,9 +241,11 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
         {revealed >= drawnCards.length && !done && (
           <div className="pack-actions">
             <p className="pack-prompt">Wybierz kartę aby dodać do kolekcji</p>
-            <button className="pack-coins-btn" onClick={handleCoins}>
-              🪙 +{PACK_REFUND} MONET ZAMIAST KARTY
-            </button>
+            {onTakeCoins && (
+              <button className="pack-coins-btn" onClick={handleCoins}>
+                🪙 +{PACK_REFUND} MONET ZAMIAST KARTY
+              </button>
+            )}
           </div>
         )}
 
@@ -244,6 +254,25 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
             {picked ? `✅ Dodano ${picked.name} do kolekcji!` : `🪙 Otrzymano ${PACK_REFUND} monet!`}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ── Ad Reward Overlay ─────────────────────────────────────────────────────
+
+function AdRewardOverlay({ reward, onDismiss }) {
+  const isGem = reward.type === 'gems'
+  return (
+    <div className="ar-overlay" onClick={onDismiss}>
+      <div className="ar-panel" onClick={e => e.stopPropagation()}>
+        <div className="ar-icon-wrap">
+          <span className="ar-icon">{isGem ? '💎' : '🪙'}</span>
+        </div>
+        <div className="ar-amount">+{reward.amount}</div>
+        <div className="ar-label">{isGem ? 'KLEJNOT' : 'MONET'}</div>
+        <p className="ar-desc">Za obejrzenie reklamy</p>
+        <button className="ar-btn" onClick={onDismiss}>ODBIERZ</button>
       </div>
     </div>
   )
@@ -396,6 +425,7 @@ export default function MarketScreen() {
   const { profile, sellCard, addCoins, spendCoins, claimPackCard, update, recordAdWatched, recordFreePackClaimed, refreshCardShop, buyShopCard } = useProfile()
   const [tab, setTab] = useState('packs')
   const [openingPack, setOpeningPack] = useState(null)
+  const [adReward, setAdReward] = useState(null)
   const [notification, setNotification] = useState(null)
   const gems = profile.gems ?? 0
   const adSecsLeft = useCooldown(profile.lastAdWatchedAt, AD_COOLDOWN_MS)
@@ -420,8 +450,10 @@ export default function MarketScreen() {
 
   const handlePickCard = (def) => {
     claimPackCard(def)
+    const isFree = openingPack?.isFree
     setOpeningPack(null)
-    showNotif(`🎉 ${def.name} dodany do kolekcji!`)
+    if (isFree) addCoins(50)
+    showNotif(`🎉 ${def.name}${isFree ? ' + 50 🪙' : ''} dodany do kolekcji!`)
   }
 
   const handleTakeCoins = () => {
@@ -440,10 +472,10 @@ export default function MarketScreen() {
     setTimeout(() => {
       if (Math.random() < 0.4) {
         update(prev => ({ ...prev, gems: (prev.gems ?? 0) + 1 }))
-        showNotif('✅ +1 💎 klejnot za reklamę!')
+        setAdReward({ type: 'gems', amount: 1 })
       } else {
         addCoins(50)
-        showNotif('✅ +50 🪙 monet za reklamę!')
+        setAdReward({ type: 'coins', amount: 50 })
       }
     }, 2200)
   }
@@ -455,10 +487,8 @@ export default function MarketScreen() {
     }
     const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0 && d.rarity !== 'legendary')
     const card = pool[Math.floor(Math.random() * pool.length)]
-    claimPackCard(card)
-    addCoins(50)
     recordFreePackClaimed()
-    showNotif(`🎁 ${card.name} + 50 🪙 odebrane!`)
+    setOpeningPack({ pack: FREE_PACK_META, cards: [card], isFree: true })
   }
 
   return (
@@ -559,8 +589,12 @@ export default function MarketScreen() {
           pack={openingPack.pack}
           drawnCards={openingPack.cards}
           onPick={handlePickCard}
-          onTakeCoins={handleTakeCoins}
+          onTakeCoins={openingPack.isFree ? null : handleTakeCoins}
         />
+      )}
+
+      {adReward && (
+        <AdRewardOverlay reward={adReward} onDismiss={() => setAdReward(null)} />
       )}
 
       {notification && (

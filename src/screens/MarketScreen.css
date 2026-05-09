@@ -98,7 +98,8 @@
 /* ── Ad banner ───────────────────────────────────────────────────────────── */
 
 .ad-banner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 10px;
   padding: 14px 14px 14px 16px;
@@ -107,21 +108,23 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   min-height: 68px;
-  background: linear-gradient(120deg, #0a2618 0%, #0f3a22 50%, #071d12 100%);
+  background-color: #0a2618;
+  background-image: linear-gradient(120deg, #0a2618 0%, #0f3a22 50%, #071d12 100%);
+  color: #fff;
 }
 
 .ad-banner-bg { display: none; }
 
 .ad-text {
-  flex: 1;
   min-width: 0;
-  color: white;
+  overflow: hidden;
+  color: #fff;
 }
 
 .ad-title {
   font-size: 15px;
   font-weight: 900;
-  color: white;
+  color: #fff;
   letter-spacing: 0.5px;
   line-height: 1.2;
 }
@@ -130,7 +133,7 @@
 
 .ad-desc {
   font-size: 10px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.6);
   margin-top: 3px;
 }
 
@@ -742,3 +745,94 @@
   70%  { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* ── Ad Reward Overlay ────────────────────────────────────────────────────── */
+
+.ar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.ar-panel {
+  background: linear-gradient(160deg, #0c1022 0%, #111828 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 28px 28px;
+  animation: panel-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ar-icon-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  animation: ar-bounce 2.4s ease-in-out infinite;
+}
+
+@keyframes ar-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.ar-icon { font-size: 44px; line-height: 1; }
+
+.ar-amount {
+  font-family: 'Bangers', cursive;
+  font-size: 52px;
+  letter-spacing: 2px;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+  text-shadow: 0 0 30px rgba(255,255,255,0.3);
+}
+
+.ar-label {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 10px;
+}
+
+.ar-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin: 0 0 24px;
+  font-weight: 600;
+}
+
+.ar-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #00e676 0%, #00a854 100%);
+  border: none;
+  border-radius: 14px;
+  padding: 14px 24px;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #051a0c;
+  cursor: pointer;
+  transition: transform 0.12s;
+  box-shadow: 0 4px 18px rgba(0,230,118,0.4);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ar-btn:active { transform: scale(0.97); }

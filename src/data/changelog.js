@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: '4.9',
+    date: '2026-05-09',
+    changes: [
+      'Darmowa paczka: otwieranie przez animowany overlay (jak płatna paczka)',
+      'Reklama: nagroda pokazywana w dedykowanym okienku zamiast powiadomienia',
+      'Naprawiono: baner "Obejrzyj reklamę" niewidoczny na PC — zmieniono layout na grid',
+    ],
+  },
+  {
     version: '4.8',
     date: '2026-05-09',
     changes: [

@@ -606,9 +606,9 @@ export default function MatchScreen({ matchParams = {} }) {
         )}
 
         {/* Buttons */}
+        <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>Zmień skład</button>
         <div className="ms-pm-actions">
           <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← Powrót</button>
-          <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>🃏 Skład</button>
           <button className="ms-pm-play" onClick={handlePlay} disabled={prematchLoading}>
             {prematchLoading
               ? <span className="ms-pm-loading-dots"><span /><span /><span /></span>

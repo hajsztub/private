@@ -1410,18 +1410,19 @@
 }
 
 .ms-pm-lineup {
-  flex: 1;
-  padding: 14px;
-  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+  padding: 10px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.6);
   font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
+  margin-bottom: 8px;
 }
 
 .ms-pm-play {

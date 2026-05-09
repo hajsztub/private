@@ -561,8 +561,8 @@ export default function MatchScreen({ matchParams = {} }) {
     const primaryGkId = assignments.gk1
     const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
     const MATCH_TYPE_LABEL = { league: '🏆 MECZ LIGOWY', training_amateur: '🟢 TRENING AMATOR', training_pro: '🔴 TRENING PRO' }
-    const TYPE_C = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#26c6da' }
-    const TYPE_L = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'B' }
+    const TYPE_C = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#ffa000' }
+    const TYPE_L = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'G' }
 
     const getCard = (slotId) => {
       const id = assignments[slotId]
@@ -577,7 +577,7 @@ export default function MatchScreen({ matchParams = {} }) {
           <div className="pm-card-name pm-card-name--empty">&nbsp;</div>
         </div>
       )
-      const stat = isGk
+      const stat = (isGk || card.type === 'goalkeeper')
         ? (card.currentDefenseStat ?? card.defenseStat ?? 0)
         : (card.currentAttackStat ?? card.attackStat ?? 0)
       const tc = TYPE_C[card.type] || '#888'

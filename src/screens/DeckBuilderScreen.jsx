@@ -46,7 +46,7 @@ const FILTER_ACCEPTS = {
 }
 
 const TYPE_COLOR = {
-  attack: '#ff5252', midfield: '#aa40ff', defense: '#448aff', goalkeeper: '#00b0ff',
+  attack: '#ff5252', midfield: '#aa40ff', defense: '#448aff', goalkeeper: '#ffa000',
 }
 
 const ROWS = [0, 1, 2, 3]

@@ -1646,6 +1646,26 @@
   40% { transform: scale(1.1); opacity: 1; }
 }
 
+/* ── Pre-match: desktop overrides ────────────────────────────────────────── */
+@media (min-width: 600px) {
+  .ms-pm-topbar { padding: 10px 16px 6px; }
+  .ms-pm-pitch  { padding: 10px 10px 8px; }
+
+  .pm-card      { max-width: 86px; }
+  .pm-card--small { max-width: 76px; }
+
+  .pm-card-pos  { width: 18px; height: 18px; font-size: 9px; top: 4px; left: 4px; }
+  .pm-card-stat { font-size: 20px; top: 2px; right: 4px; }
+  .pm-card-name { font-size: 9px; margin-top: 3px; }
+
+  .ms-pm-reserves { gap: 6px; padding-top: 6px; }
+
+  .ms-pm-bottom   { padding: 8px 16px 12px; gap: 8px; }
+  .ms-pm-lineup   { padding: 11px; font-size: 14px; }
+  .ms-pm-back     { padding: 14px; font-size: 18px; }
+  .ms-pm-play     { padding: 14px; }
+}
+
 /* ── Zoom modal: coin-flip outcomes ─────────────────────────────────────── */
 
 .zoom-coin-outcomes {

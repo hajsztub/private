@@ -201,6 +201,7 @@ export default function MainMenuScreen() {
   const [showChangelog, setShowChangelog] = useState(false)
   const [showHistory, setShowHistory]     = useState(false)
   const [showNotifs, setShowNotifs]       = useState(false)
+  const [showMissions, setShowMissions]   = useState(false)
   const [showStadion, setShowStadion]     = useState(false)
   const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
   const [trainingOpen, setTrainingOpen]   = useState(false)
@@ -340,7 +341,6 @@ export default function MainMenuScreen() {
           <div className="mm-play-card-body">
             <span className="mm-play-card-title">MECZ<br/>LIGOWY</span>
             <span className="mm-play-card-desc">Wejdź do gry i walcz o zwycięstwo!</span>
-            <span className="mm-play-card-icon">⚽</span>
           </div>
         </button>
 
@@ -354,7 +354,6 @@ export default function MainMenuScreen() {
             <div className="mm-play-card-body">
               <span className="mm-play-card-title">TRENING</span>
               <span className="mm-play-card-desc">Rozwijaj zespół i zdobywaj nagrody!</span>
-              <span className="mm-play-card-icon">🏋️</span>
               {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
             </div>
           ) : (
@@ -382,6 +381,9 @@ export default function MainMenuScreen() {
         </button>
       </div>
 
+      {/* ── Separator ── */}
+      <div className="mm-separator" />
+
       {/* ── Missions ── */}
       {allMissionsDone && !missionsExpanded ? (
         <button className="mm-missions-done-bar" onClick={() => setMissionsExpanded(true)}>
@@ -403,13 +405,19 @@ export default function MainMenuScreen() {
             {missions.length === 0 && (
               <div className="mm-mc mm-mc--empty">Brak misji</div>
             )}
-            {missions.map(m => {
+            {missions.slice(0, 3).map(m => {
               const pct = Math.min(100, (m.progress / m.target) * 100)
               const ready = !m.claimed && m.progress >= m.target
               return (
                 <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
-                  <div className="mm-mc-top">
-                    <span className="mm-mc-icon">{m.icon}</span>
+                  <div className="mm-mc-header">
+                    <span className="mm-mc-label">
+                      <span className="mm-mc-icon">{m.icon}</span>{m.label}
+                    </span>
+                  </div>
+                  <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
+                  <div className="mm-mc-footer">
+                    <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
                     {m.claimed
                       ? <span className="mm-mc-check">✓</span>
                       : <button
@@ -419,15 +427,21 @@ export default function MainMenuScreen() {
                         >+{m.reward}🪙</button>
                     }
                   </div>
-                  <div className="mm-mc-label">{m.label}</div>
-                  <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
-                  <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
                 </div>
               )
             })}
+            {missions.length > 3 && (
+              <button className="mm-mc mm-mc-see-more" onClick={() => setShowMissions(true)}>
+                <span className="mm-mc-see-more-icon">+</span>
+                <span>{missions.length - 3} więcej</span>
+              </button>
+            )}
           </div>
         </div>
       )}
+
+      {/* ── Separator ── */}
+      <div className="mm-separator" />
 
       {/* ── Grid navigation ── */}
       <div className="mm-grid">
@@ -491,6 +505,47 @@ export default function MainMenuScreen() {
             </div>
             <div className="mm-stadion-soon-msg">wkrótce!</div>
             <button className="mm-weekly-close-btn" onClick={() => setShowStadion(false)}>Zamknij</button>
+          </div>
+        </div>
+      )}
+
+      {showMissions && (
+        <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
+          <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
+            <div className="mm-missions-header">
+              <span className="mm-missions-title">⚡ MISJE DZIENNE</span>
+              <span className="mm-missions-reset">Reset za {resetIn}</span>
+              <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
+            </div>
+            <div className="mm-missions-list">
+              {missions.map(m => {
+                const pct = Math.min(100, (m.progress / m.target) * 100)
+                const ready = !m.claimed && m.progress >= m.target
+                return (
+                  <div key={m.id} className={`mm-mission ${m.claimed ? 'mm-mission--done' : ready ? 'mm-mission--ready' : ''}`}>
+                    <span className="mm-mission-icon">{m.icon}</span>
+                    <div className="mm-mission-body">
+                      <span className="mm-mission-label">{m.label}</span>
+                      <div className="mm-mission-track">
+                        <div className="mm-mission-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="mm-mission-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                    </div>
+                    <div className="mm-mission-right">
+                      {m.claimed ? (
+                        <span className="mm-mission-check">✓</span>
+                      ) : (
+                        <button
+                          className={`mm-mission-claim ${ready ? 'mm-mission-claim--ready' : ''}`}
+                          onClick={() => ready && claimMission(m.id)}
+                          disabled={!ready}
+                        >+{m.reward} 🪙</button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       )}

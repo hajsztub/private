@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '4.1',
+    date: '2026-05-09',
+    changes: [
+      'Główne menu: logo powiększone (82% szerokości ekranu)',
+      'Usunięto emoji ⚽/🏋️ z kafelków MECZ LIGOWY i TRENING',
+      'Kafelki misji wyrównane z siatką nawigacji (ten sam grid 3×2)',
+      'Emoji i nazwa misji w tej samej linii, tej samej wielkości',
+      'Separator między blokiem meczu a misjami i misjami a nawigacją',
+      'Misje: ponad 3 — pojawia się kafelek "+X więcej" otwierający pełną listę',
+    ],
+  },
+  {
     version: '4.0',
     date: '2026-05-09',
     changes: [

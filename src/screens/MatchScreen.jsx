@@ -223,7 +223,7 @@ function GoalPosts({ side }) {
 // ── MatchScreen ────────────────────────────────────────────────────────────
 
 export default function MatchScreen({ matchParams = {} }) {
-  const { replace } = useRouter()
+  const { replace, navigate } = useRouter()
   const { profile, addMatchResult, addInjuries, addNotifications, markTutorialSeen, claimFirstWinReward } = useProfile()
   const { settings } = useSettings()
 
@@ -608,6 +608,7 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* Buttons */}
         <div className="ms-pm-actions">
           <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← Powrót</button>
+          <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>🃏 Skład</button>
           <button className="ms-pm-play" onClick={handlePlay} disabled={prematchLoading}>
             {prematchLoading
               ? <span className="ms-pm-loading-dots"><span /><span /><span /></span>

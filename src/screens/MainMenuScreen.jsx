@@ -47,43 +47,18 @@ function NotificationPanel({ notifications, onDismiss, onClose }) {
 }
 
 const TUTORIAL_SECTIONS = [
-  {
-    icon: '🃏',
-    title: 'Czym jest GOAL TCG?',
-    text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.',
-  },
-  {
-    icon: '⚽',
-    title: 'Jak przebiega mecz?',
-    text: 'Mecz trwa 10 rund. Każda runda to wymiana kart — ty i rywal gracie po jednej karcie z ręki. Wyższy Atak pokonuje niższą Obronę. Za każde trafienie dostajesz punkt.',
-  },
-  {
-    icon: '🗂️',
-    title: 'Pozycje i strefy',
-    text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.',
-  },
-  {
-    icon: '✨',
-    title: 'Zdolności specjalne',
-    text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!',
-  },
-  {
-    icon: '🏆',
-    title: 'Mecze i nagrody',
-    text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.',
-  },
-  {
-    icon: '📦',
-    title: 'Paczki i rynek',
-    text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Obejrzyj reklamę raz na godzinę po darmowe nagrody!',
-  },
+  { icon: '🃏', title: 'Czym jest GOAL TCG?', text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.' },
+  { icon: '⚽', title: 'Jak przebiega mecz?', text: 'Mecz trwa 10 rund. Każda runda to wymiana kart — ty i rywal gracie po jednej karcie z ręki. Wyższy Atak pokonuje niższą Obronę. Za każde trafienie dostajesz punkt.' },
+  { icon: '🗂️', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
+  { icon: '✨', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
+  { icon: '🏆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
+  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Obejrzyj reklamę raz na godzinę po darmowe nagrody!' },
 ]
 
 function TutorialModal({ onClose }) {
   const [page, setPage] = useState(0)
   const section = TUTORIAL_SECTIONS[page]
   const isLast = page === TUTORIAL_SECTIONS.length - 1
-
   return (
     <div className="tut-overlay" onClick={onClose}>
       <div className="tut-modal" onClick={e => e.stopPropagation()}>
@@ -97,14 +72,11 @@ function TutorialModal({ onClose }) {
         <div className="tut-title">{section.title}</div>
         <div className="tut-text">{section.text}</div>
         <div className="tut-nav">
-          {page > 0 && (
-            <button className="tut-btn tut-btn--back" onClick={() => setPage(p => p - 1)}>← Wstecz</button>
-          )}
-          {!isLast ? (
-            <button className="tut-btn tut-btn--next" onClick={() => setPage(p => p + 1)}>Dalej →</button>
-          ) : (
-            <button className="tut-btn tut-btn--done" onClick={onClose}>Graj! ⚽</button>
-          )}
+          {page > 0 && <button className="tut-btn tut-btn--back" onClick={() => setPage(p => p - 1)}>← Wstecz</button>}
+          {!isLast
+            ? <button className="tut-btn tut-btn--next" onClick={() => setPage(p => p + 1)}>Dalej →</button>
+            : <button className="tut-btn tut-btn--done" onClick={onClose}>Graj! ⚽</button>
+          }
         </div>
       </div>
     </div>
@@ -140,9 +112,7 @@ function HistoryModal({ history, onClose }) {
             {last3.map((m, i) => (
               <div key={i} className={`hist-entry hist-entry--${m.type}`}>
                 <div className="hist-entry-top">
-                  <span className="hist-result-icon">
-                    {m.type === 'win' ? '🏆' : m.type === 'loss' ? '❌' : '🤝'}
-                  </span>
+                  <span className="hist-result-icon">{m.type === 'win' ? '🏆' : m.type === 'loss' ? '❌' : '🤝'}</span>
                   <span className="hist-score">{m.score?.player ?? 0} : {m.score?.ai ?? 0}</span>
                   <span className="hist-type">{matchTypeLabel(m.matchType)}</span>
                   <span className="hist-date">{fmtMatchDate(m.date)}</span>
@@ -180,9 +150,7 @@ function ChangelogModal({ onClose }) {
                 <span className="cl-version">v{entry.version}</span>
               </div>
               <ul className="cl-changes">
-                {entry.changes.map((c, i) => (
-                  <li key={i} className="cl-change">{c}</li>
-                ))}
+                {entry.changes.map((c, i) => <li key={i} className="cl-change">{c}</li>)}
               </ul>
             </div>
           ))}
@@ -197,13 +165,7 @@ function Logo() {
   if (!failed) {
     return (
       <div className="mm-logo-wrap">
-        <img
-          src="/logo.png"
-          alt="GOAL TCG"
-          className="mm-logo-img"
-          onError={() => setFailed(true)}
-          draggable={false}
-        />
+        <img src="/logo.png" alt="GOAL TCG" className="mm-logo-img" onError={() => setFailed(true)} draggable={false} />
       </div>
     )
   }
@@ -223,17 +185,10 @@ function ProfileAvatar({ name }) {
   const initial = (name || 'G')[0].toUpperCase()
   return (
     <div className="mm-avatar">
-      {!failed ? (
-        <img
-          className="mm-avatar-img"
-          src="/avatar_player.png"
-          alt=""
-          onError={() => setFailed(true)}
-          draggable={false}
-        />
-      ) : (
-        initial
-      )}
+      {!failed
+        ? <img className="mm-avatar-img" src="/avatar_player.png" alt="" onError={() => setFailed(true)} draggable={false} />
+        : initial
+      }
     </div>
   )
 }
@@ -241,18 +196,22 @@ function ProfileAvatar({ name }) {
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
   const { profile, claimMission, addNotifications, markNotificationsRead, dismissNotification } = useProfile()
-  const [showTutorial, setShowTutorial] = useState(false)
-  const [showChangelog, setShowChangelog] = useState(false)
-  const [showHistory, setShowHistory] = useState(false)
-  const [showNotifs, setShowNotifs] = useState(false)
-  const [trainingOpen, setTrainingOpen] = useState(false)
-  const [tooltip, setTooltip] = useState(null)
-  const isNewPlayer = (profile.matchHistory || []).length === 0
-  const notifications = profile.notifications || []
-  const unreadCount = notifications.filter(n => !n.read).length
-  const didCheckRef = useRef(false)
 
-  // Check for recoveries and free pack availability on mount
+  const [showTutorial, setShowTutorial]   = useState(false)
+  const [showChangelog, setShowChangelog] = useState(false)
+  const [showHistory, setShowHistory]     = useState(false)
+  const [showNotifs, setShowNotifs]       = useState(false)
+  const [showMissions, setShowMissions]   = useState(false)
+  const [showStadion, setShowStadion]     = useState(false)
+  const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
+  const [trainingOpen, setTrainingOpen]   = useState(false)
+  const [resetIn, setResetIn]             = useState('')
+
+  const isNewPlayer   = (profile.matchHistory || []).length === 0
+  const notifications = profile.notifications || []
+  const unreadCount   = notifications.filter(n => !n.read).length
+  const didCheckRef   = useRef(false)
+
   useEffect(() => {
     if (didCheckRef.current) return
     didCheckRef.current = true
@@ -267,13 +226,7 @@ export default function MainMenuScreen() {
           const owned = profile.ownedCards.find(c => c.instanceId === instanceId)
           if (owned) {
             const def = ALL_DEFS_MM.find(d => d.id === owned.cardId)
-            newNotifs.push({
-              id: notifId,
-              type: 'recovery',
-              message: `💪 ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`,
-              timestamp: now,
-              read: false,
-            })
+            newNotifs.push({ id: notifId, type: 'recovery', message: `💪 ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`, timestamp: now, read: false })
           }
         }
       }
@@ -283,45 +236,12 @@ export default function MainMenuScreen() {
     if (freePackAvailable) {
       const notifId = `free_pack_${Math.floor((profile.lastFreePackAt || 0) / 1000)}`
       if (!notifications.some(n => n.id === notifId)) {
-        newNotifs.push({
-          id: notifId,
-          type: 'free_pack',
-          message: '📦 Darmowa paczka jest dostępna w Markecie!',
-          timestamp: now,
-          read: false,
-        })
+        newNotifs.push({ id: notifId, type: 'free_pack', message: '📦 Darmowa paczka jest dostępna w Markecie!', timestamp: now, read: false })
       }
     }
 
     if (newNotifs.length) addNotifications(newNotifs)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const openNotifs = () => {
-    setShowNotifs(true)
-    markNotificationsRead()
-  }
-
-  const TOOLTIPS = {
-    league:    { title: 'Mecz Ligowy', desc: 'Rankingowy mecz wpływający na rating. Trudniejszy — zacznij od treningu.' },
-    training:  { title: 'Trening',     desc: 'Ćwicz bez ryzyka utraty ratingu. Amator dla początkujących, PRO dla wyzwania.' },
-    deck:      { title: 'Skład',       desc: 'Buduj i edytuj swój skład 11 zawodników przed meczem.' },
-    market:    { title: 'Market',      desc: 'Kupuj paczki kart i zdobywaj nowych zawodników za monety.' },
-    players:   { title: 'Zawodnicy',   desc: 'Przeglądaj i ulepszaj swoje karty. Max poziom daje ekstra bonus statystyk.' },
-    settings:  { title: 'Ustawienia',  desc: 'Dźwięk, efekty wizualne i inne opcje.' },
-  }
-
-  let longPressTimer = null
-  const startLongPress = (id) => {
-    longPressTimer = setTimeout(() => setTooltip(id), 500)
-  }
-  const endLongPress = () => {
-    clearTimeout(longPressTimer)
-  }
-
-  const [showMissions, setShowMissions] = useState(false)
-  const [showStadion, setShowStadion] = useState(false)
-  const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
-  const [resetIn, setResetIn] = useState('')
 
   useEffect(() => {
     const tick = () => {
@@ -339,13 +259,14 @@ export default function MainMenuScreen() {
     return () => clearInterval(id)
   }, [])
 
+  const openNotifs = () => { setShowNotifs(true); markNotificationsRead() }
+
   const missions = profile.dailyMissions?.missions || []
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-    const botName = getBotName(Date.now(), 'training')
-    navigate('match', { matchType: type, matchId: Date.now(), opponentName: botName })
+    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training') })
   }
 
   const tier = getTier(profile.rating)
@@ -353,124 +274,75 @@ export default function MainMenuScreen() {
 
   return (
     <div className="main-menu">
-      <div className="mm-bg-field" />
+      <div className="mm-bg" />
 
-      <Logo />
-
-      {/* ── Bell (top-right corner) ── */}
-      <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
-        🔔
-        {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
-      </button>
-
-      {/* ── Profile card ── */}
-      <div className="mm-profile-card">
-        <div className="mm-profile-left">
-          <div className="mm-avatar-wrap">
-            <ProfileAvatar name={profile.name} />
-          </div>
-          <div className="mm-profile-info">
-            <div className="mm-profile-name">{profile.name || 'Gracz'}</div>
-            <div className="mm-tier-badge" style={{ color: tier.color }}>
-              {tier.icon} {tier.label}
-            </div>
+      {/* ── Top bar ── */}
+      <div className="mm-topbar">
+        <div className="mm-tp-profile">
+          <ProfileAvatar name={profile.name} />
+          <div className="mm-tp-info">
+            <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+            <span className="mm-tp-tier" style={{ color: tier.color }}>{tier.icon} {tier.label}</span>
           </div>
         </div>
-        <div className="mm-profile-right">
-          <div className="mm-currency">
-            <span className="mm-cur-icon">⭐</span>
-            <span className="mm-cur-val">{profile.rating}</span>
+
+        <div className="mm-tp-currencies">
+          <div className="mm-tp-cur">
+            <span className="mm-tp-cur-icon">⭐</span>
+            <span className="mm-tp-cur-val">{profile.rating}</span>
           </div>
-          <div className="mm-currency">
-            <span className="mm-cur-icon">🪙</span>
-            <span className="mm-cur-val">{profile.coins}</span>
+          <div className="mm-tp-cur">
+            <span className="mm-tp-cur-icon">🪙</span>
+            <span className="mm-tp-cur-val">{profile.coins}</span>
           </div>
-          <div className="mm-currency">
-            <span className="mm-cur-icon">💎</span>
-            <span className="mm-cur-val">{gems}</span>
+          <div className="mm-tp-cur">
+            <span className="mm-tp-cur-icon">💎</span>
+            <span className="mm-tp-cur-val">{gems}</span>
           </div>
         </div>
+
+        <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
+          🔔
+          {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
+        </button>
       </div>
 
-      {/* ── Record ── */}
+      {/* ── Logo ── */}
+      <Logo />
+
+      {/* ── W/D/L record ── */}
       <div className="mm-record">
         <span className="mmr-w">{profile.wins}W</span>
-        <span className="mmr-sep">|</span>
+        <span className="mmr-sep">·</span>
         <span className="mmr-d">{profile.draws}R</span>
-        <span className="mmr-sep">|</span>
+        <span className="mmr-sep">·</span>
         <span className="mmr-l">{profile.losses}P</span>
         <button className="mm-history-btn" onClick={() => setShowHistory(true)}>📋</button>
       </div>
 
-      {/* ── Missions row ── */}
-      <div className="mm-missions-row">
-        <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
-          <span className="mm-missions-bar-icon">⚡</span>
-          <span className="mm-missions-bar-label">DZIENNE</span>
-          <div className="mm-missions-bar-dots">
-            {missions.map(m => (
-              <span
-                key={m.id}
-                className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`}
-              />
-            ))}
-          </div>
-          {claimableCount > 0 && (
-            <span className="mm-missions-badge">{claimableCount}</span>
-          )}
-          <span className="mm-missions-bar-arrow">›</span>
-        </button>
-
-        <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
-          <span className="mm-missions-bar-icon">📅</span>
-          <span className="mm-missions-bar-label">TYGODNIOWE</span>
-          <span className="mm-weekly-lock">🔒</span>
-          <span className="mm-missions-bar-arrow">›</span>
-        </button>
-      </div>
-
-      {/* ── Play buttons ── */}
+      {/* ── Play section ── */}
       <div className="mm-play-section">
-        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}
-          onTouchStart={() => startLongPress('league')}
-          onTouchEnd={endLongPress}
-          onMouseDown={() => startLongPress('league')}
-          onMouseUp={endLongPress}
-          onMouseLeave={endLongPress}
-        >
-          <div className="mm-btn-icon-wrap">
-            <span className="mm-btn-icon">🏆</span>
-          </div>
+        <button className="mm-btn mm-btn--league" onClick={() => navigate('league')}>
+          <span className="mm-btn-icon">🏆</span>
           <div className="mm-btn-body">
             <span className="mm-btn-title">MECZ LIGOWY</span>
             <span className="mm-btn-desc">Rankingowy · Więcej nagród</span>
           </div>
-          <div className="mm-btn-right">
-            <span className="mm-btn-ball">⚽</span>
-          </div>
+          <span className="mm-btn-ball">⚽</span>
         </button>
 
         {!trainingOpen ? (
           <button
             className={`mm-btn mm-btn--training${isNewPlayer ? ' mm-btn--onboard' : ''}`}
             onClick={() => setTrainingOpen(true)}
-            onTouchStart={() => startLongPress('training')}
-            onTouchEnd={endLongPress}
-            onMouseDown={() => startLongPress('training')}
-            onMouseUp={endLongPress}
-            onMouseLeave={endLongPress}
           >
-            <div className="mm-btn-icon-wrap">
-              <span className="mm-btn-icon">🚧</span>
-            </div>
+            <span className="mm-btn-icon">🚧</span>
             <div className="mm-btn-body">
               <span className="mm-btn-title">TRENING</span>
               <span className="mm-btn-desc">Bez rankingu · Wybierz poziom</span>
               {isNewPlayer && <span className="mm-onboard-chip">✨ Zacznij tutaj!</span>}
             </div>
-            <div className="mm-btn-right">
-              <span className="mm-btn-arrow">›</span>
-            </div>
+            <span className="mm-btn-arrow">›</span>
           </button>
         ) : (
           <div className="mm-training-panel">
@@ -500,52 +372,64 @@ export default function MainMenuScreen() {
         )}
       </div>
 
-      {/* ── Stadion button ── */}
-      <button className="mm-btn mm-btn--stadion" onClick={() => setShowStadion(true)}>
-        <div className="mm-btn-icon-wrap">
-          <span className="mm-btn-icon">🏟️</span>
-        </div>
-        <div className="mm-btn-body">
-          <span className="mm-btn-title">STADION</span>
-          <span className="mm-btn-desc">Stroje · Herb · Sponsorzy · Ulepszenia</span>
-        </div>
-        <div className="mm-btn-right">
-          <span className="mm-stadion-soon">wkrótce</span>
-        </div>
-      </button>
+      {/* ── Missions strip ── */}
+      <div className="mm-missions-row">
+        <button className="mm-missions-bar" onClick={() => setShowMissions(true)}>
+          <span className="mm-missions-bar-icon">⚡</span>
+          <span className="mm-missions-bar-label">DZIENNE</span>
+          <div className="mm-missions-bar-dots">
+            {missions.map(m => (
+              <span key={m.id} className={`mm-missions-dot ${m.claimed ? 'mm-missions-dot--done' : m.progress >= m.target ? 'mm-missions-dot--ready' : ''}`} />
+            ))}
+          </div>
+          {claimableCount > 0 && <span className="mm-missions-badge">{claimableCount}</span>}
+          <span className="mm-missions-bar-arrow">›</span>
+        </button>
 
-      {/* ── Bottom nav ── */}
-      <div className="mm-nav">
-        <button className="mm-nav-btn" onClick={() => navigate('deck_builder')}
-          onTouchStart={() => startLongPress('deck')} onTouchEnd={endLongPress}
-          onMouseDown={() => startLongPress('deck')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
-          <span className="mm-nav-icon">🃏</span>
-          <span className="mm-nav-label">Skład</span>
-        </button>
-        <button className="mm-nav-btn" onClick={() => navigate('market')}
-          onTouchStart={() => startLongPress('market')} onTouchEnd={endLongPress}
-          onMouseDown={() => startLongPress('market')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
-          <span className="mm-nav-icon">🛒</span>
-          <span className="mm-nav-label">Market</span>
-        </button>
-        <button className="mm-nav-btn" onClick={() => navigate('players')}
-          onTouchStart={() => startLongPress('players')} onTouchEnd={endLongPress}
-          onMouseDown={() => startLongPress('players')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
-          <span className="mm-nav-icon">👥</span>
-          <span className="mm-nav-label">Karty</span>
-        </button>
-        <button className="mm-nav-btn" onClick={() => navigate('settings')}
-          onTouchStart={() => startLongPress('settings')} onTouchEnd={endLongPress}
-          onMouseDown={() => startLongPress('settings')} onMouseUp={endLongPress} onMouseLeave={endLongPress}>
-          <span className="mm-nav-icon">⚙️</span>
-          <span className="mm-nav-label">Ustawienia</span>
-        </button>
-        <button className="mm-nav-btn mm-nav-btn--tutorial" onClick={() => setShowTutorial(true)}>
-          <span className="mm-nav-icon">📖</span>
-          <span className="mm-nav-label">Jak grać?</span>
+        <button className="mm-missions-bar mm-missions-bar--weekly" onClick={() => setShowWeeklyPopup(true)}>
+          <span className="mm-missions-bar-icon">📅</span>
+          <span className="mm-missions-bar-label">TYGODNIOWE</span>
+          <span className="mm-weekly-lock">🔒</span>
+          <span className="mm-missions-bar-arrow">›</span>
         </button>
       </div>
 
+      {/* ── Grid navigation ── */}
+      <div className="mm-grid">
+        <button className="mm-grid-btn" onClick={() => navigate('deck_builder')}>
+          <span className="mm-grid-icon">🃏</span>
+          <span className="mm-grid-label">Skład</span>
+        </button>
+        <button className="mm-grid-btn" onClick={() => navigate('market')}>
+          <span className="mm-grid-icon">🛒</span>
+          <span className="mm-grid-label">Market</span>
+        </button>
+        <button className="mm-grid-btn" onClick={() => navigate('players')}>
+          <span className="mm-grid-icon">👥</span>
+          <span className="mm-grid-label">Zawodnicy</span>
+        </button>
+        <button className="mm-grid-btn mm-grid-btn--soon" onClick={() => setShowStadion(true)}>
+          <span className="mm-grid-icon">🏟️</span>
+          <span className="mm-grid-label">Stadion</span>
+          <span className="mm-grid-soon-badge">wkrótce</span>
+        </button>
+        <button className="mm-grid-btn" onClick={() => navigate('settings')}>
+          <span className="mm-grid-icon">⚙️</span>
+          <span className="mm-grid-label">Ustawienia</span>
+        </button>
+        <button className="mm-grid-btn" onClick={() => setShowTutorial(true)}>
+          <span className="mm-grid-icon">📖</span>
+          <span className="mm-grid-label">Jak grać?</span>
+        </button>
+      </div>
+
+      {/* ── Version ── */}
+      <div className="mm-version">
+        <span>GOAL TCG v{CHANGELOG[0].version} — build 20260508</span>
+        <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
+      </div>
+
+      {/* ── Modals ── */}
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
 
       {showWeeklyPopup && (
@@ -602,11 +486,6 @@ export default function MainMenuScreen() {
         </div>
       )}
 
-      <div className="mm-version">
-        <span>GOAL TCG v{CHANGELOG[0].version} — build 20260508</span>
-        <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
-      </div>
-
       {showStadion && (
         <div className="mm-stadion-overlay" onClick={() => setShowStadion(false)}>
           <div className="mm-stadion-panel" onClick={e => e.stopPropagation()}>
@@ -632,16 +511,6 @@ export default function MainMenuScreen() {
           onDismiss={dismissNotification}
           onClose={() => setShowNotifs(false)}
         />
-      )}
-
-      {tooltip && (
-        <div className="mm-tooltip-overlay" onClick={() => setTooltip(null)}>
-          <div className="mm-tooltip-box">
-            <div className="mm-tooltip-title">{TOOLTIPS[tooltip]?.title}</div>
-            <div className="mm-tooltip-desc">{TOOLTIPS[tooltip]?.desc}</div>
-            <div className="mm-tooltip-hint">Przytrzymaj przyciski aby zobaczyć opisy</div>
-          </div>
-        </div>
       )}
     </div>
   )

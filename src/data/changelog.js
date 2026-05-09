@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: '4.4',
+    date: '2026-05-09',
+    changes: [
+      'Główne menu: kafelek "MECZ LIGOWY" przemianowany na "LIGA"',
+      'Tło stadionu (bg.jpg) aktywne na całym menu — widoczne przez ciemny gradient',
+      'Kafelki LIGA i TRENING: grafiki zawodników z players_bg.png widoczne',
+    ],
+  },
+  {
     version: '4.3',
     date: '2026-05-09',
     changes: [

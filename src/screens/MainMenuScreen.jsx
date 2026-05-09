@@ -339,7 +339,7 @@ export default function MainMenuScreen() {
         <button className="mm-play-card mm-play-card--league" onClick={() => navigate('league')}>
           <div className="mm-play-card-bg mm-play-card-bg--league" />
           <div className="mm-play-card-body">
-            <span className="mm-play-card-title">MECZ<br/>LIGOWY</span>
+            <span className="mm-play-card-title">LIGA</span>
             <span className="mm-play-card-desc">Wejdź do gry i walcz o zwycięstwo!</span>
           </div>
         </button>

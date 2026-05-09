@@ -1827,6 +1827,35 @@
   }
 }
 
+/* ── Mobile: compact goalkeeper panels (phone only, desktop unchanged) ───── */
+
+@media (max-width: 480px) {
+  /* Shrink the stat boxes */
+  .ms-goal-inner {
+    grid-template-columns: 68px 1fr 68px;
+    gap: 5px;
+    padding: 3px 6px;
+    max-height: 110px;
+  }
+  .ms-stat-box {
+    width: 68px;
+    height: 52px;
+  }
+  .msb-lbl  { font-size: 7px; letter-spacing: 1px; }
+  .msb-num  { font-size: 17px; min-width: 16px; }
+  .msb-icon { font-size: 10px; }
+
+  /* Hide gloves — saves horizontal + gives GK card more room */
+  .ms-gk-glove { display: none; }
+
+  /* GK card shorter */
+  .gk-card       { height: 62px; }
+  .gk-card--empty { height: 62px; }
+
+  /* Goal post bar slimmer */
+  .goal-posts { height: 8px; max-height: 8px; }
+}
+
 /* ── Forfeit confirm dialog ─────────────────────────────────────────────── */
 
 .ms-forfeit-confirm {

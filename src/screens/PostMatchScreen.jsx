@@ -57,19 +57,15 @@ export default function PostMatchScreen({ result = {} }) {
             <span className="pm-reward-val">+{coinsEarned}</span>
           </div>
         )}
-        {matchType === 'league' && ratingChange !== 0 && (
+        {matchType === 'league' && (
           <div className="pm-reward-chip">
             <span className="pm-reward-icon">⭐</span>
-            <span className="pm-reward-val" style={{ color: ratingChange >= 0 ? '#81c784' : '#ef9a9a' }}>
-              {ratingChange > 0 ? '+' : ''}{ratingChange}
-            </span>
-          </div>
-        )}
-        {matchType === 'league' && (
-          <div className="pm-reward-chip pm-reward-chip--rating">
-            <span className="pm-reward-icon">📊</span>
-            <span className="pm-reward-val">{profile.rating}</span>
-            <span className="pm-reward-label">rating</span>
+            {ratingChange !== 0 && (
+              <span className="pm-reward-val" style={{ color: ratingChange > 0 ? '#81c784' : '#ef9a9a' }}>
+                {ratingChange > 0 ? '+' : ''}{ratingChange}
+              </span>
+            )}
+            <span className="pm-reward-rating-now">({profile.rating})</span>
           </div>
         )}
       </div>

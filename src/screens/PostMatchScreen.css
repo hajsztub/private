@@ -22,10 +22,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--res-bg, rgba(255,255,255,0.05));
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 20px 16px 16px;
+  padding: 8px 0 4px;
   gap: 4px;
 }
 
@@ -130,6 +127,13 @@
 }
 
 .pm-reward-chip--rating .pm-reward-val { color: rgba(255,255,255,0.8); }
+
+.pm-reward-rating-now {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  margin-left: 1px;
+}
 
 /* ── MVP ──────────────────────────────────────────────────────────────────── */
 

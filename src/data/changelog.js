@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '3.8',
+    date: '2026-05-09',
+    changes: [
+      'Ekran podsumowania: brak tła pod wynikiem meczu — czystszy wygląd',
+      'Zawodnik meczu przeniesiony wyżej, bezpośrednio pod chipami nagród',
+      'Rating pokazuje zmianę i aktualną wartość w nawiasie: ⭐ -15 (945)',
+      'Przebudowa głównego menu — kompaktowy top bar, siatka nawigacji 3×2, przycisk Stadion (wkrótce)',
+    ],
+  },
+  {
     version: '3.7',
     date: '2026-05-08',
     changes: [

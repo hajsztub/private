@@ -109,17 +109,12 @@
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   min-height: 68px;
+  /* Background directly on the element — avoids stacking context issues on PC */
+  background: linear-gradient(120deg, #0a2618 0%, #0f3a22 50%, #071d12 100%);
 }
 
-.ad-banner-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(120deg, #0a2618 0%, #0f3a22 50%, #071d12 100%);
-  z-index: 0;
-}
-
-.ad-banner-bg::before {
+/* Decorative rings (moved from .ad-banner-bg pseudo-elements) */
+.ad-banner::before {
   content: '';
   position: absolute;
   right: 100px;
@@ -129,9 +124,10 @@
   height: 90px;
   border-radius: 50%;
   border: 18px solid rgba(0,230,118,0.07);
+  pointer-events: none;
 }
 
-.ad-banner-bg::after {
+.ad-banner::after {
   content: '';
   position: absolute;
   right: 60px;
@@ -140,12 +136,15 @@
   height: 80px;
   border-radius: 50%;
   background: rgba(0,230,118,0.04);
+  pointer-events: none;
 }
+
+/* .ad-banner-bg kept in JSX for backwards compat but visually hidden */
+.ad-banner-bg { display: none; }
 
 .ad-text {
   flex: 1;
-  position: relative;
-  z-index: 1;
+  min-width: 0;
 }
 
 .ad-title {
@@ -166,8 +165,6 @@
 
 .ad-ball {
   font-size: 26px;
-  position: relative;
-  z-index: 1;
   flex-shrink: 0;
   filter: drop-shadow(0 0 10px rgba(0,230,118,0.3));
 }
@@ -183,8 +180,6 @@
   letter-spacing: 0.5px;
   white-space: nowrap;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
 }
 
 .ad-cta--wait {

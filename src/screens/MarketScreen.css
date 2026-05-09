@@ -3,7 +3,10 @@
 .market-screen {
   width: 100%;
   height: 100dvh;
-  background: #080b16;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.55) 100%),
+    url('/bg.jpg') center top / cover no-repeat;
+  background-color: #080b16;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '4.5',
+    date: '2026-05-09',
+    changes: [
+      'Jedno tło stadionu (bg.jpg) — usunięto podwójne gradienty CSS',
+      'bg.jpg aktywne też w Markecie, Zawodnikach i Ustawieniach',
+      'Kafelek LIGA: opis zmieniony na "Zagraj mecz rankingowy PvP!"',
+      'Stopka: biały napis, dodano "Powered by AppHill.Agency"',
+      'Misje: ciemnozielone tło, odróżnia się od niebieskich kafelków nawigacji',
+      'Drobny odstęp powiększony między logo a paskiem bilansu',
+    ],
+  },
+  {
     version: '4.4',
     date: '2026-05-09',
     changes: [

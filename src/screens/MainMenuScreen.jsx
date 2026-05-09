@@ -340,7 +340,7 @@ export default function MainMenuScreen() {
           <div className="mm-play-card-bg mm-play-card-bg--league" />
           <div className="mm-play-card-body">
             <span className="mm-play-card-title">LIGA</span>
-            <span className="mm-play-card-desc">Wejdź do gry i walcz o zwycięstwo!</span>
+            <span className="mm-play-card-desc">Zagraj mecz rankingowy PvP!</span>
           </div>
         </button>
 
@@ -474,8 +474,11 @@ export default function MainMenuScreen() {
 
       {/* ── Version ── */}
       <div className="mm-version">
-        <span>GOAL TCG v{CHANGELOG[0].version}</span>
-        <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
+        <div className="mm-version-row">
+          <span>GOAL TCG v{CHANGELOG[0].version}</span>
+          <button className="mm-changelog-btn" onClick={() => setShowChangelog(true)}>?</button>
+        </div>
+        <span className="mm-version-powered">Powered by AppHill.Agency</span>
       </div>
 
       {/* ── Modals ── */}

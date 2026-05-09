@@ -2,7 +2,10 @@
 
 .ps-screen {
   min-height: 100dvh;
-  background: radial-gradient(ellipse at 50% -10%, #0d2a18 0%, var(--c-bg) 60%);
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.52) 100%),
+    url('/bg.jpg') center top / cover no-repeat;
+  background-color: var(--c-bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;

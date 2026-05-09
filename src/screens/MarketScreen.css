@@ -105,46 +105,17 @@
   border-radius: 16px;
   border: 1px solid rgba(0,230,118,0.3);
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   min-height: 68px;
-  /* Background directly on the element — avoids stacking context issues on PC */
   background: linear-gradient(120deg, #0a2618 0%, #0f3a22 50%, #071d12 100%);
 }
 
-/* Decorative rings (moved from .ad-banner-bg pseudo-elements) */
-.ad-banner::before {
-  content: '';
-  position: absolute;
-  right: 100px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 18px solid rgba(0,230,118,0.07);
-  pointer-events: none;
-}
-
-.ad-banner::after {
-  content: '';
-  position: absolute;
-  right: 60px;
-  bottom: -20px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(0,230,118,0.04);
-  pointer-events: none;
-}
-
-/* .ad-banner-bg kept in JSX for backwards compat but visually hidden */
 .ad-banner-bg { display: none; }
 
 .ad-text {
   flex: 1;
   min-width: 0;
+  color: white;
 }
 
 .ad-title {

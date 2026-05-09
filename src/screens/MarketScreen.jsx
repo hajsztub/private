@@ -488,7 +488,6 @@ export default function MarketScreen() {
 
           {/* Ad banner */}
           <div className={`ad-banner ${adSecsLeft > 0 ? 'ad-banner--cooldown' : ''}`} onClick={handleWatchAd}>
-            <div className="ad-banner-bg" />
             <div className="ad-text">
               <div className="ad-title">
                 OBEJRZYJ <span className="ad-kw">REKLAMĘ</span>

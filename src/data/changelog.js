@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '5.0.2',
+    date: '2026-05-10',
+    changes: [
+      'Naprawiono: czarny ekran przy uruchamianiu meczu — handleEndTurn używany przed deklaracją (TDZ)',
+    ],
+  },
+  {
     version: '5.0.1',
     date: '2026-05-10',
     changes: [

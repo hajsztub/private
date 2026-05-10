@@ -795,7 +795,7 @@ export default function MatchScreen({ matchParams = {} }) {
               ))}
             </div>
             <span className={`msb-seg-round${matchState.maxRounds !== 10 ? ' msb-seg-round--custom' : ''}${isExtraTime ? ' msb-seg-round--extra' : ''}`}>
-              R{round}
+              R{round}/{matchState.maxRounds ?? 10}
             </span>
             <div className="msb-seg-group">
               {[6,7,8,9,10].map(r => (

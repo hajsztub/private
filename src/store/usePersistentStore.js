@@ -21,18 +21,18 @@ function getShopCardIds(seed) {
 // ── Daily missions ─────────────────────────────────────────────────────────
 
 const MISSION_POOL = [
-  { type: 'play_matches', target: 1, label: 'Zagraj 1 mecz',              icon: '🎮', reward: 50,  rewardType: 'coins' },
-  { type: 'play_matches', target: 3, label: 'Zagraj 3 mecze',             icon: '🎮', reward: 120, rewardType: 'coins' },
-  { type: 'win_matches',  target: 1, label: 'Wygraj 1 mecz',              icon: '🏆', reward: 80,  rewardType: 'coins' },
-  { type: 'win_matches',  target: 2, label: 'Wygraj 2 mecze',             icon: '🏆', reward: 150, rewardType: 'coins' },
-  { type: 'win_matches',  target: 3, label: 'Wygraj 3 mecze',             icon: '🏆', reward: 220, rewardType: 'coins' },
-  { type: 'win_league',   target: 1, label: 'Wygraj mecz ligowy',         icon: '⭐', reward: 120, rewardType: 'coins' },
-  { type: 'win_league',   target: 2, label: 'Wygraj 2 mecze ligowe',      icon: '⭐', reward: 220, rewardType: 'coins' },
-  { type: 'score_goals',  target: 3, label: 'Strzel 3 gole',              icon: '⚽', reward: 80,  rewardType: 'coins' },
-  { type: 'score_goals',  target: 5, label: 'Strzel 5 goli',              icon: '⚽', reward: 130, rewardType: 'coins' },
-  { type: 'score_goals',  target: 8, label: 'Strzel 8 goli',              icon: '⚽', reward: 200, rewardType: 'coins' },
-  { type: 'win_pro',      target: 1, label: 'Wygraj trening PRO',         icon: '🔴', reward: 200, rewardType: 'coins' },
-  { type: 'clean_sheet',  target: 1, label: 'Wygraj nie tracąc gola',     icon: '🧤', reward: 160, rewardType: 'coins' },
+  { type: 'play_matches', target: 1, label: 'Zagraj 1 mecz',              icon: '🎮', reward: 80,  rewardType: 'coins' },
+  { type: 'play_matches', target: 3, label: 'Zagraj 3 mecze',             icon: '🎮', reward: 180, rewardType: 'coins' },
+  { type: 'win_matches',  target: 1, label: 'Wygraj 1 mecz',              icon: '🏆', reward: 120, rewardType: 'coins' },
+  { type: 'win_matches',  target: 2, label: 'Wygraj 2 mecze',             icon: '🏆', reward: 220, rewardType: 'coins' },
+  { type: 'win_matches',  target: 3, label: 'Wygraj 3 mecze',             icon: '🏆', reward: 320, rewardType: 'coins' },
+  { type: 'win_league',   target: 1, label: 'Wygraj mecz ligowy',         icon: '⭐', reward: 180, rewardType: 'coins' },
+  { type: 'win_league',   target: 2, label: 'Wygraj 2 mecze ligowe',      icon: '⭐', reward: 320, rewardType: 'coins' },
+  { type: 'score_goals',  target: 3, label: 'Strzel 3 gole',              icon: '⚽', reward: 120, rewardType: 'coins' },
+  { type: 'score_goals',  target: 5, label: 'Strzel 5 goli',              icon: '⚽', reward: 200, rewardType: 'coins' },
+  { type: 'score_goals',  target: 8, label: 'Strzel 8 goli',              icon: '⚽', reward: 300, rewardType: 'coins' },
+  { type: 'win_pro',      target: 1, label: 'Wygraj trening PRO',         icon: '🔴', reward: 280, rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 1, label: 'Wygraj nie tracąc gola',     icon: '🧤', reward: 240, rewardType: 'coins' },
 ]
 
 // ── Weekly missions ────────────────────────────────────────────────────────

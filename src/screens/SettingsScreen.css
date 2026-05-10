@@ -96,6 +96,9 @@
 
 /* ── Name field ───────────────────────────────────────────────────────────── */
 
+.sn-field-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+.sn-error { font-size: 11px; color: #ff5252; padding-left: 2px; }
+
 .sn-field {
   display: flex;
   gap: 8px;

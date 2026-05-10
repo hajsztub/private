@@ -613,56 +613,57 @@ export default function MarketScreen() {
             </div>
           </div>
 
-          {/* Pack items */}
-          {PACKS.map(pack => {
-            const canAffordCoins = profile.coins >= pack.cost
-            const canAffordGems = gems >= (pack.gemCost ?? pack.cost)
-            const isGemsOnly = pack.currency === 'gems'
+          {/* Premium pack — full width */}
+          {(() => {
+            const prem = PACKS.find(p => p.id === 'premium')
+            const canAfford = gems >= prem.cost
             return (
-              <div
-                key={pack.id}
-                className="pack-item"
-                style={{ background: pack.itemBg }}
-              >
-                <div className="pi-stripe" style={{ background: pack.iconBg }}>
-                  <span className="pi-icon">{pack.icon}</span>
+              <div className="pack-premium-card" style={{ background: prem.itemBg }}>
+                <div className="ppc-badge">💎 PREMIUM</div>
+                <div className="ppc-icon">{prem.icon}</div>
+                <div className="ppc-info">
+                  <div className="ppc-name">{prem.label}</div>
+                  <div className="ppc-desc">{prem.desc}</div>
                 </div>
-                <div className="pi-info">
-                  <div className="pi-name">{pack.label}</div>
-                  <div className="pi-desc">{pack.desc}</div>
-                </div>
-                <div className="pi-preview">
-                  <img src="/avatars/placeholder.png" className="pi-preview-img" alt="" />
-                </div>
-                {isGemsOnly ? (
-                  <button
-                    className={`pi-btn-gem${!canAffordGems ? ' pi-btn--locked' : ''}`}
-                    onClick={() => handleBuyPack(pack)}
-                  >
-                    <span>💎</span>
-                    <span>{pack.cost}</span>
-                  </button>
-                ) : (
-                  <div className="pi-dual-price">
-                    <button
-                      className={`pi-btn-coin${!canAffordCoins ? ' pi-btn--locked' : ''}`}
-                      onClick={() => handleBuyPack(pack, false)}
-                    >
-                      <span>🪙</span>
-                      <span>{pack.cost}</span>
-                    </button>
-                    <button
-                      className={`pi-btn-gem${!canAffordGems ? ' pi-btn--locked' : ''}`}
-                      onClick={() => handleBuyPack(pack, true)}
-                    >
-                      <span>💎</span>
-                      <span>{pack.gemCost}</span>
-                    </button>
-                  </div>
-                )}
+                <button className={`ppc-buy${!canAfford ? ' ppc-buy--locked' : ''}`} onClick={() => handleBuyPack(prem)}>
+                  💎 {prem.cost}
+                </button>
               </div>
             )
-          })}
+          })()}
+
+          {/* Coin pack grid */}
+          <div className="packs-grid">
+            {PACKS.filter(p => p.currency === 'coins').map(pack => {
+              const canAffordCoins = profile.coins >= pack.cost
+              const canAffordGems = gems >= pack.gemCost
+              return (
+                <div key={pack.id} className="pack-card" style={{ background: pack.itemBg }}>
+                  <div className="pc-header" style={{ background: pack.iconBg }}>
+                    <span className="pc-icon">{pack.icon}</span>
+                  </div>
+                  <div className="pc-body">
+                    <div className="pc-name">{pack.label}</div>
+                    <div className="pc-desc">{pack.desc}</div>
+                  </div>
+                  <div className="pc-actions">
+                    <button
+                      className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`}
+                      onClick={() => handleBuyPack(pack, false)}
+                    >
+                      🪙 {pack.cost}
+                    </button>
+                    <button
+                      className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`}
+                      onClick={() => handleBuyPack(pack, true)}
+                    >
+                      lub 💎 {pack.gemCost}
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       ) : (
         <SellTab profile={profile} sellCard={sellCard} showNotif={showNotif} />

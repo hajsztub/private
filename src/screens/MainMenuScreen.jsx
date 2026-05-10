@@ -447,14 +447,14 @@ export default function MainMenuScreen() {
                   <span className="mm-tmode-inline-name">🟢 AMATOR</span>
                   <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+15🪙</span>
+                <span className="mm-tmode-inline-reward">+30🪙</span>
               </button>
               <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
                 <div className="mm-tmode-inline-body">
                   <span className="mm-tmode-inline-name">🔴 PRO</span>
                   <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+100🪙</span>
+                <span className="mm-tmode-inline-reward">+150🪙</span>
               </button>
             </div>
           )}

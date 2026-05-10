@@ -1203,7 +1203,7 @@ function FirstWinRewardOverlay({ onDone }) {
         <div className="fwr-reward">
           <div className="fwr-reward-icon">🪙</div>
           <div className="fwr-reward-text">
-            <div className="fwr-reward-amount">+200 monet</div>
+            <div className="fwr-reward-amount">+350 monet</div>
             <div className="fwr-reward-label">Nagroda za debiut</div>
           </div>
         </div>

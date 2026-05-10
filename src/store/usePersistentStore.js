@@ -394,7 +394,7 @@ export function usePersistentStore() {
     update(prev => ({
       ...prev,
       hasClaimedFirstWinReward: true,
-      coins: prev.coins + 200,
+      coins: prev.coins + 350,
     }))
   }, [update])
 

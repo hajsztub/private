@@ -150,7 +150,7 @@ export default function LeagueScreen() {
       <div className="league-cta">
         <div className="league-cta-info">
           <span>🏆 Wygrana: +{profile.wins > 0 ? '28' : '20'} pkt ratingu</span>
-          <span>🪙 Nagroda: 50–120 monet</span>
+          <span>🪙 Nagroda: 280–340 monet</span>
         </div>
         <button className="league-start-btn" onClick={handleStartMatch}>
           ⚽ Rozpocznij Mecz

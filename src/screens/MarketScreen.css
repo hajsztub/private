@@ -485,9 +485,60 @@
   flex: 1;
   overflow-y: auto;
   scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .sell-tab::-webkit-scrollbar { display: none; }
+
+/* ── Sort bar ────────────────────────────────────────────────────────────── */
+
+.sell-sort-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px 0;
+  flex-shrink: 0;
+}
+
+.sell-sort-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.45);
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 7px 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.sell-sort-btn--active {
+  background: rgba(0,230,118,0.15);
+  border-color: rgba(0,230,118,0.45);
+  color: #00e676;
+}
+
+/* ── Duplicate badge ─────────────────────────────────────────────────────── */
+
+.sr-dupe-badge {
+  display: inline-block;
+  background: rgba(255,180,0,0.2);
+  border: 1px solid rgba(255,180,0,0.45);
+  color: #ffd54f;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0;
+}
 
 .sell-list {
   display: flex;

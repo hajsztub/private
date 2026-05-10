@@ -282,6 +282,7 @@ function AdRewardOverlay({ reward, onDismiss }) {
 
 function SellTab({ profile, sellCard, showNotif }) {
   const [selected, setSelected] = useState(null)
+  const [sort, setSort] = useState('dupes')
 
   const sellableCards = profile.ownedCards
     .filter(o => !o.isStarter)
@@ -292,6 +293,26 @@ function SellTab({ profile, sellCard, showNotif }) {
     })
     .filter(Boolean)
 
+  const countById = {}
+  for (const { def } of sellableCards) countById[def.id] = (countById[def.id] || 0) + 1
+
+  const sorted = [...sellableCards].sort((a, b) => {
+    if (sort === 'dupes') {
+      const diff = (countById[b.def.id] || 0) - (countById[a.def.id] || 0)
+      if (diff !== 0) return diff
+      return a.def.name.localeCompare(b.def.name)
+    }
+    if (sort === 'name') return a.def.name.localeCompare(b.def.name)
+    if (sort === 'price') return (b.def.sellPrice || 0) - (a.def.sellPrice || 0)
+    return 0
+  })
+
+  const SORTS = [
+    { id: 'dupes', label: '2× Duplikaty' },
+    { id: 'name',  label: 'A–Z Nazwa' },
+    { id: 'price', label: '🪙 Cena' },
+  ]
+
   return (
     <div className="sell-tab">
       {sellableCards.length === 0 ? (
@@ -301,43 +322,60 @@ function SellTab({ profile, sellCard, showNotif }) {
           <p>Karty startowe nie mogą być sprzedane.<br/>Otwórz paczki aby zdobyć nowe karty.</p>
         </div>
       ) : (
-        <div className="sell-list">
-          {sellableCards.map(({ owned, def, card }) => {
-            const isSelected = selected === owned.instanceId
-            return (
-              <div
-                key={owned.instanceId}
-                className={`sell-row ${isSelected ? 'sell-row--selected' : ''}`}
-                onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
+        <>
+          <div className="sell-sort-bar">
+            {SORTS.map(s => (
+              <button
+                key={s.id}
+                className={`sell-sort-btn ${sort === s.id ? 'sell-sort-btn--active' : ''}`}
+                onClick={() => setSort(s.id)}
               >
-                <div className="sr-card">
-                  <FieldCard card={card} />
-                </div>
-                <div className="sr-info">
-                  <div className="sr-name">{def.name}</div>
-                  {(owned.upgradeLevel || 0) > 0 && (
-                    <span className="sr-lvl">+{owned.upgradeLevel}</span>
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="sell-list">
+            {sorted.map(({ owned, def, card }) => {
+              const isSelected = selected === owned.instanceId
+              const count = countById[def.id] || 1
+              return (
+                <div
+                  key={owned.instanceId}
+                  className={`sell-row ${isSelected ? 'sell-row--selected' : ''}`}
+                  onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
+                >
+                  <div className="sr-card">
+                    <FieldCard card={card} />
+                  </div>
+                  <div className="sr-info">
+                    <div className="sr-name">
+                      {def.name}
+                      {count > 1 && <span className="sr-dupe-badge">×{count}</span>}
+                    </div>
+                    {(owned.upgradeLevel || 0) > 0 && (
+                      <span className="sr-lvl">+{owned.upgradeLevel}</span>
+                    )}
+                    <div className="sr-ability">{def.abilityName}</div>
+                    <div className="sr-price">🪙 {def.sellPrice}</div>
+                  </div>
+                  {isSelected && (
+                    <button
+                      className="si-sell-btn"
+                      onClick={e => {
+                        e.stopPropagation()
+                        sellCard(owned.instanceId)
+                        showNotif(`Sprzedano ${def.name} za ${def.sellPrice} 🪙`, true)
+                        setSelected(null)
+                      }}
+                    >
+                      Sprzedaj
+                    </button>
                   )}
-                  <div className="sr-ability">{def.abilityName}</div>
-                  <div className="sr-price">🪙 {def.sellPrice}</div>
                 </div>
-                {isSelected && (
-                  <button
-                    className="si-sell-btn"
-                    onClick={e => {
-                      e.stopPropagation()
-                      sellCard(owned.instanceId)
-                      showNotif(`Sprzedano ${def.name} za ${def.sellPrice} 🪙`, true)
-                      setSelected(null)
-                    }}
-                  >
-                    Sprzedaj
-                  </button>
-                )}
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        </>
       )}
     </div>
   )

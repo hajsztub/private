@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '5.0.1',
+    date: '2026-05-10',
+    changes: [
+      'Naprawiono: czarny ekran przy uruchamianiu meczu po aktualizacji v5.0 (błąd timera tury)',
+    ],
+  },
+  {
     version: '5.0',
     date: '2026-05-10',
     changes: [

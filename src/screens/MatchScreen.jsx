@@ -256,7 +256,9 @@ export default function MatchScreen({ matchParams = {} }) {
   const [goalsCollapsed, setGoalsCollapsed] = useState(false)
   const [handCollapsed, setHandCollapsed] = useState(false)
   const [showDeckPopup, setShowDeckPopup] = useState(false)
+  const [turnSecsLeft, setTurnSecsLeft] = useState(45)
   const deckBadgeRef = useRef(null)
+  const handleEndTurnRef = useRef(null)
 
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
@@ -371,6 +373,29 @@ export default function MatchScreen({ matchParams = {} }) {
       setTimeout(() => { setTutStep(null); markTutorialSeen() }, 2800)
     }
   }, [matchState.round])
+
+  // Keep handleEndTurnRef current so the timer closure always calls the latest version
+  useEffect(() => { handleEndTurnRef.current = handleEndTurn }, [handleEndTurn])
+
+  // ── Turn timer (45 s) ─────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!isPlayerTurn || phase !== 'playing') {
+      setTurnSecsLeft(45)
+      return
+    }
+    setTurnSecsLeft(45)
+    const id = setInterval(() => {
+      setTurnSecsLeft(s => {
+        if (s <= 1) {
+          clearInterval(id)
+          handleEndTurnRef.current?.()
+          return 0
+        }
+        return s - 1
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [isPlayerTurn, matchState.round, phase])
 
   // Watch log for new ability/event messages to show as toasts
   const prevLogLenRef = useRef(0)
@@ -502,6 +527,15 @@ export default function MatchScreen({ matchParams = {} }) {
   const myTotalDef = (playerA.activeGoalkeeper
     ? (playerA.activeGoalkeeper.currentDefenseStat ?? playerA.activeGoalkeeper.defenseStat ?? 0) : 0)
     + playerA.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? c.defenseStat ?? 0), 0)
+
+  // Half / period label
+  const halfLabel = round <= 5 ? '1. POŁOWA' : round <= 10 ? '2. POŁOWA' : 'DOGRYWKA'
+  const isExtraTime = round > 10
+
+  // Upcoming event hints (shown during player A's turn)
+  const drawRounds = [3, 5, 7, 9]
+  const upcomingDraw = isPlayerTurn && drawRounds.includes(round + 1) && [2, 4, 6, 8].includes(round)
+  const upcomingSpecial = isPlayerTurn && round === 5 && !matchState.specialCardRevealed
 
   // Goal scorer counts (player only — shown on field cards)
   const goalScorerCounts = matchState.goalEvents
@@ -759,6 +793,7 @@ export default function MatchScreen({ matchParams = {} }) {
               /{matchState.maxRounds ?? 10}
             </span>
           </div>
+          <div className={`msb-half-label${isExtraTime ? ' msb-half-label--extra' : ''}`}>{halfLabel}</div>
         </div>
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
@@ -830,7 +865,12 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-midfield">
           <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
           <div className="ms-mid-line" />
-          <div className="ms-mid-ball">⚽</div>
+          {upcomingSpecial
+            ? <div className="ms-mid-event ms-mid-event--special">🃏 Karta specjalna po rundzie!</div>
+            : upcomingDraw
+            ? <div className="ms-mid-event ms-mid-event--draw">📤 Dobierasz kartę po rundzie</div>
+            : <div className="ms-mid-ball">⚽</div>
+          }
           <div className="ms-mid-line" />
         </div>
 
@@ -957,23 +997,34 @@ export default function MatchScreen({ matchParams = {} }) {
 
       {/* ── Action bar ──────────────────────────────────────────────────── */}
       <div className="ms-action-bar">
-        <div className="ms-action-chips">
-          {matchState.redraws < 2 && (
-            <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
-              🔄 Dobierz 4 ({2 - matchState.redraws}/2)
-            </button>
-          )}
-          {isPlayerTurn && (
-            <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
-          )}
+        {isPlayerTurn && (
+          <div className="ms-timer-bar">
+            <div
+              className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+              style={{ width: `${(turnSecsLeft / 45) * 100}%` }}
+            />
+            <span className={`ms-timer-text${turnSecsLeft <= 10 ? ' ms-timer-text--urgent' : ''}`}>{turnSecsLeft}s</span>
+          </div>
+        )}
+        <div className="ms-action-row">
+          <div className="ms-action-chips">
+            {matchState.redraws < 2 && (
+              <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
+                🔄 Dobierz 4 ({2 - matchState.redraws}/2)
+              </button>
+            )}
+            {isPlayerTurn && (
+              <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
+            )}
+          </div>
+          <button
+            className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
+            onClick={handleEndTurn}
+            disabled={!isPlayerTurn || !!coinFlipState?.pending}
+          >
+            {!isPlayerTurn ? (aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika') : '→ Zakończ turę'}
+          </button>
         </div>
-        <button
-          className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
-          onClick={handleEndTurn}
-          disabled={!isPlayerTurn || !!coinFlipState?.pending}
-        >
-          {!isPlayerTurn ? (aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika') : '→ Zakończ turę'}
-        </button>
       </div>
 
       {/* ── Redraw confirm ──────────────────────────────────────────────── */}

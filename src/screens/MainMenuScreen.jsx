@@ -349,7 +349,7 @@ export default function MainMenuScreen() {
 
   const openNotifs = () => { setShowNotifs(true); markNotificationsRead() }
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
-  const weeklyClaimableCount = weeklyMissions.filter(m => !m.claimed && m.progress >= m.target).length
+  const weeklyClaimableCount = weeklyMissions.filter(m => !m.locked && !m.claimed && m.progress >= m.target).length
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
@@ -520,6 +520,14 @@ export default function MainMenuScreen() {
             <div className="mm-missions-cards">
               {weeklyMissions.length === 0 && <div className="mm-mc mm-mc--empty">Brak misji</div>}
               {weeklyMissions.map(m => {
+                if (m.locked) {
+                  return (
+                    <div key={m.id} className="mm-mc mm-mc--locked-mystery">
+                      <div className="mm-mc-mystery-icon">🔒</div>
+                      <div className="mm-mc-mystery-label">Ukończ pozostałe misje</div>
+                    </div>
+                  )
+                }
                 const pct = Math.min(100, (m.progress / m.target) * 100)
                 const ready = !m.claimed && m.progress >= m.target
                 const isGem = m.rewardType === 'gems'

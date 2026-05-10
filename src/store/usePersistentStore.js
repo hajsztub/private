@@ -38,19 +38,24 @@ const MISSION_POOL = [
 // ── Weekly missions ────────────────────────────────────────────────────────
 
 const WEEKLY_COIN_POOL = [
-  { type: 'play_matches', target: 5,  label: 'Zagraj 5 meczów',            icon: '🎮', reward: 200, rewardType: 'coins' },
-  { type: 'win_matches',  target: 3,  label: 'Wygraj 3 mecze',             icon: '🏆', reward: 300, rewardType: 'coins' },
-  { type: 'win_matches',  target: 5,  label: 'Wygraj 5 meczów',            icon: '🏆', reward: 500, rewardType: 'coins' },
-  { type: 'win_league',   target: 3,  label: 'Wygraj 3 mecze ligowe',      icon: '⭐', reward: 350, rewardType: 'coins' },
-  { type: 'score_goals',  target: 15, label: 'Strzel 15 goli',             icon: '⚽', reward: 250, rewardType: 'coins' },
-  { type: 'score_goals',  target: 25, label: 'Strzel 25 goli',             icon: '⚽', reward: 400, rewardType: 'coins' },
-  { type: 'clean_sheet',  target: 2,  label: 'Wygraj 2× nie tracąc gola', icon: '🧤', reward: 350, rewardType: 'coins' },
+  { type: 'play_matches', target: 15, label: 'Zagraj 15 meczów',           icon: '🎮', reward: 400,  rewardType: 'coins' },
+  { type: 'play_matches', target: 25, label: 'Zagraj 25 meczów',           icon: '🎮', reward: 700,  rewardType: 'coins' },
+  { type: 'win_matches',  target: 7,  label: 'Wygraj 7 meczów',            icon: '🏆', reward: 500,  rewardType: 'coins' },
+  { type: 'win_matches',  target: 12, label: 'Wygraj 12 meczów',           icon: '🏆', reward: 900,  rewardType: 'coins' },
+  { type: 'win_league',   target: 5,  label: 'Wygraj 5 meczów ligowych',   icon: '⭐', reward: 600,  rewardType: 'coins' },
+  { type: 'win_league',   target: 8,  label: 'Wygraj 8 meczów ligowych',   icon: '⭐', reward: 1000, rewardType: 'coins' },
+  { type: 'score_goals',  target: 30, label: 'Strzel 30 goli',             icon: '⚽', reward: 450,  rewardType: 'coins' },
+  { type: 'score_goals',  target: 50, label: 'Strzel 50 goli',             icon: '⚽', reward: 750,  rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 4,  label: 'Wygraj 4× nie tracąc gola', icon: '🧤', reward: 600,  rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 7,  label: 'Wygraj 7× nie tracąc gola', icon: '🧤', reward: 950,  rewardType: 'coins' },
+  { type: 'win_pro',      target: 5,  label: 'Wygraj 5 treningów PRO',     icon: '🔴', reward: 700,  rewardType: 'coins' },
 ]
 
 const WEEKLY_GEM_POOL = [
-  { type: 'win_league',  target: 5, label: 'Wygraj 5 meczów ligowych', icon: '⭐', reward: 2, rewardType: 'gems' },
-  { type: 'win_pro',     target: 2, label: 'Wygraj 2 treningi PRO',    icon: '🔴', reward: 2, rewardType: 'gems' },
-  { type: 'win_matches', target: 7, label: 'Wygraj 7 meczów',          icon: '🏆', reward: 3, rewardType: 'gems' },
+  { type: 'win_league',  target: 10, label: 'Wygraj 10 meczów ligowych', icon: '⭐', reward: 3, rewardType: 'gems' },
+  { type: 'win_pro',     target: 5,  label: 'Wygraj 5 treningów PRO',    icon: '🔴', reward: 2, rewardType: 'gems' },
+  { type: 'win_matches', target: 15, label: 'Wygraj 15 meczów',          icon: '🏆', reward: 3, rewardType: 'gems' },
+  { type: 'score_goals', target: 60, label: 'Strzel 60 goli',            icon: '⚽', reward: 2, rewardType: 'gems' },
 ]
 
 function getTodayStr() {
@@ -114,11 +119,18 @@ function ensureDailyMissions(profile) {
 function generateWeeklyMissions(weekStr) {
   const seed = weekStr.replace(/-/g, '').split('').reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 13)
   const rand = seededRandom(seed)
-  const shuffledCoins = [...WEEKLY_COIN_POOL].sort(() => rand() - 0.5).slice(0, 3)
+  const shuffledCoins = [...WEEKLY_COIN_POOL].sort(() => rand() - 0.5).slice(0, 5)
   const gemMission = WEEKLY_GEM_POOL[Math.floor(rand() * WEEKLY_GEM_POOL.length)]
-  return [...shuffledCoins, gemMission]
-    .sort(() => rand() - 0.5)
-    .map((m, i) => ({ ...m, id: `w_${weekStr}_${i}`, progress: 0, claimed: false }))
+  const all = [...shuffledCoins, gemMission].sort(() => rand() - 0.5)
+  return all.map((m, i) => ({ ...m, id: `w_${weekStr}_${i}`, progress: 0, claimed: false, locked: i >= 4 }))
+}
+
+function tryUnlockWeeklyMissions(wm) {
+  const visibleAll = wm.missions.filter(m => !m.locked)
+  if (visibleAll.length > 0 && visibleAll.every(m => m.claimed)) {
+    return { ...wm, missions: wm.missions.map(m => ({ ...m, locked: false })) }
+  }
+  return wm
 }
 
 function ensureWeeklyMissions(profile) {
@@ -281,11 +293,9 @@ export function usePersistentStore() {
       const wm = prev.weeklyMissions
       if (!wm) return prev
       const mission = wm.missions.find(m => m.id === missionId)
-      if (!mission || mission.claimed || mission.progress < mission.target) return prev
-      const updated = {
-        ...prev,
-        weeklyMissions: { ...wm, missions: wm.missions.map(m => m.id === missionId ? { ...m, claimed: true } : m) },
-      }
+      if (!mission || mission.claimed || mission.locked || mission.progress < mission.target) return prev
+      const afterClaim = { ...wm, missions: wm.missions.map(m => m.id === missionId ? { ...m, claimed: true } : m) }
+      const updated = { ...prev, weeklyMissions: tryUnlockWeeklyMissions(afterClaim) }
       return mission.rewardType === 'gems'
         ? { ...updated, gems: prev.gems + mission.reward }
         : { ...updated, coins: prev.coins + mission.reward }

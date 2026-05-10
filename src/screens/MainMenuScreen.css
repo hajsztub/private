@@ -541,6 +541,13 @@
 
 .mm-mc--ready { border-color: rgba(255,214,0,0.4); background: rgba(255,200,0,0.05); }
 .mm-mc--done  { opacity: 0.45; }
+.mm-mc--locked-mystery {
+  justify-content: center; align-items: center; flex-direction: column; gap: 4px;
+  background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.06);
+  cursor: default; min-height: 74px;
+}
+.mm-mc-mystery-icon { font-size: 22px; opacity: 0.35; }
+.mm-mc-mystery-label { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; font-weight: 600; }
 
 .mm-mc--empty {
   grid-column: 1 / -1;

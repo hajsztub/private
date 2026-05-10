@@ -1,0 +1,128 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #e8d5b7 0%, #d4bc95 100%);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid rgba(255,255,255,0.5);
+  gap: 16px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.app-header__logo {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: #e65100;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.app-header__info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header-badge {
+  border-radius: 10px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.header-badge--round {
+  background: rgba(0,0,0,0.08);
+  color: #37474f;
+}
+
+.header-badge--player-A {
+  background: #1565c0;
+  color: white;
+}
+
+.header-badge--player-B {
+  background: #7b1c1c;
+  color: white;
+}
+
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-done {
+  font-size: 11px;
+  font-weight: 800;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 8px;
+  padding: 3px 8px;
+}
+
+.end-turn-btn {
+  background: linear-gradient(135deg, #e65100, #bf360c);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 20px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 3px 10px rgba(230,81,0,0.25);
+  white-space: nowrap;
+}
+
+.end-turn-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(230,81,0,0.35);
+}
+
+/* ── Main layout ─────────────────────────────────────────────────────────── */
+
+.app-main {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  flex: 1;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 64px;
+}
+
+.sidebar-deck-info {
+  font-size: 11px;
+  font-weight: 700;
+  color: #78909c;
+  padding: 4px 8px;
+}

@@ -1,0 +1,221 @@
+/* ── GOAL TCG — Settings ─────────────────────────────────────────────────── */
+
+.settings-screen {
+  min-height: 100dvh;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.55) 100%),
+    url('/bg.jpg') center top / cover no-repeat;
+  background-color: #07090e;
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: max(16px, env(safe-area-inset-top)) 16px 16px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.settings-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.settings-list {
+  padding: 0 14px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.settings-section-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+  padding: 18px 4px 7px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  cursor: default;
+  width: 100%;
+  text-align: left;
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+}
+
+.settings-row--name {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.settings-row--danger {
+  background: rgba(198,40,40,0.1);
+  border-color: rgba(198,40,40,0.25);
+  cursor: pointer;
+}
+
+.settings-row-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  width: 100%;
+}
+
+.settings-row-icon { font-size: 22px; flex-shrink: 0; }
+
+.settings-row-labels { display: flex; flex-direction: column; gap: 2px; }
+
+.settings-row-label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.settings-row-desc {
+  font-size: 12px;
+  color: var(--c-text-2);
+}
+
+/* ── Name field ───────────────────────────────────────────────────────────── */
+
+.sn-field {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.sn-input {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sn-input:focus { border-color: var(--c-primary); }
+
+.sn-save {
+  background: var(--c-surface-hi);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sn-save--done {
+  background: var(--c-primary-dim);
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+/* ── Toggle ───────────────────────────────────────────────────────────────── */
+
+.settings-toggle {
+  width: 50px;
+  height: 28px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.settings-toggle--on { background: var(--c-primary); }
+
+.settings-toggle-knob {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.settings-toggle--on .settings-toggle-knob { transform: translateX(22px); }
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+
+.settings-badge {
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--c-surface-hi);
+  border-radius: 8px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+}
+
+.settings-badge--danger {
+  background: rgba(198,40,40,0.35);
+  color: #ff8a80;
+}
+
+/* ── Language selector ───────────────────────────────────────────────────── */
+
+.settings-lang-select-wrap {
+  flex-shrink: 0;
+}
+
+.settings-lang-select {
+  background: var(--c-surface-hi);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  color: var(--c-text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 130px;
+  text-align: center;
+}
+
+.settings-lang-select option:disabled {
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── App info ─────────────────────────────────────────────────────────────── */
+
+.settings-app-info {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-text-3);
+  letter-spacing: 0.5px;
+}

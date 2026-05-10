@@ -1,0 +1,88 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, #0d2a18 0%, #07090e 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  font-family: 'Outfit', sans-serif;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+  width: min(360px, 90vw);
+}
+
+.splash-logo {
+  max-width: 280px;
+  max-height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(0,230,118,0.45));
+  animation: splash-pulse 2s ease-in-out infinite;
+}
+
+@keyframes splash-pulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(0,230,118,0.35)); }
+  50%       { filter: drop-shadow(0 0 40px rgba(0,230,118,0.65)); }
+}
+
+.splash-logo-fallback {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.splash-ball {
+  font-size: 72px;
+  animation: splash-pulse 2s ease-in-out infinite;
+}
+
+.splash-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.9;
+}
+
+.splash-goal {
+  font-family: 'Bangers', cursive;
+  font-size: 64px;
+  letter-spacing: 6px;
+  color: white;
+  text-shadow: 0 0 30px rgba(0,230,118,0.5);
+}
+
+.splash-tcg {
+  font-family: 'Bangers', cursive;
+  font-size: 32px;
+  letter-spacing: 8px;
+  color: #00e676;
+}
+
+.splash-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.splash-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #00c853, #00e676);
+  border-radius: 4px;
+  transition: width 0.03s linear;
+  box-shadow: 0 0 8px rgba(0,230,118,0.7);
+}
+
+.splash-loading {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}

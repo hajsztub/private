@@ -1,0 +1,220 @@
+.coin-flip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.coin-flip-modal {
+  border-radius: 24px;
+  padding: 24px 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  min-width: 280px;
+}
+
+/* Player flip — blue theme */
+.coin-flip-modal--player {
+  background: linear-gradient(160deg, #0a1628, #0d2247, #0a1628);
+  border: 2px solid rgba(66,165,245,0.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 32px rgba(66,165,245,0.18);
+}
+
+/* Opponent flip — red theme */
+.coin-flip-modal--opponent {
+  background: linear-gradient(160deg, #1a0a0a, #2d0f0f, #1a0a0a);
+  border: 2px solid rgba(229,57,53,0.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 32px rgba(229,57,53,0.18);
+}
+
+/* Owner label */
+.coin-flip-owner {
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 3px;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: -4px;
+}
+
+.coin-flip-owner--player {
+  background: rgba(66,165,245,0.15);
+  color: #90caf9;
+  border: 1px solid rgba(66,165,245,0.35);
+}
+
+.coin-flip-owner--opponent {
+  background: rgba(229,57,53,0.15);
+  color: #ef9a9a;
+  border: 1px solid rgba(229,57,53,0.35);
+}
+
+.coin-flip-title {
+  font-family: 'Bangers', cursive;
+  font-size: 32px;
+  letter-spacing: 3px;
+  color: #ffd54f;
+  margin: 0;
+}
+
+.coin {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.3);
+  transition: transform 0.2s;
+}
+
+.coin--spinning {
+  animation: coinSpin 1.2s ease-in-out;
+}
+
+.coin--ball {
+  background: linear-gradient(135deg, #43a047, #1b5e20);
+}
+
+.coin--glove {
+  background: linear-gradient(135deg, #e53935, #7b1fa2);
+}
+
+@keyframes coinSpin {
+  0% { transform: rotateY(0deg) scale(1); }
+  25% { transform: rotateY(360deg) scale(1.2); }
+  50% { transform: rotateY(720deg) scale(0.9); }
+  75% { transform: rotateY(1080deg) scale(1.1); }
+  100% { transform: rotateY(1440deg) scale(1); }
+}
+
+.coin-face {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.coin-face--question {
+  font-family: 'Bangers', cursive;
+  font-size: 48px;
+  color: rgba(255,255,255,0.9);
+}
+
+.coin-card-name {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+}
+
+.coin-outcomes {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.coin-outcome {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.co-icon { font-size: 18px; flex-shrink: 0; }
+.co-text { display: flex; flex-direction: column; gap: 1px; }
+.co-label { font-size: 11px; font-weight: 900; color: white; }
+.co-desc { font-size: 9px; color: rgba(255,255,255,0.5); }
+
+.coin-result {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 2px;
+  padding: 8px 20px;
+  border-radius: 12px;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+
+.coin-result--ball {
+  background: rgba(67,160,71,0.2);
+  color: #a5d6a7;
+  border: 2px solid rgba(67,160,71,0.5);
+}
+
+.coin-result--glove {
+  background: rgba(233,30,99,0.2);
+  color: #f48fb1;
+  border: 2px solid rgba(233,30,99,0.4);
+}
+
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.coin-waiting {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1px;
+  animation: waitPulse 1.2s ease-in-out infinite;
+}
+
+.coin-waiting--done {
+  animation: none;
+  opacity: 0.3;
+}
+
+@keyframes waitPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.coin-flip-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.coin-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.coin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.coin-btn--flip {
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  color: #1a0900;
+  font-size: 18px;
+  padding: 14px 36px;
+  box-shadow: 0 4px 16px rgba(249,168,37,0.4);
+}
+
+.coin-btn--ok {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: white;
+  box-shadow: 0 4px 12px rgba(46,125,50,0.4);
+}

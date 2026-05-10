@@ -1,0 +1,114 @@
+.setup-phase {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #f5e6d0 0%, #f0d9b5 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 40px 20px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.setup-banner {
+  text-align: center;
+}
+
+.setup-ball {
+  font-size: 64px;
+  margin-bottom: 8px;
+  animation: bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.setup-title {
+  font-family: 'Bangers', cursive;
+  font-size: 56px;
+  letter-spacing: 4px;
+  color: #e65100;
+  margin: 0;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+}
+
+.setup-subtitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5d4037;
+  margin: 4px 0 0;
+}
+
+.setup-done-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.setup-done-label {
+  font-weight: 800;
+  color: #2e7d32;
+  font-size: 14px;
+}
+
+.setup-pick-area {
+  background: rgba(255,255,255,0.65);
+  border-radius: 20px;
+  padding: 28px 32px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.setup-pick-title {
+  font-family: 'Bangers', cursive;
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: #1a237e;
+  margin: 0 0 4px;
+}
+
+.setup-pick-hint {
+  color: #78909c;
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.setup-goalkeeper-options {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.setup-gk-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.setup-select-btn {
+  background: #e65100;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.setup-select-btn:hover {
+  background: #bf360c;
+  transform: translateY(-2px);
+}

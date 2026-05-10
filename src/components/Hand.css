@@ -1,0 +1,97 @@
+.hand {
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.3s;
+}
+
+.hand--active {
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 0 3px #ff9800, 0 4px 16px rgba(255, 152, 0, 0.2);
+}
+
+.hand--inactive {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hand__label {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #5d4037;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hand__turn-badge {
+  background: #ff9800;
+  color: white;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.hand__cards {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hand__empty {
+  color: #90a4ae;
+  font-size: 12px;
+  font-style: italic;
+  padding: 8px;
+}
+
+.hand__place-options {
+  margin-top: 10px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hand__place-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #37474f;
+}
+
+.hand__place-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.place-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.place-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.place-btn--offense { background: #2e7d32; color: white; }
+.place-btn--defense { background: #1565c0; color: white; }
+.place-btn--cancel { background: #757575; color: white; }

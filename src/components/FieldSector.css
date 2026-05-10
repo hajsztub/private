@@ -1,0 +1,57 @@
+.field-sector {
+  border-radius: 12px;
+  padding: 10px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 160px;
+  flex: 1;
+  position: relative;
+}
+
+.field-sector--offense {
+  background: #2e7d32;
+  border: 2px solid #1b5e20;
+}
+
+.field-sector--defense {
+  background: #558b2f;
+  border: 2px solid #33691e;
+}
+
+.field-sector__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 4px;
+}
+
+.field-sector__score {
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.field-sector__cards {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.field-sector__empty-slot {
+  width: 90px;
+  min-height: 130px;
+  border: 2px dashed rgba(255,255,255,0.25);
+  border-radius: 10px;
+}

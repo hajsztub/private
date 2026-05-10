@@ -508,6 +508,7 @@
 }
 
 .mm-mtab--active { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+.mm-mtab--season { color: rgba(255,214,0,0.5); }
 
 .mm-mtab-dot {
   width: 5px;
@@ -628,6 +629,85 @@
   color: #1a0900;
   cursor: pointer;
   box-shadow: 0 1px 6px rgba(249,168,37,0.4);
+}
+
+/* Gem mission styles */
+.mm-mc--gem { border-color: rgba(100,180,255,0.3); background: rgba(80,140,255,0.05); }
+.mm-mc-gem-badge { font-size: 12px; margin-left: auto; }
+.mm-mc-fill--gem { background: linear-gradient(90deg, #42a5f5, #7c4dff); }
+.mm-mc-claim--gem.mm-mc-claim--ready {
+  background: linear-gradient(135deg, #42a5f5, #7c4dff);
+  border-color: transparent;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(66,165,245,0.5);
+}
+
+/* Season (battle pass) popup */
+.mm-season-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 900; padding: 20px;
+}
+.mm-season-panel {
+  background: linear-gradient(160deg, #0d1b2e, #0a1020);
+  border: 1px solid rgba(255,214,0,0.25);
+  border-radius: 20px;
+  padding: 24px 20px 20px;
+  width: 100%; max-width: 480px;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.mm-season-soon-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(90deg, #ffd600, #ff9800);
+  color: #1a0900; font-family: 'Bangers', cursive;
+  font-size: 13px; letter-spacing: 2px;
+  padding: 2px 14px; border-radius: 20px;
+}
+.mm-season-title {
+  font-family: 'Bangers', cursive; font-size: 28px;
+  letter-spacing: 2px; color: #ffd600; margin-top: 8px;
+}
+.mm-season-subtitle { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 600; letter-spacing: 0.5px; }
+.mm-season-tracks {
+  width: 100%; margin: 8px 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.mm-season-track-label {
+  font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+  padding: 0 2px;
+}
+.mm-season-track-label--free    { color: rgba(105,240,174,0.7); }
+.mm-season-track-label--premium { color: rgba(100,180,255,0.5); filter: blur(0.5px); }
+.mm-season-track {
+  display: flex; gap: 4px; overflow-x: auto; padding: 4px 0;
+  scrollbar-width: none;
+}
+.mm-season-track::-webkit-scrollbar { display: none; }
+.mm-season-node {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.mm-season-node-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.6);
+}
+.mm-season-reward {
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.07); border-radius: 6px;
+  padding: 2px 5px; min-width: 32px; text-align: center;
+}
+.mm-season-reward--locked { filter: blur(3px); opacity: 0.6; }
+.mm-season-desc { font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; line-height: 1.5; }
+.mm-season-close-btn {
+  margin-top: 4px; padding: 10px 28px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px; color: rgba(255,255,255,0.7);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer;
 }
 
 /* See more cell */
@@ -1136,6 +1216,9 @@
 
 .mm-notif-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
 .mm-notif-title  { font-family: 'Bangers', cursive; font-size: 20px; letter-spacing: 1px; color: #fff; }
+.mm-notif-header-actions { display: flex; align-items: center; gap: 8px; }
+.mm-notif-clear-all { background: none; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: rgba(255,255,255,0.5); font-size: 11px; font-family: 'Outfit', sans-serif; font-weight: 700; cursor: pointer; padding: 3px 8px; transition: border-color 0.15s, color 0.15s; }
+.mm-notif-clear-all:hover { border-color: rgba(255,80,80,0.6); color: #ff5252; }
 .mm-notif-close  { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 18px; cursor: pointer; padding: 2px 6px; }
 .mm-notif-empty  { padding: 32px 16px; text-align: center; color: rgba(255,255,255,0.35); font-size: 14px; }
 .mm-notif-list   { overflow-y: auto; padding: 8px 0; }

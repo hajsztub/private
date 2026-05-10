@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '5.1',
+    date: '2026-05-10',
+    changes: [
+      'Misje tygodniowe: 4 misje resetowane co poniedziałek, jedna nagradza diamentami 💎',
+      'Powiadomienia: przycisk "Wyczyść wszystkie" w panelu',
+      'Sezonowe (Battle Pass): podgląd sezonu free/premium — wkrótce',
+      'Tablica wyników: pasek 5+5 segmentów zastępuje etykietę połowy, runda widoczna jako R3/10',
+    ],
+  },
+  {
     version: '5.0.2',
     date: '2026-05-10',
     changes: [

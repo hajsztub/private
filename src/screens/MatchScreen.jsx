@@ -260,6 +260,13 @@ export default function MatchScreen({ matchParams = {} }) {
   const deckBadgeRef = useRef(null)
   const handleEndTurnRef = useRef(null)
 
+  const handleEndTurn = useCallback(() => {
+    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
+    SFX.endTurn()
+    dispatch({ type: 'END_TURN' })
+    setSelectedCard(null)
+  }, [matchState])
+
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
   const lastTapRef = useRef({})
@@ -411,13 +418,6 @@ export default function MatchScreen({ matchParams = {} }) {
     }
     prevLogLenRef.current = current.length
   }, [matchState.log.length])
-
-  const handleEndTurn = useCallback(() => {
-    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
-    SFX.endTurn()
-    dispatch({ type: 'END_TURN' })
-    setSelectedCard(null)
-  }, [matchState])
 
   // ── Placement helper ──────────────────────────────────────────────────────
   const placeCard = useCallback((sector) => {

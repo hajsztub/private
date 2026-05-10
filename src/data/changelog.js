@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '5.0',
+    date: '2026-05-10',
+    changes: [
+      'Podział meczu: 1. połowa (rundy 1–5), 2. połowa (6–10), dogrywka (11+) — widoczne w tablicy wyników',
+      'Zapowiedzi zdarzeń: w linii środkowej widać "Dobierasz kartę po rundzie" i "Karta specjalna po rundzie!"',
+      'Licznik czasu: 45 sekund na ruch — tura kończy się automatycznie przy upływie czasu',
+      'Naprawiono: zniszczona karta nie może strzelić gola',
+      'Limit cofnięcia: ten sam zawodnik może wrócić na rękę max 2 razy na rundę',
+    ],
+  },
+  {
     version: '4.9',
     date: '2026-05-09',
     changes: [

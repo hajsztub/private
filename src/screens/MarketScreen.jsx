@@ -32,7 +32,8 @@ const PACKS = [
     label: 'Losowa Paczka',
     desc: '3 losowe karty • min. 1 Rzadka',
     icon: '🎲',
-    cost: 200,
+    cost: 450,
+    gemCost: 2,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#1565c0,#283593)',
     itemBg: 'linear-gradient(120deg,#0d1b3e 0%,#1a2a5e 100%)',
@@ -43,7 +44,8 @@ const PACKS = [
     label: 'Paczka Ataku',
     desc: '3 karty napastników',
     icon: '⚔️',
-    cost: 240,
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#c62828,#7f0000)',
     itemBg: 'linear-gradient(120deg,#2a0a0a 0%,#4a1010 100%)',
@@ -54,7 +56,8 @@ const PACKS = [
     label: 'Paczka Obrony',
     desc: '3 karty obrońców',
     icon: '🛡️',
-    cost: 240,
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#0d47a1,#1a237e)',
     itemBg: 'linear-gradient(120deg,#071530 0%,#0d2560 100%)',
@@ -65,7 +68,8 @@ const PACKS = [
     label: 'Paczka Środka',
     desc: '3 karty pomocników',
     icon: '🔮',
-    cost: 240,
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#6a1b9a,#4a148c)',
     itemBg: 'linear-gradient(120deg,#1a0830 0%,#2e1060 100%)',
@@ -76,18 +80,31 @@ const PACKS = [
     label: 'Paczka Bramkarzy',
     desc: '3 karty bramkarzy',
     icon: '🧤',
-    cost: 280,
+    cost: 650,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#00695c,#004d40)',
     itemBg: 'linear-gradient(120deg,#021a16 0%,#063d30 100%)',
     filter: d => d.type === 'goalkeeper' && d.marketPrice > 0,
   },
   {
+    id: 'mega',
+    label: 'Mega Paczka',
+    desc: '5 kart • 15% Legendarny • ~50% Rzadkie',
+    icon: '🏆',
+    cost: 1200,
+    gemCost: 6,
+    currency: 'coins',
+    iconBg: 'linear-gradient(160deg,#e65100,#bf360c)',
+    itemBg: 'linear-gradient(120deg,#2a0e00 0%,#4a1a00 100%)',
+    filter: d => d.marketPrice > 0,
+  },
+  {
     id: 'premium',
     label: 'Paczka Premium',
-    desc: 'Gwarantowana karta Legendarna!',
+    desc: '5 kart • Gwarantowana Legendarny!',
     icon: '💎',
-    cost: 5,
+    cost: 12,
     currency: 'gems',
     iconBg: 'linear-gradient(160deg,#880e4f,#4a0072)',
     itemBg: 'linear-gradient(120deg,#1a0020 0%,#380060 100%)',
@@ -95,21 +112,21 @@ const PACKS = [
   },
 ]
 
-const PACK_REFUND = 60
+const PACK_REFUND = 80
 const AD_COOLDOWN_MS = 60 * 60 * 1000
-const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 12 * 60 * 60 * 1000
 
 const FREE_PACK_META = {
   id: 'free',
   label: 'Darmowa Paczka',
-  desc: '1 losowa karta + 50 monet',
+  desc: '1 losowa karta + 30 monet',
   icon: '🎁',
   iconBg: 'linear-gradient(160deg, #1a4a10, #2d6e1a)',
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function drawCards(pack, count = 3) {
+function drawCards(pack) {
   const pool = CARD_DEFINITIONS.filter(pack.filter)
   if (pool.length === 0) return []
   const legendaries = pool.filter(c => c.rarity === 'legendary')
@@ -117,8 +134,11 @@ function drawCards(pack, count = 3) {
   const commons = pool.filter(c => c.rarity !== 'legendary' && c.rarity !== 'rare')
 
   const isPremium = pack.id === 'premium'
-  const legChance = isPremium ? 1.0 : 0.05
-  const rareChance = isPremium ? 1.0 : 0.30
+  const isMega = pack.id === 'mega'
+  const count = (isPremium || isMega) ? 5 : 3
+
+  const legChance = isMega ? 0.15 : (isPremium ? 1.0 : 0.05)
+  const rareChance = isMega ? 0.65 : (isPremium ? 1.0 : 0.30)
 
   function pickOne() {
     const roll = Math.random()
@@ -128,7 +148,6 @@ function drawCards(pack, count = 3) {
     return pool[Math.floor(Math.random() * pool.length)]
   }
 
-  // Premium pack: guarantee at least 1 legendary
   const drawn = []
   if (isPremium && legendaries.length) {
     drawn.push(legendaries[Math.floor(Math.random() * legendaries.length)])
@@ -167,6 +186,12 @@ function useCooldown(lastAt, durationMs) {
 }
 
 function fmtCountdown(secs) {
+  if (secs >= 3600) {
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    const s = secs % 60
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
   const m = Math.floor(secs / 60)
   const s = secs % 60
   return `${m}:${String(s).padStart(2, '0')}`
@@ -474,13 +499,14 @@ export default function MarketScreen() {
     setTimeout(() => setNotification(null), 2800)
   }
 
-  const handleBuyPack = (pack) => {
-    if (pack.currency === 'coins') {
+  const handleBuyPack = (pack, useGems = false) => {
+    if (pack.currency === 'gems' || useGems) {
+      const cost = useGems ? pack.gemCost : pack.cost
+      if (gems < cost) { showNotif('Za mało klejnotów! 💎', false); return }
+      update(prev => ({ ...prev, gems: (prev.gems ?? 0) - cost }))
+    } else {
       if (profile.coins < pack.cost) { showNotif('Za mało monet! 🪙', false); return }
       spendCoins(pack.cost)
-    } else {
-      if (gems < pack.cost) { showNotif('Za mało klejnotów! 💎', false); return }
-      update(prev => ({ ...prev, gems: (prev.gems ?? 0) - pack.cost }))
     }
     const drawn = drawCards(pack)
     setOpeningPack({ pack, cards: drawn })
@@ -490,8 +516,8 @@ export default function MarketScreen() {
     claimPackCard(def)
     const isFree = openingPack?.isFree
     setOpeningPack(null)
-    if (isFree) addCoins(50)
-    showNotif(`🎉 ${def.name}${isFree ? ' + 50 🪙' : ''} dodany do kolekcji!`)
+    if (isFree) addCoins(30)
+    showNotif(`🎉 ${def.name}${isFree ? ' + 30 🪙' : ''} dodany do kolekcji!`)
   }
 
   const handleTakeCoins = () => {
@@ -580,7 +606,7 @@ export default function MarketScreen() {
             <div className="fp-icon">🎁</div>
             <div className="fp-info">
               <div className="fp-title">DARMOWA PACZKA</div>
-              <div className="fp-desc">1 zawodnik + 50 monet • co 45 minut</div>
+              <div className="fp-desc">1 zawodnik + 30 monet • co 12 godzin</div>
             </div>
             <div className={`fp-cta ${freePackSecsLeft > 0 ? 'fp-cta--wait' : ''}`}>
               {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
@@ -589,15 +615,14 @@ export default function MarketScreen() {
 
           {/* Pack items */}
           {PACKS.map(pack => {
-            const canAfford = pack.currency === 'coins'
-              ? profile.coins >= pack.cost
-              : gems >= pack.cost
+            const canAffordCoins = profile.coins >= pack.cost
+            const canAffordGems = gems >= (pack.gemCost ?? pack.cost)
+            const isGemsOnly = pack.currency === 'gems'
             return (
               <div
                 key={pack.id}
-                className={`pack-item ${!canAfford ? 'pack-item--locked' : ''}`}
+                className="pack-item"
                 style={{ background: pack.itemBg }}
-                onClick={() => canAfford && handleBuyPack(pack)}
               >
                 <div className="pi-stripe" style={{ background: pack.iconBg }}>
                   <span className="pi-icon">{pack.icon}</span>
@@ -609,10 +634,32 @@ export default function MarketScreen() {
                 <div className="pi-preview">
                   <img src="/avatars/placeholder.png" className="pi-preview-img" alt="" />
                 </div>
-                <div className="pi-price">
-                  <span className="pi-price-cur">{pack.currency === 'coins' ? '🪙' : '💎'}</span>
-                  <span className="pi-price-val">{pack.cost}</span>
-                </div>
+                {isGemsOnly ? (
+                  <button
+                    className={`pi-btn-gem${!canAffordGems ? ' pi-btn--locked' : ''}`}
+                    onClick={() => handleBuyPack(pack)}
+                  >
+                    <span>💎</span>
+                    <span>{pack.cost}</span>
+                  </button>
+                ) : (
+                  <div className="pi-dual-price">
+                    <button
+                      className={`pi-btn-coin${!canAffordCoins ? ' pi-btn--locked' : ''}`}
+                      onClick={() => handleBuyPack(pack, false)}
+                    >
+                      <span>🪙</span>
+                      <span>{pack.cost}</span>
+                    </button>
+                    <button
+                      className={`pi-btn-gem${!canAffordGems ? ' pi-btn--locked' : ''}`}
+                      onClick={() => handleBuyPack(pack, true)}
+                    >
+                      <span>💎</span>
+                      <span>{pack.gemCost}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )
           })}

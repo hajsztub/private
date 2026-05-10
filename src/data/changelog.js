@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '5.2',
+    date: '2026-05-10',
+    changes: [
+      'Filtr nazwy gracza: cenzura wulgaryzmów (PL+EN), losowa nazwa przy pustym polu',
+      'Darmowa paczka: cooldown zmieniony z 45 min na 12 h; nagroda 50→30 monet',
+      'Balans sklepu: wyższe ceny paczek, nowa Mega Paczka (5 kart), Premium 5💎→12💎 (5 kart), możliwość płacenia klejnotami za paczki monetowe',
+      'Sprzedaż kart: zwrot 60→80 monet',
+      'Sezon (Battle Pass): 40 poziomów, widok wyróżnionych nagród — kity, herby, kontrakty, karty specjalne na poz. 20 i 40',
+    ],
+  },
+  {
     version: '5.1',
     date: '2026-05-10',
     changes: [

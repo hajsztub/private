@@ -8,7 +8,7 @@ import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
 import './MainMenuScreen.css'
 
 const ALL_DEFS_MM = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
-const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 12 * 60 * 60 * 1000
 
 function fmtRelTime(ts) {
   const diff = Date.now() - ts
@@ -52,29 +52,71 @@ function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
 }
 
 function SeasonPopup({ onClose }) {
-  const MILESTONES = [1, 3, 5, 8, 10, 12, 15, 18, 20]
-  const FREE_REWARDS =    ['50🪙', '100🪙', '1💎',  '200🪙', '300🪙', '2💎',  '500🪙', '📦',   '5💎'  ]
-  const PREMIUM_REWARDS = ['150🪙', '1💎',  '📦',   '2💎',   '500🪙', '5💎',  '📦Leg', '10💎', '🏆'   ]
+  const NODES = [
+    { lvl: 5,  free: { icon: '🪙', text: '100 monet' },              prem: { icon: '🪙', text: '300 monet' } },
+    { lvl: 10, free: { icon: '📦', text: 'Paczka kart' },             prem: { icon: '📋', text: 'Kontrakt\nsponsorski' } },
+    { lvl: 15, free: { icon: '🪙', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
+    { lvl: 20, free: { icon: '⭐', text: 'Karta\nspecjalna', sp: true }, prem: { icon: '🎽', text: 'Kit\n"Thunder"', sp: true } },
+    { lvl: 25, free: { icon: '💎', text: '1 klejnot' },                prem: { icon: '🛡️', text: 'Herb\ndrużyny' } },
+    { lvl: 30, free: { icon: '🏟️', text: 'Tło\nstadionu' },           prem: { icon: '📦', text: 'Mega\nPaczka' } },
+    { lvl: 35, free: { icon: '🪙', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
+    { lvl: 40, free: { icon: '🃏', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '🏆', text: '"El Capitán\nPRO"', sp: true } },
+  ]
   return (
     <div className="mm-season-overlay" onClick={onClose}>
       <div className="mm-season-panel" onClick={e => e.stopPropagation()}>
         <div className="mm-season-soon-badge">WKRÓTCE</div>
         <div className="mm-season-title">⚡ SEZON 1</div>
-        <div className="mm-season-subtitle">Battle Pass · 20 poziomów</div>
+        <div className="mm-season-subtitle">Battle Pass · 40 poziomów</div>
+
+        <div className="mm-season-highlights">
+          <div className="mm-season-hl">
+            <div className="mm-season-hl-lvl">LVL 20</div>
+            <div className="mm-season-hl-icon">⭐</div>
+            <div className="mm-season-hl-name">Karta specjalna</div>
+            <div className="mm-season-hl-sub">Połowa sezonu</div>
+          </div>
+          <div className="mm-season-hl mm-season-hl--prem">
+            <div className="mm-season-hl-lvl">LVL 20</div>
+            <div className="mm-season-hl-icon">🎽</div>
+            <div className="mm-season-hl-name">Kit "Thunder"</div>
+            <div className="mm-season-hl-sub">Tylko Premium</div>
+          </div>
+          <div className="mm-season-hl">
+            <div className="mm-season-hl-lvl">LVL 40</div>
+            <div className="mm-season-hl-icon">🃏</div>
+            <div className="mm-season-hl-name">Karta legendarna</div>
+            <div className="mm-season-hl-sub">Koniec sezonu</div>
+          </div>
+          <div className="mm-season-hl mm-season-hl--prem">
+            <div className="mm-season-hl-lvl">LVL 40</div>
+            <div className="mm-season-hl-icon">🏆</div>
+            <div className="mm-season-hl-name">El Capitán PRO</div>
+            <div className="mm-season-hl-sub">Tylko Premium</div>
+          </div>
+        </div>
+
         <div className="mm-season-tracks">
           <div className="mm-season-track-label mm-season-track-label--free">DARMOWY</div>
           <div className="mm-season-track">
-            {MILESTONES.map((lvl, i) => (
-              <div key={lvl} className="mm-season-node">
-                <div className="mm-season-reward mm-season-reward--free">{FREE_REWARDS[i]}</div>
-                <div className="mm-season-node-circle">{lvl}</div>
-                <div className="mm-season-reward mm-season-reward--premium mm-season-reward--locked">{PREMIUM_REWARDS[i]}</div>
+            {NODES.map(n => (
+              <div key={n.lvl} className={`mm-season-node${n.free.sp ? ' mm-season-node--sp' : ''}`}>
+                <div className="mm-season-reward mm-season-reward--free">
+                  <span className="mm-snr-icon">{n.free.icon}</span>
+                  <span className="mm-snr-text">{n.free.text}</span>
+                </div>
+                <div className="mm-season-node-circle">{n.lvl}</div>
+                <div className="mm-season-reward mm-season-reward--premium mm-season-reward--locked">
+                  <span className="mm-snr-icon">{n.prem.icon}</span>
+                  <span className="mm-snr-text">{n.prem.text}</span>
+                </div>
               </div>
             ))}
           </div>
           <div className="mm-season-track-label mm-season-track-label--premium">💎 PREMIUM</div>
         </div>
-        <div className="mm-season-desc">Ukończ misje, zdobywaj XP i odbieraj nagrody każdego sezonu.</div>
+
+        <div className="mm-season-desc">Rozgrywaj mecze, ukończ misje tygodniowe i zdobywaj XP. Odbieraj karty, kity, herby i klejnoty każdego sezonu!</div>
         <button className="mm-season-close-btn" onClick={onClose}>Zamknij</button>
       </div>
     </div>
@@ -87,7 +129,7 @@ const TUTORIAL_SECTIONS = [
   { icon: '🗂️', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
   { icon: '✨', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
   { icon: '🏆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
-  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 45 minut!' },
+  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 12 godzin!' },
 ]
 
 function TutorialModal({ onClose }) {

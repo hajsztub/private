@@ -788,13 +788,21 @@ export default function MatchScreen({ matchParams = {} }) {
             <span className="msb-sep">:</span>
             <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
           </div>
-          <div className="msb-round-row">
-            <span className="msb-round-badge">R{round}</span>
-            <span className={`msb-round-of${matchState.maxRounds !== 10 ? ' msb-round-of--custom' : ''}`}>
-              /{matchState.maxRounds ?? 10}
+          <div className="msb-segments-row">
+            <div className="msb-seg-group">
+              {[1,2,3,4,5].map(r => (
+                <span key={r} className={`msb-seg${round >= r ? ' msb-seg--on' : ''}${round === r && !isExtraTime && r <= 5 ? ' msb-seg--cur' : ''}`} />
+              ))}
+            </div>
+            <span className={`msb-seg-round${matchState.maxRounds !== 10 ? ' msb-seg-round--custom' : ''}${isExtraTime ? ' msb-seg-round--extra' : ''}`}>
+              R{round}
             </span>
+            <div className="msb-seg-group">
+              {[6,7,8,9,10].map(r => (
+                <span key={r} className={`msb-seg${round >= r ? ' msb-seg--on' : ''}${round === r && !isExtraTime ? ' msb-seg--cur' : ''}`} />
+              ))}
+            </div>
           </div>
-          <div className={`msb-half-label${isExtraTime ? ' msb-half-label--extra' : ''}`}>{halfLabel}</div>
         </div>
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>

@@ -412,6 +412,13 @@ export default function MatchScreen({ matchParams = {} }) {
     prevLogLenRef.current = current.length
   }, [matchState.log.length])
 
+  const handleEndTurn = useCallback(() => {
+    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
+    SFX.endTurn()
+    dispatch({ type: 'END_TURN' })
+    setSelectedCard(null)
+  }, [matchState])
+
   // ── Placement helper ──────────────────────────────────────────────────────
   const placeCard = useCallback((sector) => {
     const card = dragRef.current?.card || selectedCard
@@ -425,13 +432,6 @@ export default function MatchScreen({ matchParams = {} }) {
     dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector })
     setSelectedCard(null)
   }, [matchState, selectedCard])
-
-  const handleEndTurn = useCallback(() => {
-    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
-    SFX.endTurn()
-    dispatch({ type: 'END_TURN' })
-    setSelectedCard(null)
-  }, [matchState])
 
   const handleFirstWinDismiss = useCallback(() => {
     setFirstWinReward(false)

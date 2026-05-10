@@ -51,6 +51,7 @@ export function createMatchState(matchType = 'local', playerDeckCards = null, ai
     coinFlipState: null,
     redraws: 0,
     winner: null,
+    roundSubstitutes: {},
   }
 }
 
@@ -585,13 +586,13 @@ export function endTurn(state) {
 
     const newGoalEvents = [...newState.goalEvents]
     if (playerGoal) {
-      const scorers = newState.players.A.offenseSector
+      const scorers = newState.players.A.offenseSector.filter(c => !c.isDestroyed)
       const scorer = scorers.length > 0 ? scorers[Math.floor(Math.random() * scorers.length)] : null
       newGoalEvents.push({ round: state.round, scorer: 'player', cardId: scorer?.instanceId, cardName: scorer?.name })
       goalResult = { scorer: 'player', score: newScore }
     }
     if (aiGoal) {
-      const scorers = newState.players.B.offenseSector
+      const scorers = newState.players.B.offenseSector.filter(c => !c.isDestroyed)
       const scorer = scorers.length > 0 ? scorers[Math.floor(Math.random() * scorers.length)] : null
       newGoalEvents.push({ round: state.round, scorer: 'ai', cardId: scorer?.instanceId, cardName: scorer?.name })
       if (!goalResult) goalResult = { scorer: 'ai', score: newScore }
@@ -618,7 +619,10 @@ export function endTurn(state) {
   newState = tickLockedCards(newState)
 
   // Round buffs (e.g. Rodrigo coin flip) expire when the round advances
-  if (state.currentPlayer === 'B') newState = clearRoundBuffs(newState)
+  if (state.currentPlayer === 'B') {
+    newState = clearRoundBuffs(newState)
+    newState = { ...newState, roundSubstitutes: {} }
+  }
 
   // Advance turn
   const nextPlayer = state.currentPlayer === 'A' ? 'B' : 'A'
@@ -1036,6 +1040,12 @@ export function substituteCard(state, playerId, cardInstanceId, sector) {
   if (state.currentPlayer !== playerId) return { state, error: 'Nie twoja tura!' }
   if (state.phase !== 'playing') return { state, error: 'Gra nie jest w toku.' }
 
+  // Enforce recall limit: same player card max 2× per round
+  if (playerId === 'A') {
+    const count = (state.roundSubstitutes || {})[cardInstanceId] || 0
+    if (count >= 2) return { state: addLog(state, `⚠ Limit zmian: ta karta wróciła już 2× tej rundy.`, 'warning'), error: 'Limit zmian.' }
+  }
+
   const actionKey = sector === 'offense' ? 'placedOffense' : 'placedDefense'
   const player = state.players[playerId]
   const sectorKey = sector === 'offense' ? 'offenseSector' : 'defenseSector'
@@ -1044,9 +1054,11 @@ export function substituteCard(state, playerId, cardInstanceId, sector) {
 
   // Pull back into hand, mark sector action used so player can still place another
   const restoredCard = { ...card, justPlaced: false, roundsOnField: card.roundsOnField || 0 }
+  const newRoundSubs = { ...(state.roundSubstitutes || {}), [cardInstanceId]: ((state.roundSubstitutes || {})[cardInstanceId] || 0) + 1 }
   let newState = {
     ...state,
-    turnActionsUsed: { ...state.turnActionsUsed, [actionKey]: false }, // free up the slot for new placement
+    roundSubstitutes: newRoundSubs,
+    turnActionsUsed: { ...state.turnActionsUsed, [actionKey]: false },
     players: {
       ...state.players,
       [playerId]: {
@@ -1070,7 +1082,7 @@ export function gameReducer(state, action) {
     }
     case 'SUBSTITUTE_CARD': {
       const { state: next, error } = substituteCard(state, action.playerId, action.cardInstanceId, action.sector)
-      return error ? state : next
+      return error ? next : next
     }
     case 'ACTIVATE_ABILITY': {
       const { state: next, error } = activateAbility(state, action.playerId, action.cardInstanceId)

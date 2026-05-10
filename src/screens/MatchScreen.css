@@ -142,6 +142,21 @@
   50%       { opacity: 0.55; }
 }
 
+.msb-half-label {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+
+.msb-half-label--extra {
+  color: #ff5252;
+  animation: roundCustomPulse 1.4s ease-in-out infinite;
+}
+
 /* ── Goal collapse tab ───────────────────────────────────────────────────── */
 
 .ms-goal-tab {
@@ -635,6 +650,34 @@
   line-height: 1;
 }
 
+.ms-mid-event {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ms-mid-event--draw {
+  background: rgba(100,180,255,0.15);
+  color: rgba(140,200,255,0.9);
+  border: 1px solid rgba(100,180,255,0.25);
+}
+
+.ms-mid-event--special {
+  background: rgba(255,213,0,0.15);
+  color: #ffd54f;
+  border: 1px solid rgba(255,213,0,0.3);
+  animation: specialEventPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes specialEventPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
 /* ── Hand area ───────────────────────────────────────────────────────────── */
 
 .ms-hand-area {
@@ -726,12 +769,50 @@
 .ms-action-bar {
   flex-shrink: 0;
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
   background: #0d1117;
   border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.ms-timer-bar {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ms-timer-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #69f0ae;
+  border-radius: 2px;
+  transition: width 1s linear, background 0.3s;
+}
+
+.ms-timer-fill--urgent { background: #ff5252; }
+
+.ms-timer-text {
+  position: absolute;
+  right: 4px;
+  top: -10px;
+  font-size: 8px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.4);
+  line-height: 1;
+}
+
+.ms-timer-text--urgent { color: #ff5252; }
+
+.ms-action-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .ms-hand-chips {

@@ -379,7 +379,8 @@ export default function MatchScreen({ matchParams = {} }) {
 
   // ── Turn timer (45 s) ─────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isPlayerTurn || phase !== 'playing') {
+    const active = matchState.currentPlayer === 'A' && matchState.phase === 'playing'
+    if (!active) {
       setTurnSecsLeft(45)
       return
     }
@@ -395,7 +396,7 @@ export default function MatchScreen({ matchParams = {} }) {
       })
     }, 1000)
     return () => clearInterval(id)
-  }, [isPlayerTurn, matchState.round, phase])
+  }, [matchState.currentPlayer, matchState.phase, matchState.round])
 
   // Watch log for new ability/event messages to show as toasts
   const prevLogLenRef = useRef(0)

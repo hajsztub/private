@@ -643,21 +643,25 @@ export default function MarketScreen() {
           </div>
 
           {/* Section label */}
-          <div className="packs-section-label">🎲 PACZKI</div>
+          <div className="packs-section-label">PACZKI</div>
 
-          {/* 3-column pack grid */}
+          {/* 2-column pack grid */}
           <div className="packs-grid">
             {PACKS.filter(p => p.currency === 'coins').map(pack => {
               const canAffordCoins = profile.coins >= pack.cost
               const canAffordGems = gems >= pack.gemCost
+              const countLabel = pack.id === 'mega' || pack.id === 'premium' ? '5 kart' : '3 karty'
               return (
                 <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
                   {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA!</div>}
-                  <div className="pc-bag-area">
-                    <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} />
+                  <div className="pc-header">
+                    <span className="pc-icon">{pack.icon}</span>
+                    <div className="pc-title-group">
+                      <div className="pc-name">{pack.label}</div>
+                      <div className="pc-cards-count">{countLabel}</div>
+                    </div>
                   </div>
-                  <div className="pc-info">
-                    <div className="pc-name">{pack.label}</div>
+                  <div className="pc-desc-row">
                     <div className="pc-desc">{pack.desc}</div>
                   </div>
                   <div className="pc-actions">
@@ -671,7 +675,7 @@ export default function MarketScreen() {
                       className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`}
                       onClick={() => handleBuyPack(pack, true)}
                     >
-                      💎 {pack.gemCost}
+                      lub 💎 {pack.gemCost}
                     </button>
                   </div>
                 </div>

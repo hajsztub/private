@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '5.5',
+    date: '2026-05-11',
+    changes: [
+      'Nawigacja: floating dock (SKŁAD / MENU / MARKET) na wszystkich ekranach poza meczem',
+      'Sekcja Zawodników: redesign — siatka 3 kolumny, pasek statystyk, kolorowe taby pozycji, jeden przycisk sortowania, efekt poświaty w podglądzie karty',
+      'Modal zawodnika w meczu: redesign — awatar po lewej, kolorowe odznaki pozycji, sekcja zdolności z ikoną i nazwą w jednym wierszu',
+      'Rzut żetonem: pełny redesign — stadionowe tło, żeton 140px z obracającym się złotym pierścieniem, animowany baner wyniku',
+      'Mechanika goli: wzajemne anulowanie — jeśli obie strony strzelają w tej samej rundzie, żaden gol nie pada',
+      'iOS: dodano apple-touch-icon.png bez sufiksu (iOS default lookup) — poprawia wyświetlanie ikony po dodaniu do ekranu głównego',
+    ],
+  },
+  {
     version: '5.4',
     date: '2026-05-11',
     changes: [

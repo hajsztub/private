@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '5.4',
+    date: '2026-05-11',
+    changes: [
+      'Balans ekonomii: liga wygrana 280→190🪙, remis 100→70🪙, przegrana 50→65🪙 (wolniejszy mid game, mniej kary za porażkę)',
+      'Trening Amator: wygrana 30→40🪙, przegrana 4→5🪙',
+      'Trening PRO: przegrana 18→25🪙',
+      'Mega Paczka: cena 1200→950🪙, 6→5💎',
+      'Misje tygodniowe "Zagraj 15/25 meczów": nagrody 400→600🪙 i 700→1100🪙',
+    ],
+  },
+  {
     version: '5.3',
     date: '2026-05-11',
     changes: [

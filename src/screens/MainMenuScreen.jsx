@@ -447,7 +447,7 @@ export default function MainMenuScreen() {
                   <span className="mm-tmode-inline-name">🟢 AMATOR</span>
                   <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+30🪙</span>
+                <span className="mm-tmode-inline-reward">+40🪙</span>
               </button>
               <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
                 <div className="mm-tmode-inline-body">

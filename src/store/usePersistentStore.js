@@ -38,8 +38,8 @@ const MISSION_POOL = [
 // ── Weekly missions ────────────────────────────────────────────────────────
 
 const WEEKLY_COIN_POOL = [
-  { type: 'play_matches', target: 15, label: 'Zagraj 15 meczów',           icon: '🎮', reward: 400,  rewardType: 'coins' },
-  { type: 'play_matches', target: 25, label: 'Zagraj 25 meczów',           icon: '🎮', reward: 700,  rewardType: 'coins' },
+  { type: 'play_matches', target: 15, label: 'Zagraj 15 meczów',           icon: '🎮', reward: 600,  rewardType: 'coins' },
+  { type: 'play_matches', target: 25, label: 'Zagraj 25 meczów',           icon: '🎮', reward: 1100, rewardType: 'coins' },
   { type: 'win_matches',  target: 7,  label: 'Wygraj 7 meczów',            icon: '🏆', reward: 500,  rewardType: 'coins' },
   { type: 'win_matches',  target: 12, label: 'Wygraj 12 meczów',           icon: '🏆', reward: 900,  rewardType: 'coins' },
   { type: 'win_league',   target: 5,  label: 'Wygraj 5 meczów ligowych',   icon: '⭐', reward: 600,  rewardType: 'coins' },

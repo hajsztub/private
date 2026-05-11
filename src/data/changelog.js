@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '6.0',
+    date: '2026-05-11',
+    changes: [
+      'Emoji: kompleksowa zamiana emoji na symbole Unicode we wszystkich ekranach gry (MainMenu, Market, League, PostMatch, Players, Settings, komponenty)',
+      'Ekran meczu: ikony drużyn w scoreboard — tarcze SVG zamiast tekstu AI/TY',
+      'Ekran meczu: sektory ataku/obrony — więcej wewnętrznego paddingu (8px) zapobiegającego nakładaniu kart na obwódkę strefy',
+      'Ekran ligi: panel "Rozpocznij mecz" zawsze widoczny bez scrollowania (naprawiono layout na desktop/web)',
+    ],
+  },
+  {
     version: '5.9',
     date: '2026-05-11',
     changes: [

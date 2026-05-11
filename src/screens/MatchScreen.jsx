@@ -823,7 +823,9 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Scoreboard ──────────────────────────────────────────────────── */}
       <div className="ms-scoreboard">
         <div className="msb-side msb-side--left">
-          <div className="msb-team-icon msb-team-icon--ai">AI</div>
+          <div className="msb-team-icon msb-team-icon--ai">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"/></svg>
+          </div>
           <span className={`msb-dot ${currentPlayer === 'B' ? 'msb-dot--on' : ''}`} />
           <span className="msb-name">{opponentName}</span>
         </div>
@@ -852,7 +854,9 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
           <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
-          <div className="msb-team-icon msb-team-icon--player">TY</div>
+          <div className="msb-team-icon msb-team-icon--player">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"/></svg>
+          </div>
         </div>
       </div>
 

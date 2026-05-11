@@ -78,11 +78,11 @@ body {
 
   /* Screens that use dvh need to be capped to the container */
   .match-screen    { height: 900px !important; max-height: 900px !important; }
+  .league-screen   { height: 900px !important; max-height: 900px !important; }
+  .players-screen  { height: 900px !important; max-height: 900px !important; }
   .main-menu       { min-height: 900px; }
   .deck-builder    { min-height: 900px; }
   .market-screen   { min-height: 900px; }
-  .league-screen   { min-height: 900px; }
-  .players-screen  { min-height: 900px; }
   .settings-screen { min-height: 900px; }
 }
 

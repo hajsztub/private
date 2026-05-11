@@ -45,12 +45,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
   flex-shrink: 0;
-  color: white;
+  color: rgba(255,255,255,0.9);
 }
 .msb-team-icon--ai     { background: linear-gradient(135deg, #c62828, #7f0000); }
 .msb-team-icon--player { background: linear-gradient(135deg, #1565c0, #0d47a1); }
@@ -515,7 +511,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 4px 2px;
+  padding: 4px 8px 2px;
   overflow-y: hidden;
   overflow-x: auto;
   scrollbar-width: none;

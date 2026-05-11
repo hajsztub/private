@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: '5.8',
+    date: '2026-05-11',
+    changes: [
+      'Ekran meczu: naprawiono widoczność kart bramkarzy (przywrócono flex:1 zamiast flex-shrink:0)',
+      'Ekran meczu: panele ATK/DEF skrócone o 50% wysokości (100px→50px) i poszerzone o 20% (90px→108px) — stała wielkość na wszystkich urządzeniach',
+      'Ekran meczu: czcionka liczb w panelach ATK/DEF zmniejszona do 22px dopasowana do niższego panelu',
+      'Ekran meczu: strefa ataku i obrony ma stałą minimalną wysokość (110px) niezależnie od urządzenia',
+    ],
+  },
+  {
     version: '5.7',
     date: '2026-05-11',
     changes: [

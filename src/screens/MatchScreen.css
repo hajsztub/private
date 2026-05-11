@@ -357,22 +357,22 @@
 
 .ms-goal-inner {
   display: grid;
-  grid-template-columns: 90px 1fr 90px;
+  grid-template-columns: 108px 1fr 108px;
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
 }
 
 .ms-stat-box {
-  width: 90px;
-  height: 100px;
-  border-radius: 12px;
+  width: 108px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  gap: 3px;
+  gap: 1px;
 }
 
 .msb-icon { font-size: 14px; line-height: 1; opacity: 0.7; }
@@ -457,9 +457,9 @@
   line-height: 1;
 }
 
-.msb-num {
+.ms-stat-box .msb-num {
   font-family: 'Bangers', cursive;
-  font-size: 36px;
+  font-size: 22px;
   color: white;
   line-height: 1;
 }
@@ -488,7 +488,7 @@
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  min-height: 0;
+  min-height: 110px;
   position: relative;
   z-index: 1;
 }
@@ -2236,17 +2236,17 @@
 
   /* Goal / stat area */
   .ms-goal-inner {
-    grid-template-columns: 80px 1fr 80px;
+    grid-template-columns: 108px 1fr 108px;
     gap: 6px;
     padding: 4px 8px;
   }
   .ms-stat-box {
-    width: 80px;
-    height: 100px;
+    width: 108px;
+    height: 50px;
   }
-  .gk-card, .gk-card--empty { height: 100px; }
+  .gk-card, .gk-card--empty { height: 50px; }
   .msb-lbl  { font-size: 7px; letter-spacing: 1.5px; }
-  .msb-num  { font-size: 28px; }
+  .ms-stat-box .msb-num  { font-size: 22px; }
   .ms-gk-glove { font-size: 16px; }
   .goal-posts { height: 10px; }
 
@@ -2283,17 +2283,17 @@
 @media (max-width: 480px) {
   /* Shrink the stat boxes */
   .ms-goal-inner {
-    grid-template-columns: 68px 1fr 68px;
+    grid-template-columns: 108px 1fr 108px;
     gap: 5px;
     padding: 3px 6px;
   }
   .ms-stat-box {
-    width: 68px;
-    height: 100px;
+    width: 108px;
+    height: 50px;
   }
-  .gk-card, .gk-card--empty { height: 100px; }
+  .gk-card, .gk-card--empty { height: 50px; }
   .msb-lbl  { font-size: 7px; letter-spacing: 1px; }
-  .msb-num  { font-size: 24px; min-width: 16px; }
+  .ms-stat-box .msb-num  { font-size: 22px; min-width: 16px; }
   .ms-gk-glove { display: none; }
 
   /* Goal post bar slimmer */

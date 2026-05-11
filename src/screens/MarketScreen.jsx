@@ -200,27 +200,35 @@ function fmtCountdown(secs) {
 // ── Pack Opening Overlay ───────────────────────────────────────────────────
 
 function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
-  const [revealed, setRevealed] = useState(0)
+  const [flipped, setFlipped] = useState([])
   const [picked, setPicked] = useState(null)
   const [done, setDone] = useState(false)
   const [legendaryFlash, setLegendaryFlash] = useState(false)
 
+  const allFlipped = flipped.length >= drawnCards.length
+
   useEffect(() => {
-    if (revealed < drawnCards.length) {
-      const delay = drawnCards[revealed]?.rarity === 'legendary' ? 750 : 480
-      const t = setTimeout(() => {
-        if (drawnCards[revealed]?.rarity === 'legendary') setLegendaryFlash(true)
-        setRevealed(r => r + 1)
+    let idx = 0
+    function flipNext() {
+      if (idx >= drawnCards.length) return
+      const isLeg = drawnCards[idx]?.rarity === 'legendary'
+      const delay = isLeg ? 900 : 520
+      const capture = idx
+      setTimeout(() => {
+        if (isLeg) setLegendaryFlash(true)
+        setFlipped(prev => [...prev, capture])
+        idx++
+        flipNext()
       }, delay)
-      return () => clearTimeout(t)
     }
-  }, [revealed, drawnCards.length])
+    flipNext()
+  }, [])
 
   const handlePick = (def) => {
-    if (done) return
+    if (done || !allFlipped) return
     setPicked(def)
     setDone(true)
-    setTimeout(() => onPick(def), 500)
+    setTimeout(() => onPick(def), 600)
   }
 
   const handleCoins = () => {
@@ -232,40 +240,44 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   return (
     <div className={`pack-overlay ${legendaryFlash ? 'pack-overlay--legendary-flash' : ''}`}>
       <div className="pack-overlay-panel">
-        <div className="pack-overlay-header" style={{ background: pack.iconBg }}>
+        <div className="poh-bar" style={{ background: pack.iconBg }}>
           <span className="poh-icon">{pack.icon}</span>
-          <span className="poh-title">{pack.label}</span>
-          <span className="poh-desc">{pack.desc}</span>
+          <div className="poh-text">
+            <div className="poh-title">{pack.label}</div>
+            <div className="poh-desc">{pack.desc}</div>
+          </div>
         </div>
 
-        <div className="pack-cards-row">
+        <div className="poc-grid">
           {drawnCards.map((def, i) => {
-            const card = defToCard(def)
+            const isFlipped = flipped.includes(i)
             const isSelected = picked === def
-            const isLegendary = def.rarity === 'legendary'
+            const card = defToCard(def)
             return (
               <div
                 key={i}
-                className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'} ${isSelected ? 'pack-card-slot--picked' : ''} ${i < revealed && isLegendary ? 'pack-card-slot--legendary' : ''}`}
-                style={{ transitionDelay: `${i * 0.06}s` }}
-                onClick={() => i < revealed && handlePick(def)}
+                className={`poc-slot ${isFlipped ? 'poc-slot--flipped' : ''} ${isSelected ? 'poc-slot--picked' : ''} ${isFlipped && def.rarity === 'legendary' ? 'poc-slot--legendary' : ''}`}
+                onClick={() => handlePick(def)}
               >
-                {i < revealed ? (
-                  <FieldCard card={card} fieldSize />
-                ) : (
-                  <div className="pack-card-back">
-                    <span className="pcb-ball">⚽</span>
-                    <span className="pcb-sub">FC</span>
+                <div className="poc-inner">
+                  <div className="poc-back">
+                    <span className="poc-back-ball">⚽</span>
+                    <span className="poc-back-label">GOAL TCG</span>
                   </div>
-                )}
+                  <div className="poc-front">
+                    <FieldCard card={card} fieldSize />
+                  </div>
+                </div>
               </div>
             )
           })}
         </div>
 
-        {revealed >= drawnCards.length && !done && (
+        {!allFlipped && <div className="poc-hint">Odkrywanie kart...</div>}
+
+        {allFlipped && !done && (
           <div className="pack-actions">
-            <p className="pack-prompt">Wybierz kartę aby dodać do kolekcji</p>
+            <p className="pack-prompt">Dotknij kartę aby dodać do kolekcji</p>
             {onTakeCoins && (
               <button className="pack-coins-btn" onClick={handleCoins}>
                 🪙 +{PACK_REFUND} MONET ZAMIAST KARTY

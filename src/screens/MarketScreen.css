@@ -415,8 +415,8 @@
 
 .packs-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .pack-card--random   { --pk-card-bg: linear-gradient(160deg,#0a1428,#13204e); --pk-glow: rgba(21,101,192,0.55); --pk-btn: linear-gradient(135deg,#1565c0,#0d47a1); --pk-accent: #42a5f5; }
@@ -454,93 +454,88 @@
   z-index: 2;
 }
 
-/* ── Pack card body: image left + text right ─────────────────────────────── */
+/* ── Pack card: vertical layout ──────────────────────────────────────────── */
 
-.pc-body {
+.pc-img-area {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 10px 6px 5px;
-  flex: 1;
+  padding: 16px 20px 8px;
 }
 
-.pack-card--mega .pc-body { padding-top: 18px; }
-
-.pc-img-col {
-  width: 46px;
-  flex-shrink: 0;
-}
+.pack-card--mega .pc-img-area { padding-top: 22px; }
 
 .pc-bag-img {
-  width: 100%;
+  width: 72%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 2px 8px var(--pk-glow, rgba(255,255,255,0.2)));
+  filter: drop-shadow(0 4px 16px var(--pk-glow, rgba(255,255,255,0.3)));
 }
 
-.pc-text-col {
-  flex: 1;
-  min-width: 0;
+.pc-info {
+  padding: 2px 10px 6px;
 }
 
 .pc-name {
   font-family: 'Bangers', cursive;
-  font-size: 13px;
-  letter-spacing: 1.2px;
+  font-size: 20px;
+  letter-spacing: 1.5px;
   color: white;
   line-height: 1;
 }
 
 .pc-karta-count {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 900;
   color: var(--pk-accent, white);
-  letter-spacing: 0.2px;
-  margin-top: 1px;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
 }
 
 .pc-short-desc {
-  font-size: 8px;
+  font-size: 9px;
   color: rgba(255,255,255,0.38);
   line-height: 1.3;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 /* ── Pack action buttons ─────────────────────────────────────────────────── */
 
 .pc-actions {
   display: flex;
-  gap: 4px;
-  padding: 2px 6px 8px;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 10px 12px;
+  margin-top: auto;
 }
 
 .pc-buy-coin {
-  flex: 1;
-  padding: 7px 0;
-  border-radius: 8px;
+  width: 100%;
+  padding: 11px 0;
+  border-radius: 10px;
   background: var(--pk-btn, linear-gradient(135deg,#1565c0,#0d47a1));
   border: none;
   color: white;
   font-family: 'Bangers', cursive;
-  font-size: 13px;
-  letter-spacing: 0.8px;
+  font-size: 17px;
+  letter-spacing: 1.2px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
 }
 
 .pc-buy-coin:active { opacity: 0.82; }
 
 .pc-buy-gem {
-  flex: 1;
+  width: 100%;
   padding: 7px 0;
   border-radius: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.6);
-  font-size: 10px;
-  font-weight: 800;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s;
@@ -562,103 +557,118 @@
 /* ── Starter pack / Special offer ────────────────────────────────────────── */
 
 .starter-pack-card {
-  border-radius: 16px;
-  border: 1px solid rgba(255,170,0,0.35);
-  background: linear-gradient(160deg, #1e1200 0%, #2e1c00 50%, #1e1200 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(255,200,0,0.45);
+  background: linear-gradient(140deg, #1e1200 0%, #3a2400 45%, #1a1000 100%);
   overflow: hidden;
+  box-shadow: 0 0 28px rgba(255,150,0,0.18);
 }
 
-.starter-pack-card--locked { opacity: 0.6; }
-
-.sp-offer-badge {
+.sp-top-badge {
   background: linear-gradient(90deg, #e65100, #ff8f00);
   color: #fff;
   font-family: 'Bangers', cursive;
-  font-size: 10px;
-  letter-spacing: 1.5px;
+  font-size: 11px;
+  letter-spacing: 2px;
   text-align: center;
-  padding: 3px 0;
+  padding: 4px 0;
 }
 
 .sp-body {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 12px 8px 10px;
+  gap: 12px;
+  padding: 14px 14px 10px 12px;
+}
+
+.sp-img-col {
+  flex-shrink: 0;
+  width: 74px;
 }
 
 .sp-bag-img {
-  width: 60px;
-  flex-shrink: 0;
+  width: 100%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 2px 12px rgba(255,140,0,0.5));
+  filter: drop-shadow(0 4px 18px rgba(255,150,0,0.55));
 }
 
-.sp-info { flex: 1; min-width: 0; }
+.sp-content { flex: 1; min-width: 0; }
 
 .sp-name {
   font-family: 'Bangers', cursive;
-  font-size: 17px;
+  font-size: 20px;
   letter-spacing: 2px;
   color: #ffd54f;
   line-height: 1;
 }
 
-.sp-desc {
+.sp-tagline {
   font-size: 10px;
-  color: rgba(255,255,255,0.45);
-  margin: 2px 0 5px;
+  color: rgba(255,255,255,0.5);
+  margin: 3px 0 8px;
+  line-height: 1.3;
 }
 
-.sp-rewards { display: flex; flex-direction: column; gap: 2px; }
+.sp-reward-row {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
 
-.sp-reward {
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.7);
+.sp-chip {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
 }
 
-.sp-reward b { color: white; font-weight: 900; }
+.sp-chip b { font-weight: 900; }
 
-.sp-reward-label { font-size: 9px; color: rgba(255,255,255,0.38); }
+.sp-chip--gem  { background: rgba(156,39,176,0.2); border-color: rgba(186,104,200,0.4); }
+.sp-chip--pack { background: rgba(33,150,243,0.15); border-color: rgba(100,181,246,0.35); }
 
-.sp-price-col { flex-shrink: 0; }
+.sp-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
 
-.sp-price-btn {
+.sp-price-tag {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  letter-spacing: 1px;
+  color: #ffd54f;
+  text-shadow: 0 0 20px rgba(255,213,79,0.35);
+}
+
+.sp-cta-btn {
   background: linear-gradient(135deg, #2e7d32, #1b5e20);
   color: white;
   font-family: 'Bangers', cursive;
-  font-size: 17px;
+  font-size: 15px;
   letter-spacing: 1px;
-  padding: 10px 14px;
+  padding: 11px 22px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 3px 12px rgba(46,125,50,0.5);
-  display: block;
+  box-shadow: 0 3px 14px rgba(46,125,50,0.5);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.sp-price-btn--locked {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.3);
-  font-size: 12px;
+.sp-cta-btn:disabled {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.35);
   box-shadow: none;
   cursor: not-allowed;
-  letter-spacing: 0.5px;
-}
-
-.sp-footer {
-  text-align: center;
-  font-size: 9px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.25);
-  padding: 5px 10px 8px;
-  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 /* ── Pack opening overlay ────────────────────────────────────────────────── */

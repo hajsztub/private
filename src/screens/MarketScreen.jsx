@@ -670,22 +670,20 @@ export default function MarketScreen() {
                 return (
                   <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
                     {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA WARTOŚĆ!</div>}
-                    <div className="pc-body">
-                      <div className="pc-img-col">
-                        <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
-                      </div>
-                      <div className="pc-text-col">
-                        <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
-                        <div className="pc-karta-count">{cardCount}</div>
-                        <div className="pc-short-desc">{descMap[pack.id]}</div>
-                      </div>
+                    <div className="pc-img-area">
+                      <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
+                    </div>
+                    <div className="pc-info">
+                      <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
+                      <div className="pc-karta-count">{cardCount}</div>
+                      <div className="pc-short-desc">{descMap[pack.id]}</div>
                     </div>
                     <div className="pc-actions">
                       <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
                         🪙 {pack.cost}
                       </button>
                       <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
-                        💎 {pack.gemCost}
+                        lub 💎 {pack.gemCost}
                       </button>
                     </div>
                   </div>
@@ -696,24 +694,26 @@ export default function MarketScreen() {
 
           {/* Special offers */}
           <div className="packs-section-label">⭐ OFERTY SPECJALNE</div>
-          <div className="starter-pack-card starter-pack-card--locked">
-            <div className="sp-offer-badge">JEDNORAZOWA OFERTA!</div>
+          <div className="starter-pack-card">
+            <div className="sp-top-badge">⭐ JEDNORAZOWA OFERTA</div>
             <div className="sp-body">
-              <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
-              <div className="sp-info">
+              <div className="sp-img-col">
+                <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
+              </div>
+              <div className="sp-content">
                 <div className="sp-name">PAKIET STARTOWY</div>
-                <div className="sp-desc">Idealny start dla każdego menedżera!</div>
-                <div className="sp-rewards">
-                  <div className="sp-reward"><span>🪙</span><b>10 000</b><span className="sp-reward-label">MONET</span></div>
-                  <div className="sp-reward"><span>💎</span><b>200</b><span className="sp-reward-label">DIAMENTÓW</span></div>
-                  <div className="sp-reward"><span>📦</span><b>5×</b><span className="sp-reward-label">LOSOWYCH PACZEK</span></div>
+                <div className="sp-tagline">Idealny start dla każdego menedżera!</div>
+                <div className="sp-reward-row">
+                  <div className="sp-chip">🪙 <b>10 000</b></div>
+                  <div className="sp-chip sp-chip--gem">💎 <b>200</b></div>
+                  <div className="sp-chip sp-chip--pack">📦 <b>5×</b></div>
                 </div>
               </div>
-              <div className="sp-price-col">
-                <div className="sp-price-btn sp-price-btn--locked">WKRÓTCE</div>
-              </div>
             </div>
-            <div className="sp-footer">⏱ Wymaga systemu płatności</div>
+            <div className="sp-cta-row">
+              <div className="sp-price-tag">19,99 zł</div>
+              <button className="sp-cta-btn" disabled>🔒 WKRÓTCE</button>
+            </div>
           </div>
 
           <div className="packs-footer">ⓘ Karty są dodawane do Twojej kolekcji od razu po zakupie.</div>

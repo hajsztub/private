@@ -1151,6 +1151,84 @@
 .cl-changes { margin: 0; padding: 0 0 0 14px; display: flex; flex-direction: column; gap: 4px; }
 .cl-change  { font-size: 11px; color: rgba(255,255,255,0.65); line-height: 1.5; }
 
+.cl-header-right { display: flex; align-items: center; gap: 8px; }
+
+.cl-dev-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.35);
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cl-dev-btn--on { background: rgba(255,152,0,0.18); border-color: rgba(255,152,0,0.45); color: #ffa726; }
+
+.cl-dev-form {
+  display: flex;
+  gap: 6px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+}
+.cl-dev-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+}
+.cl-dev-submit {
+  background: rgba(255,152,0,0.25);
+  border: 1px solid rgba(255,152,0,0.5);
+  color: #ffa726;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cl-dev-panel {
+  background: rgba(255,100,0,0.06);
+  border-bottom: 1px solid rgba(255,152,0,0.18);
+  padding: 10px 16px 12px;
+}
+.cl-dev-header {
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #ffa726;
+  margin-bottom: 8px;
+}
+.cl-dev-msg {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a5d6a7;
+  margin-bottom: 7px;
+}
+.cl-dev-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.cl-dev-action {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.75);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 9px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.cl-dev-action:active { background: rgba(255,255,255,0.12); }
+
 /* ── History Modal ────────────────────────────────────────────────────────── */
 
 .hist-modal { max-height: 65vh; }

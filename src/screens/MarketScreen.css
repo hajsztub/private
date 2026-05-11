@@ -460,17 +460,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 20px 6px;
+  padding: 12px 16px 4px;
+  height: 88px;
 }
 
-.pack-card--mega .pc-img-area { padding-top: 18px; }
+.pack-card--mega .pc-img-area { padding-top: 18px; height: 82px; }
 
 .pc-bag-img {
-  width: 52%;
-  height: auto;
-  max-height: 86px;
+  height: 100%;
+  width: auto;
+  max-width: 80%;
   display: block;
   filter: drop-shadow(0 4px 14px var(--pk-glow, rgba(255,255,255,0.3)));
+  object-fit: contain;
 }
 
 .pc-info {
@@ -563,6 +565,7 @@
   background: linear-gradient(140deg, #1e1200 0%, #3a2400 45%, #1a1000 100%);
   overflow: hidden;
   box-shadow: 0 0 28px rgba(255,150,0,0.18);
+  flex-shrink: 0;
 }
 
 .sp-top-badge {

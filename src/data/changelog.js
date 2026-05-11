@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '5.6',
+    date: '2026-05-11',
+    changes: [
+      'Market: siatka paczek 2 kolumny — większe karty, obraz paczki wyśrodkowany z zachowaniem proporcji',
+      'Market: animacja otwierania paczek — prawdziwy 3D flip (rotateY) kolejno per karta, legendarny flash ekranu',
+      'Market: pakiet startowy pełna wizualizacja — złoty banner z nagrodami, cena, przycisk WKRÓTCE (oczekuje na system płatności)',
+      'Market: przycisk klejnotów wyraźnie wtórny ("lub 💎X") — mniej przypadkowych zakupów',
+      'Changelog: ukryty panel deweloperski (hasło) z przyciskami: +5k monet, wszyscy zawodnicy, ukończ misje dzienne/tygodniowe',
+    ],
+  },
+  {
     version: '5.5',
     date: '2026-05-11',
     changes: [

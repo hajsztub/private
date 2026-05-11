@@ -213,13 +213,93 @@ function HistoryModal({ history, onClose }) {
 }
 
 function ChangelogModal({ onClose }) {
+  const { addCoins, update } = useProfile()
+  const [showDevInput, setShowDevInput] = useState(false)
+  const [devPassword, setDevPassword] = useState('')
+  const [devUnlocked, setDevUnlocked] = useState(false)
+  const [devMsg, setDevMsg] = useState('')
+
+  const showMsg = (msg) => { setDevMsg(msg); setTimeout(() => setDevMsg(''), 2200) }
+
+  const handleDevBtn = () => {
+    if (devUnlocked) { setDevUnlocked(false); return }
+    setShowDevInput(v => !v)
+    setDevPassword('')
+  }
+
+  const handleDevSubmit = (e) => {
+    e.preventDefault()
+    if (devPassword === 'max') { setDevUnlocked(true); setShowDevInput(false) }
+    setDevPassword('')
+  }
+
+  const devAddGold = () => { addCoins(5000); showMsg('🪙 +5 000 monet') }
+
+  const devAddAllPlayers = () => {
+    update(prev => {
+      const existingIds = new Set(prev.ownedCards.map(c => c.cardId))
+      const newCards = CARD_DEFINITIONS
+        .filter(d => !existingIds.has(d.id))
+        .map(d => ({ instanceId: `dev_${d.id}_${Date.now()}_${Math.random().toString(36).slice(2)}`, cardId: d.id, isStarter: false, upgradeLevel: 0 }))
+      return { ...prev, ownedCards: [...prev.ownedCards, ...newCards] }
+    })
+    showMsg('👥 Wszyscy zawodnicy dodani')
+  }
+
+  const devCompleteDailyMissions = () => {
+    update(prev => {
+      if (!prev.dailyMissions) return prev
+      return { ...prev, dailyMissions: { ...prev.dailyMissions, missions: prev.dailyMissions.missions.map(m => ({ ...m, progress: m.target })) } }
+    })
+    showMsg('✅ Misje dzienne ukończone')
+  }
+
+  const devCompleteWeeklyMissions = () => {
+    update(prev => {
+      if (!prev.weeklyMissions) return prev
+      return { ...prev, weeklyMissions: { ...prev.weeklyMissions, missions: prev.weeklyMissions.missions.map(m => ({ ...m, progress: m.target, locked: false })) } }
+    })
+    showMsg('📅 Misje tygodniowe ukończone')
+  }
+
   return (
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal" onClick={e => e.stopPropagation()}>
         <div className="cl-header">
           <span className="cl-title">📋 CO NOWEGO?</span>
-          <button className="cl-close" onClick={onClose}>✕</button>
+          <div className="cl-header-right">
+            <button className={`cl-dev-btn${devUnlocked ? ' cl-dev-btn--on' : ''}`} onClick={handleDevBtn}>DEV</button>
+            <button className="cl-close" onClick={onClose}>✕</button>
+          </div>
         </div>
+
+        {showDevInput && (
+          <form className="cl-dev-form" onSubmit={handleDevSubmit}>
+            <input
+              className="cl-dev-input"
+              type="password"
+              placeholder="Hasło..."
+              value={devPassword}
+              onChange={e => setDevPassword(e.target.value)}
+              autoFocus
+            />
+            <button type="submit" className="cl-dev-submit">OK</button>
+          </form>
+        )}
+
+        {devUnlocked && (
+          <div className="cl-dev-panel">
+            <div className="cl-dev-header">⚙️ PANEL DEV</div>
+            {devMsg && <div className="cl-dev-msg">{devMsg}</div>}
+            <div className="cl-dev-btns">
+              <button className="cl-dev-action" onClick={devAddGold}>🪙 +5 000 monet</button>
+              <button className="cl-dev-action" onClick={devAddAllPlayers}>👥 Wszyscy zawodnicy</button>
+              <button className="cl-dev-action" onClick={devCompleteDailyMissions}>✅ Misje dzienne</button>
+              <button className="cl-dev-action" onClick={devCompleteWeeklyMissions}>📅 Misje tygodniowe</button>
+            </div>
+          </div>
+        )}
+
         <div className="cl-list">
           {CHANGELOG.map(entry => (
             <div key={entry.version} className="cl-entry">

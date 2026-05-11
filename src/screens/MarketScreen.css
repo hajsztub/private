@@ -133,89 +133,69 @@
   margin-left: 2px;
 }
 
-.ad-text {
+.ad-body {
   flex: 1;
   min-width: 0;
 }
 
 .ad-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 900;
-  color: #fff;
-  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.8px;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .ad-kw { color: #00e676; }
 
+.ad-reward-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 3px;
+}
+
+.ad-rew-coin {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  color: #ffd54f;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.ad-rew-sep {
+  font-size: 9px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+}
+
+.ad-rew-gem {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  color: #ce93d8;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
 .ad-desc {
   font-size: 10px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 2px;
-}
-
-.ad-rewards {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-}
-
-.ad-reward-chip {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  background: rgba(255,214,0,0.12);
-  border: 1px solid rgba(255,214,0,0.3);
-  border-radius: 10px;
-  padding: 3px 7px;
-}
-
-.ad-reward-chip--gem {
-  background: rgba(156,39,176,0.15);
-  border-color: rgba(186,104,200,0.35);
-}
-
-.ad-reward-icon { font-size: 12px; }
-
-.ad-reward-amount {
-  font-size: 12px;
-  font-weight: 900;
-  color: #ffd54f;
-}
-
-.ad-reward-chip--gem .ad-reward-amount { color: #ce93d8; }
-
-.ad-reward-label {
-  font-size: 9px;
-  font-weight: 700;
   color: rgba(255,255,255,0.5);
-  letter-spacing: 0.5px;
 }
 
-.ad-reward-sep {
-  font-size: 9px;
-  color: rgba(255,255,255,0.3);
-  font-weight: 600;
-}
-
-.ad-cta {
-  background: #00e676;
-  color: #051a0c;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 900;
-  font-size: 11px;
-  padding: 8px 12px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+.ad-visual {
+  width: 84px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.ad-cta--wait {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.4);
+.ad-visual-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 /* ── Featured row: Free pack + Premium side by side ──────────────────────── */
@@ -403,12 +383,38 @@
 /* ── Section label ───────────────────────────────────────────────────────── */
 
 .packs-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 2px 0;
+}
+
+.psl-text {
   font-family: 'Bangers', cursive;
   font-size: 16px;
   letter-spacing: 2.5px;
   color: rgba(255,255,255,0.38);
-  padding: 2px 2px 0;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.psl-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.offers-timer-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,200,0,0.7);
+  background: rgba(255,200,0,0.08);
+  border: 1px solid rgba(255,200,0,0.2);
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ── 3-column pack grid ──────────────────────────────────────────────────── */
@@ -419,12 +425,12 @@
   gap: 10px;
 }
 
-.pack-card--random   { --pk-card-bg: linear-gradient(160deg,#0a1428,#13204e); --pk-glow: rgba(21,101,192,0.55); --pk-btn: linear-gradient(135deg,#1565c0,#0d47a1); --pk-accent: #42a5f5; }
-.pack-card--attack   { --pk-card-bg: linear-gradient(160deg,#200808,#3e1010); --pk-glow: rgba(198,40,40,0.6); --pk-btn: linear-gradient(135deg,#c62828,#7f0000); --pk-accent: #ef5350; }
-.pack-card--defense  { --pk-card-bg: linear-gradient(160deg,#060f26,#0b1e50); --pk-glow: rgba(13,71,161,0.55); --pk-btn: linear-gradient(135deg,#0d47a1,#1a237e); --pk-accent: #5c8bff; }
-.pack-card--midfield { --pk-card-bg: linear-gradient(160deg,#130620,#241050); --pk-glow: rgba(106,27,154,0.55); --pk-btn: linear-gradient(135deg,#6a1b9a,#4a148c); --pk-accent: #ce93d8; }
-.pack-card--gk       { --pk-card-bg: linear-gradient(160deg,#021410,#053025); --pk-glow: rgba(0,105,92,0.55); --pk-btn: linear-gradient(135deg,#00695c,#004d40); --pk-accent: #4dd0c4; }
-.pack-card--mega     { --pk-card-bg: linear-gradient(160deg,#1e0900,#3c1400); --pk-glow: rgba(230,81,0,0.65); --pk-btn: linear-gradient(135deg,#e65100,#bf360c); --pk-accent: #ffa726; }
+.pack-card--random   { --pk-card-bg: linear-gradient(160deg,#0a1428,#13204e); --pk-glow: rgba(21,101,192,0.55); --pk-btn: linear-gradient(135deg,#1565c0,#0d47a1); --pk-accent: #42a5f5; --pk-gem-btn: linear-gradient(135deg,#0d47a1,#071a44); }
+.pack-card--attack   { --pk-card-bg: linear-gradient(160deg,#200808,#3e1010); --pk-glow: rgba(198,40,40,0.6); --pk-btn: linear-gradient(135deg,#c62828,#7f0000); --pk-accent: #ef5350; --pk-gem-btn: linear-gradient(135deg,#b71c1c,#5a0000); }
+.pack-card--defense  { --pk-card-bg: linear-gradient(160deg,#060f26,#0b1e50); --pk-glow: rgba(13,71,161,0.55); --pk-btn: linear-gradient(135deg,#0d47a1,#1a237e); --pk-accent: #5c8bff; --pk-gem-btn: linear-gradient(135deg,#0a3470,#061230); }
+.pack-card--midfield { --pk-card-bg: linear-gradient(160deg,#130620,#241050); --pk-glow: rgba(106,27,154,0.55); --pk-btn: linear-gradient(135deg,#6a1b9a,#4a148c); --pk-accent: #ce93d8; --pk-gem-btn: linear-gradient(135deg,#4a148c,#2a0060); }
+.pack-card--gk       { --pk-card-bg: linear-gradient(160deg,#021410,#053025); --pk-glow: rgba(0,105,92,0.55); --pk-btn: linear-gradient(135deg,#00695c,#004d40); --pk-accent: #4dd0c4; --pk-gem-btn: linear-gradient(135deg,#004d40,#001a14); }
+.pack-card--mega     { --pk-card-bg: linear-gradient(160deg,#1e0900,#3c1400); --pk-glow: rgba(230,81,0,0.65); --pk-btn: linear-gradient(135deg,#e65100,#bf360c); --pk-accent: #ffa726; --pk-gem-btn: linear-gradient(135deg,#bf360c,#7a2000); }
 
 .pack-card {
   border-radius: 14px;
@@ -534,7 +540,7 @@
   flex: 1;
   padding: 10px 0;
   border-radius: 10px;
-  background: linear-gradient(135deg, #6a1b9a, #4a148c);
+  background: var(--pk-gem-btn, linear-gradient(135deg, #4a148c, #2a0060));
   border: none;
   color: white;
   font-family: 'Bangers', cursive;
@@ -543,7 +549,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s;
-  box-shadow: 0 3px 12px rgba(106,27,154,0.45);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
 }
 
 .pc-buy-gem:active { opacity: 0.82; }
@@ -590,6 +596,23 @@
 .sp-img-col {
   flex-shrink: 0;
   width: 74px;
+  position: relative;
+}
+
+.sp-x5-badge {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 1px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
 }
 
 .sp-bag-img {
@@ -640,41 +663,36 @@
 .sp-chip--gem  { background: rgba(156,39,176,0.2); border-color: rgba(186,104,200,0.4); }
 .sp-chip--pack { background: rgba(33,150,243,0.15); border-color: rgba(100,181,246,0.35); }
 
-.sp-cta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px 14px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-}
-
-.sp-price-tag {
-  font-family: 'Bangers', cursive;
-  font-size: 24px;
-  letter-spacing: 1px;
-  color: #ffd54f;
-  text-shadow: 0 0 20px rgba(255,213,79,0.35);
-}
-
-.sp-cta-btn {
-  background: linear-gradient(135deg, #2e7d32, #1b5e20);
-  color: white;
-  font-family: 'Bangers', cursive;
-  font-size: 15px;
-  letter-spacing: 1px;
-  padding: 11px 22px;
-  border-radius: 12px;
+.sp-price-btn {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #f9a825, #e65100);
   border: none;
-  cursor: pointer;
-  box-shadow: 0 3px 14px rgba(46,125,50,0.5);
-  -webkit-tap-highlight-color: transparent;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: not-allowed;
+  box-shadow: 0 4px 18px rgba(249,168,37,0.4);
 }
 
-.sp-cta-btn:disabled {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.35);
-  box-shadow: none;
-  cursor: not-allowed;
+.sp-price-amount {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  color: white;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.sp-price-label {
+  font-size: 8px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.8px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 
 /* ── Pack opening overlay ────────────────────────────────────────────────── */

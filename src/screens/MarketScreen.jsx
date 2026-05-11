@@ -596,25 +596,19 @@ export default function MarketScreen() {
             <div className="ad-play-wrap">
               <span className="ad-play-icon">▶</span>
             </div>
-            <div className="ad-text">
+            <div className="ad-body">
               <div className="ad-title">OBEJRZYJ <span className="ad-kw">REKLAMĘ</span></div>
-              <div className="ad-desc">{adSecsLeft > 0 ? `Dostępna za ${fmtCountdown(adSecsLeft)}` : 'Zdobądź nagrodę!'}</div>
-            </div>
-            <div className="ad-rewards">
-              <div className="ad-reward-chip">
-                <span className="ad-reward-icon">🪙</span>
-                <span className="ad-reward-amount">+50</span>
-                <span className="ad-reward-label">MONET</span>
+              <div className="ad-reward-row">
+                <span className="ad-rew-coin">+50 🪙</span>
+                <span className="ad-rew-sep">LUB</span>
+                <span className="ad-rew-gem">+1 💎</span>
               </div>
-              <span className="ad-reward-sep">lub</span>
-              <div className="ad-reward-chip ad-reward-chip--gem">
-                <span className="ad-reward-icon">💎</span>
-                <span className="ad-reward-amount">+1</span>
-                <span className="ad-reward-label">DIAMENT</span>
+              <div className="ad-desc">
+                {adSecsLeft > 0 ? `Dostępna za ${fmtCountdown(adSecsLeft)}` : 'Darmowa nagroda czeka!'}
               </div>
             </div>
-            <div className={`ad-cta ${adSecsLeft > 0 ? 'ad-cta--wait' : ''}`}>
-              {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OGLĄDAJ →'}
+            <div className="ad-visual">
+              <img className="ad-visual-img" src="/market/ad-reward.png" alt="" onError={e => { e.target.style.display = 'none' }} />
             </div>
           </div>
 
@@ -660,7 +654,10 @@ export default function MarketScreen() {
           </div>
 
           {/* Section label */}
-          <div className="packs-section-label">📦 PACZKI</div>
+          <div className="packs-section-label">
+            <span className="psl-text">📦 PACZKI ZAWODNIKÓW</span>
+            <div className="psl-line" />
+          </div>
 
           {/* 3-column pack grid */}
           <div className="packs-grid">
@@ -706,12 +703,17 @@ export default function MarketScreen() {
           </div>
 
           {/* Special offers */}
-          <div className="packs-section-label">⭐ OFERTY SPECJALNE</div>
+          <div className="packs-section-label">
+            <span className="psl-text">⭐ OFERTY SPECJALNE</span>
+            <div className="psl-line" />
+            <div className="offers-timer-badge">⏱ KOŃCZY SIĘ ZA: 2D 12H</div>
+          </div>
           <div className="starter-pack-card">
             <div className="sp-top-badge">⭐ JEDNORAZOWA OFERTA</div>
             <div className="sp-body">
               <div className="sp-img-col">
                 <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
+                <div className="sp-x5-badge">×5</div>
               </div>
               <div className="sp-content">
                 <div className="sp-name">PAKIET STARTOWY</div>
@@ -722,10 +724,10 @@ export default function MarketScreen() {
                   <div className="sp-chip sp-chip--pack">📦 <b>5×</b></div>
                 </div>
               </div>
-            </div>
-            <div className="sp-cta-row">
-              <div className="sp-price-tag">19,99 zł</div>
-              <button className="sp-cta-btn" disabled>🔒 WKRÓTCE</button>
+              <button className="sp-price-btn" disabled>
+                <div className="sp-price-amount">19,99 zł</div>
+                <div className="sp-price-label">JEDNORAZOWA OFERTA</div>
+              </button>
             </div>
           </div>
 

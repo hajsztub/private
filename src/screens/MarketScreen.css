@@ -317,46 +317,15 @@
 }
 
 .prem-card-bag {
-  width: 60px;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  filter: drop-shadow(0 4px 14px rgba(180,0,255,0.5));
-}
-
-.prem-bag-crimp {
-  height: 14px;
-  background: linear-gradient(135deg, #9c27b0, #6a0080);
-  clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
-}
-
-.prem-bag-body {
-  height: 60px;
-  background: linear-gradient(160deg, #7b1fa2 0%, #4a0072 60%, #2d004e 100%);
-  border-radius: 0 0 8px 8px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-.prem-bag-shine {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 45%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
-  border-radius: 0 0 4px 4px;
-}
-
-.prem-bag-logo {
-  font-family: 'Bangers', cursive;
-  font-size: 26px;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,0.9);
-  text-shadow: 0 0 12px rgba(255,100,255,0.8);
-  position: relative;
-  z-index: 1;
+.prem-bag-img {
+  width: 110px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 18px rgba(180,0,255,0.6));
 }
 
 .prem-card-info {
@@ -462,52 +431,20 @@
   z-index: 2;
 }
 
-/* ── Pack bag shape ──────────────────────────────────────────────────────── */
+/* ── Pack bag image ──────────────────────────────────────────────────────── */
 
 .pc-bag-area {
-  padding: 14px 12px 4px;
+  padding: 10px 8px 2px;
   display: flex;
   justify-content: center;
 }
 
-.pc-bag {
-  width: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  filter: drop-shadow(0 4px 10px var(--pk-glow, rgba(255,255,255,0.2)));
-}
-
-.pc-bag-crimp {
-  height: 12px;
-  background: var(--pk-crimp, #1565c0);
-  clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
-}
-
-.pc-bag-body {
-  height: 52px;
-  background: var(--pk-body, #1565c0);
-  border-radius: 0 0 7px 7px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pc-bag-shine {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 42%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 100%);
-  border-radius: 0 0 4px 4px;
-}
-
-.pc-bag-icon {
-  font-size: 20px;
-  line-height: 1;
-  position: relative;
-  z-index: 1;
+.pc-bag-img {
+  width: 100%;
+  max-width: 90px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px var(--pk-glow, rgba(255,255,255,0.2)));
 }
 
 /* ── Pack info ───────────────────────────────────────────────────────────── */

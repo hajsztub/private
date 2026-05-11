@@ -626,11 +626,7 @@ export default function MarketScreen() {
                 <div className="prem-card">
                   <div className="prem-card-badge">💎 PREMIUM</div>
                   <div className="prem-card-bag">
-                    <div className="prem-bag-crimp" />
-                    <div className="prem-bag-body">
-                      <div className="prem-bag-shine" />
-                      <div className="prem-bag-logo">G</div>
-                    </div>
+                    <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" />
                   </div>
                   <div className="prem-card-info">
                     <div className="prem-card-name">PACZKA PREMIUM</div>
@@ -661,13 +657,7 @@ export default function MarketScreen() {
                 <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
                   {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA!</div>}
                   <div className="pc-bag-area">
-                    <div className="pc-bag">
-                      <div className="pc-bag-crimp" />
-                      <div className="pc-bag-body">
-                        <div className="pc-bag-shine" />
-                        <span className="pc-bag-icon">{pack.icon}</span>
-                      </div>
-                    </div>
+                    <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} />
                   </div>
                   <div className="pc-info">
                     <div className="pc-name">{pack.label}</div>

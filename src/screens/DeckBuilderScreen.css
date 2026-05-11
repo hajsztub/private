@@ -161,22 +161,41 @@
   gap: 5px;
   padding: 8px 10px 10px;
   background:
-    linear-gradient(180deg, rgba(200,0,0,0.12) 0%, transparent 25%),
-    linear-gradient(0deg, rgba(0,30,200,0.10) 0%, transparent 25%),
-    linear-gradient(180deg, rgba(0,60,15,0.7) 0%, rgba(0,40,10,0.85) 100%),
-    url('/players_bg.jpg') center / cover no-repeat;
+    repeating-linear-gradient(
+      180deg,
+      rgba(0,0,0,0.07) 0px,
+      rgba(0,0,0,0.07) 22px,
+      transparent 22px,
+      transparent 44px
+    ),
+    linear-gradient(175deg, #0e3a0e 0%, #1a5a1a 45%, #1e6820 55%, #133813 100%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   position: relative;
+  overflow: hidden;
 }
 
+/* Center line */
+.db-pitch::after {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%;
+  top: 50%;
+  height: 1px;
+  background: rgba(255,255,255,0.22);
+  pointer-events: none;
+}
+
+/* Center circle */
 .db-pitch::before {
   content: '';
   position: absolute;
-  left: 10%; right: 10%;
+  left: 50%;
   top: 50%;
-  height: 1px;
-  background: rgba(255,255,255,0.07);
-  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
@@ -239,8 +258,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 4px 2px;
-  background: rgba(0,0,0,0.55);
+  padding: 3px 5px 2px;
+  background: rgba(0,0,0,0.72);
   flex-shrink: 0;
 }
 
@@ -258,10 +277,11 @@
 
 .fs-slot-mainstat {
   font-family: 'Bangers', cursive;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 0.5px;
   color: white;
   line-height: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
 /* Avatar area */
@@ -278,7 +298,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
+  object-position: center 15%;
 }
 
 .fs-slot-fallback {
@@ -294,37 +314,38 @@
 
 /* Footer: name + stats */
 .fs-slot-footer {
-  padding: 2px 4px 3px;
-  background: rgba(0,0,0,0.75);
+  padding: 3px 4px 4px;
+  background: rgba(0,0,0,0.82);
   flex-shrink: 0;
 }
 
 .fs-slot-name {
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 900;
-  color: white;
+  color: #ffffff;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
 .fs-slot-smallstats {
   display: flex;
   justify-content: center;
   gap: 4px;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .fss-atk {
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 900;
   color: #ff8a65;
 }
 
 .fss-def {
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 900;
   color: #82b1ff;
 }
@@ -407,12 +428,13 @@
 }
 
 .db-reserve-slots {
+  flex: 1;
   display: flex;
   gap: 6px;
+  justify-content: center;
 }
 
 .db-reserve-hint {
-  flex: 1;
   font-size: 9px;
   color: rgba(255,255,255,0.3);
   line-height: 1.4;

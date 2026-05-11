@@ -29,7 +29,7 @@ const RESERVE_SLOTS = FORMATION.filter(s => s.type === 'reserve')
 
 const SLOT_ACCEPTS = {
   attack:     ['attack', 'midfield'],
-  midfield:   ['midfield', 'attack', 'defense'],
+  midfield:   ['midfield', 'attack'],
   defense:    ['defense', 'midfield'],
   goalkeeper: ['goalkeeper'],
   reserve:    ['attack', 'midfield', 'defense', 'goalkeeper'],
@@ -589,7 +589,7 @@ export default function DeckBuilderScreen() {
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, selected, onClick, onInfo, injured }) {
+function FormationSlot({ slot, card, selected, onClick, injured }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card ? (card.currentAttackStat ?? 0) : 0
   const def = card ? (card.currentDefenseStat ?? 0) : 0
@@ -630,9 +630,6 @@ function FormationSlot({ slot, card, selected, onClick, onInfo, injured }) {
             </div>
           </div>
           {injured && <div className="fs-slot-injury">🩹</div>}
-          {onInfo && (
-            <button className="fs-info-btn" onClick={onInfo}>ⓘ</button>
-          )}
         </>
       ) : (
         <div className="fs-slot-empty-inner">

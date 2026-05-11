@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
-        name: 'Football Cards',
-        short_name: 'FC Cards',
+        name: 'GOAL TCG',
+        short_name: 'GOAL TCG',
         description: 'Kolekcjonerska gra karciana piłkarska',
         theme_color: '#0b0e1a',
         background_color: '#0b0e1a',

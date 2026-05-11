@@ -262,6 +262,28 @@ function ChangelogModal({ onClose }) {
     showMsg('📅 Misje tygodniowe ukończone')
   }
 
+  const devAddGems = () => {
+    update(prev => ({ ...prev, gems: (prev.gems ?? 0) + 10 }))
+    showMsg('💎 +10 diamentów')
+  }
+
+  const devAdvanceTier = () => {
+    update(prev => {
+      const r = prev.rating ?? 0
+      const NEXT = [1000, 2000, 3000, 4000]
+      const nextMin = NEXT.find(n => r < n)
+      if (!nextMin) { showMsg('💎 Już jesteś w najwyższej lidze!'); return prev }
+      const oldTier = getTier(r)
+      const newTier = getTier(nextMin)
+      return {
+        ...prev,
+        rating: nextMin,
+        lastTierChange: { from: oldTier.id, to: newTier.id, timestamp: Date.now() },
+      }
+    })
+    showMsg('🏆 Awans do wyższej ligi!')
+  }
+
   return (
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal" onClick={e => e.stopPropagation()}>
@@ -296,6 +318,8 @@ function ChangelogModal({ onClose }) {
               <button className="cl-dev-action" onClick={devAddAllPlayers}>👥 Wszyscy zawodnicy</button>
               <button className="cl-dev-action" onClick={devCompleteDailyMissions}>✅ Misje dzienne</button>
               <button className="cl-dev-action" onClick={devCompleteWeeklyMissions}>📅 Misje tygodniowe</button>
+              <button className="cl-dev-action" onClick={devAddGems}>💎 +10 diamentów</button>
+              <button className="cl-dev-action" onClick={devAdvanceTier}>🏆 Awans w lidze</button>
             </div>
           </div>
         )}

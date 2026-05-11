@@ -7,7 +7,7 @@ export const CHANGELOG = [
       'Market: animacja otwierania paczek — prawdziwy 3D flip (rotateY) kolejno per karta, legendarny flash ekranu',
       'Market: pakiet startowy pełna wizualizacja — złoty banner z nagrodami, cena, przycisk WKRÓTCE (oczekuje na system płatności)',
       'Market: przycisk klejnotów wyraźnie wtórny ("lub 💎X") — mniej przypadkowych zakupów',
-      'Changelog: ukryty panel deweloperski (hasło) z przyciskami: +5k monet, wszyscy zawodnicy, ukończ misje dzienne/tygodniowe',
+      'Changelog: ukryty panel deweloperski (hasło) z przyciskami: +5k monet, wszyscy zawodnicy, ukończ misje dzienne/tygodniowe, +10 diamentów, awans w lidze',
     ],
   },
   {

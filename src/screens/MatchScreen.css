@@ -973,7 +973,7 @@
 .zoom-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.78);
+  background: rgba(0,0,0,0.82);
   z-index: 50;
   display: flex;
   align-items: center;
@@ -988,28 +988,40 @@
 }
 
 .zoom-panel {
-  width: min(340px, 100vw - 32px);
+  width: min(380px, 100vw - 24px);
   max-height: 90dvh;
   overflow-y: auto;
-  background: #111e11;
-  border-radius: 20px;
+  background: #0f1a1a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 48px rgba(0,0,0,0.7);
-  animation: panel-pop 0.22s ease;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.8);
+  animation: panel-pop 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
+.zoom-panel::-webkit-scrollbar { display: none; }
+
 @keyframes panel-pop {
-  from { transform: scale(0.93); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from { transform: scale(0.9) translateY(12px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+/* ── Header: avatar left + info right ── */
+
+.zoom-header {
+  display: flex;
+  gap: 0;
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .zoom-avatar {
   position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
+  width: 130px;
   flex-shrink: 0;
+  min-height: 160px;
 }
 
 .zoom-avatar-img {
@@ -1021,42 +1033,62 @@
   object-position: top center;
 }
 
-.zoom-meta-row {
+.zoom-header-info {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 14px 14px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px 0;
-}
-
-.zoom-type-badge {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.85);
-  font-size: 10px;
-  font-weight: 900;
-  padding: 3px 8px;
-  border-radius: 8px;
-  letter-spacing: 0.5px;
-}
-
-.zoom-rarity {
-  font-size: 12px;
-  font-weight: 900;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
 }
 
 .zoom-name {
   font-family: 'Bangers', cursive;
-  font-size: 28px;
-  letter-spacing: 2px;
+  font-size: 30px;
+  letter-spacing: 2.5px;
   color: white;
-  text-align: center;
-  padding: 10px 16px 0;
+  line-height: 1;
+}
+
+.zoom-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+
+.zoom-type-badge {
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.zoom-starter-tag {
+  font-size: 10px;
+  font-weight: 900;
+  color: #00e676;
+  background: rgba(0,230,118,0.12);
+  border: 1px solid rgba(0,230,118,0.3);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.zoom-rarity {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
 .zoom-stats-row {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 8px 16px 4px;
+  align-items: center;
+  gap: 0;
+  margin-top: 4px;
 }
 
 .zoom-stat {
@@ -1064,6 +1096,14 @@
   flex-direction: column;
   align-items: center;
   gap: 1px;
+  flex: 1;
+}
+
+.zoom-stat-sep {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.12);
+  flex-shrink: 0;
 }
 
 .zs-label {
@@ -1075,7 +1115,7 @@
 
 .zs-val {
   font-family: 'Bangers', cursive;
-  font-size: 32px;
+  font-size: 30px;
   line-height: 1;
 }
 
@@ -1083,82 +1123,150 @@
 .zs-val--def { color: #42a5f5; }
 
 .zs-delta {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   border-radius: 5px;
-  padding: 2px 5px;
+  padding: 1px 4px;
   margin-top: 2px;
-  letter-spacing: 0.3px;
 }
 
 .zs-delta--up   { background: rgba(102,187,106,0.2); color: #66bb6a; }
 .zs-delta--down { background: rgba(239,83,80,0.2);   color: #ef5350; }
 
 .zoom-debuff-hint {
-  margin: 4px 14px 0;
-  font-size: 11px;
+  font-size: 10px;
   color: #ef9a9a;
   font-weight: 700;
-  text-align: center;
-  padding: 6px 10px;
-  background: rgba(239,83,80,0.08);
-  border-radius: 8px;
-  border: 1px solid rgba(239,83,80,0.2);
+  margin-top: 2px;
 }
 
+/* ── Ability block ── */
+
 .zoom-ability {
-  margin: 6px 14px 0;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px 12px;
+  margin: 10px 14px 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zoom-ability-header {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.zoom-ability-name {
-  font-family: 'Bangers', cursive;
-  font-size: 16px;
-  letter-spacing: 1px;
-  color: white;
+.zoom-ability-header-lbl {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
 }
 
-.zoom-ability-type {
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 0.5px;
+.zoom-ability-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.zoom-ability-name {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  color: white;
+  line-height: 1;
 }
 
 .zoom-ability-desc {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.45;
+  font-size: 13px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.5;
 }
+
+.zoom-coin-header {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.zoom-coin-outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.zoom-coin-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.82);
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  line-height: 1.4;
+}
+
+.zoom-coin-ico {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.07);
+  border-radius: 8px;
+}
+
+.zoom-coin-ball  { border-left: 3px solid #ff9800; }
+.zoom-coin-glove { border-left: 3px solid #82b1ff; }
 
 .zoom-noact {
   font-size: 11px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.4);
   margin-top: 2px;
+  line-height: 1.4;
 }
 
 .zoom-noact-lbl {
   font-weight: 900;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,200,100,0.65);
+}
+
+/* ── Bottom actions ── */
+
+.zoom-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px 16px;
+  margin-top: 2px;
 }
 
 .zoom-close {
-  margin: 12px 16px 14px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.11);
+  color: rgba(255,255,255,0.5);
   font-family: 'Outfit', sans-serif;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   border-radius: 12px;
   padding: 10px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
 }
 
 /* ── Tutorial overlay ────────────────────────────────────────────────────── */
@@ -1778,44 +1886,48 @@
   border-radius: 8px;
 }
 
-.zoom-coin-ball { border-left: 3px solid #ff9800; }
-.zoom-coin-glove { border-left: 3px solid #82b1ff; }
-
-/* ── Zoom modal: player field action buttons ────────────────────────────── */
+/* ── Zoom modal: action buttons ────────────────────────────────────────── */
 
 .zoom-field-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 10px 16px 0;
+  padding: 10px 14px 0;
 }
 
 .zoom-act-btn {
   width: 100%;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: 'Outfit', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s;
+  letter-spacing: 0.3px;
 }
+
+.zoom-act-btn:active { opacity: 0.82; }
 
 .zoom-act-btn--activate {
   background: linear-gradient(135deg, #f57f17, #e65100);
   color: white;
+  box-shadow: 0 4px 20px rgba(230,81,0,0.4);
+  margin: 10px 14px 0;
 }
 
 .zoom-act-btn--sub {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.13);
   color: rgba(255,255,255,0.75);
 }
 
 .zoom-act-btn--place {
   background: linear-gradient(135deg, #1b5e20, #2e7d32);
   color: white;
+  box-shadow: 0 4px 16px rgba(46,125,50,0.35);
 }
 
 /* ── Redraw button in action bar ────────────────────────────────────────── */

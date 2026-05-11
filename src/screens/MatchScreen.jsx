@@ -34,101 +34,96 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
   const baseDef = card.defenseStat ?? 0
   const atkDelta = atkVal - baseAtk
   const defDelta = defVal - baseDef
+
   const TYPE_LABEL = { attack: 'Napastnik', midfield: 'Pomocnik', defense: 'Obrońca', goalkeeper: 'Bramkarz' }
+  const TYPE_SHORT = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'GK' }
+  const TYPE_C     = { attack: '#ef5350', midfield: '#ab47bc', defense: '#448aff', goalkeeper: '#26a69a' }
   const RARITY_LABEL = { common: 'Normalny', rare: 'Rzadki', legendary: 'Legendarny ★', starter: 'Starter' }
   const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
+
+  const typeColor = TYPE_C[card.type] || '#9e9e9e'
+  const showActivate = isPlayerField && canActivate && card.abilityType !== 'passive' && !card.isLocked && !card.justPlaced
 
   return (
     <div className="zoom-backdrop" onClick={onClose}>
       <div className="zoom-panel" onClick={e => e.stopPropagation()}>
-        <div className="zoom-avatar" style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #07090e)` }}>
-          <img
-            className="zoom-avatar-img"
-            src={`/avatars/${card.id}.png`}
-            alt=""
-            onError={e => { e.target.style.display = 'none' }}
-            draggable={false}
-          />
-        </div>
 
-        <div className="zoom-meta-row">
-          <div className="zoom-type-badge">{card.typeLabel} — {TYPE_LABEL[card.type] || card.type}</div>
-          <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
-            {RARITY_LABEL[card.rarity] || card.rarity}
+        {/* ── Header: avatar + info ── */}
+        <div className="zoom-header">
+          <div
+            className="zoom-avatar"
+            style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #07090e)` }}
+          >
+            <img
+              className="zoom-avatar-img"
+              src={`/avatars/${card.id}.png`}
+              alt=""
+              onError={e => { e.target.style.display = 'none' }}
+              draggable={false}
+            />
           </div>
-        </div>
 
-        <div className="zoom-name">{card.name}</div>
-
-        <div className="zoom-stats-row">
-          <div className="zoom-stat">
-            <span className="zs-label">ATK</span>
-            <span className="zs-val zs-val--atk">{atkVal}</span>
-            {atkDelta !== 0 && (
-              <span className={`zs-delta ${atkDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
-                {atkDelta > 0 ? '+' : ''}{atkDelta}
+          <div className="zoom-header-info">
+            <div className="zoom-name">{card.name}</div>
+            <div className="zoom-badges">
+              <span className="zoom-type-badge" style={{ background: typeColor }}>
+                {TYPE_SHORT[card.type]} — {TYPE_LABEL[card.type] || card.type}
               </span>
-            )}
-          </div>
-          <div className="zoom-stat">
-            <span className="zs-label">DEF</span>
-            <span className="zs-val zs-val--def">{defVal}</span>
-            {defDelta !== 0 && (
-              <span className={`zs-delta ${defDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
-                {defDelta > 0 ? '+' : ''}{defDelta}
-              </span>
-            )}
-          </div>
-          {card.upgradeLevel > 0 && (
-            <div className="zoom-stat">
-              <span className="zs-label">LVL</span>
-              <span className="zs-val" style={{ color: '#ffd54f' }}>+{card.upgradeLevel}</span>
+              {card.isStarter && <span className="zoom-starter-tag">Starter</span>}
             </div>
-          )}
-        </div>
-        {(atkDelta < 0 || defDelta < 0) && (
-          <div className="zoom-debuff-hint">
-            ⚠ Statystyki obniżone przez efekty kart — sprawdź dziennik (ℹ)
+            {card.rarity && card.rarity !== 'common' && (
+              <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
+                {RARITY_LABEL[card.rarity]}
+              </div>
+            )}
+
+            <div className="zoom-stats-row">
+              <div className="zoom-stat">
+                <span className="zs-label">ATK</span>
+                <span className="zs-val zs-val--atk">{atkVal}</span>
+                {atkDelta !== 0 && (
+                  <span className={`zs-delta ${atkDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                    {atkDelta > 0 ? '+' : ''}{atkDelta}
+                  </span>
+                )}
+              </div>
+              <div className="zoom-stat-sep" />
+              <div className="zoom-stat">
+                <span className="zs-label">DEF</span>
+                <span className="zs-val zs-val--def">{defVal}</span>
+                {defDelta !== 0 && (
+                  <span className={`zs-delta ${defDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                    {defDelta > 0 ? '+' : ''}{defDelta}
+                  </span>
+                )}
+              </div>
+              {card.upgradeLevel > 0 && (
+                <>
+                  <div className="zoom-stat-sep" />
+                  <div className="zoom-stat">
+                    <span className="zs-label">LVL</span>
+                    <span className="zs-val" style={{ color: '#ffd54f' }}>+{card.upgradeLevel}</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {(atkDelta < 0 || defDelta < 0) && (
+              <div className="zoom-debuff-hint">
+                ⚠ Statystyki obniżone przez efekty kart
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* ── Activate button ── */}
+        {showActivate && (
+          <button className="zoom-act-btn zoom-act-btn--activate" onClick={onActivate}>
+            ⚡ Aktywuj umiejętność
+          </button>
         )}
 
-        <div className="zoom-ability">
-          <div className="zoom-ability-name">{card.abilityName}</div>
-          <div className="zoom-ability-type">
-            {card.abilityType === 'passive' ? '🔵 PASYWNA'
-              : card.abilityType === 'active_coin' ? '🟡 AKTYWNA (rzut żetonem)'
-              : '🟢 AKTYWNA'}
-          </div>
-          <div className="zoom-ability-desc">{card.abilityDescription}</div>
-          {card.abilityType === 'active_coin' && (
-            <div className="zoom-coin-outcomes">
-              <div className="zoom-coin-ball">⚽ <b>Piłka:</b> {card.activationEffect?.ball?.message || '—'}</div>
-              <div className="zoom-coin-glove">🧤 <b>Rękawica:</b> {card.activationEffect?.glove?.message || '—'}</div>
-            </div>
-          )}
-          {card.noActivationDescription && card.abilityType !== 'passive' && (
-            <div className="zoom-noact">
-              <span className="zoom-noact-lbl">Brak aktywacji: </span>
-              {card.noActivationDescription}
-            </div>
-          )}
-        </div>
-
-        {isPlayerField && (
-          <div className="zoom-field-actions">
-            {canActivate && card.abilityType !== 'passive' && !card.isLocked && !card.justPlaced && (
-              <button className="zoom-act-btn zoom-act-btn--activate" onClick={onActivate}>
-                ⚡ Aktywuj umiejętność
-              </button>
-            )}
-            {onSubstitute && (
-              <button className="zoom-act-btn zoom-act-btn--sub" onClick={onSubstitute}>
-                🔄 Zmiana (wróć na ławkę)
-              </button>
-            )}
-          </div>
-        )}
-
+        {/* ── Placement buttons (hand cards) ── */}
         {placements && placements.length > 0 && (
           <div className="zoom-field-actions">
             {placements.map((p, i) => (
@@ -139,7 +134,59 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
           </div>
         )}
 
-        <button className="zoom-close" onClick={onClose}>✕ Zamknij</button>
+        {/* ── Ability block ── */}
+        {card.abilityName && (
+          <div className="zoom-ability">
+            <div className="zoom-ability-header">
+              <span className="zoom-ability-header-lbl">
+                {card.abilityType === 'passive' ? 'UMIEJĘTNOŚĆ PASYWNA'
+                  : card.abilityType === 'active_coin' ? 'UMIEJĘTNOŚĆ (rzut żetonem)'
+                  : 'UMIEJĘTNOŚĆ'}
+              </span>
+              <div
+                className="zoom-ability-icon"
+                style={{ background: card.abilityType === 'passive' ? 'rgba(68,138,255,0.25)' : `color-mix(in srgb, ${typeColor} 25%, transparent)` }}
+              >
+                {card.abilityType === 'passive' ? '🔵' : card.abilityType === 'active_coin' ? '🎯' : '⚡'}
+              </div>
+              <div className="zoom-ability-name">{card.abilityName}</div>
+            </div>
+            <div className="zoom-ability-desc">{card.abilityDescription}</div>
+
+            {card.abilityType === 'active_coin' && (
+              <>
+                <div className="zoom-coin-header">MOŻLIWE WYNIKI RZUTU ŻETONEM:</div>
+                <div className="zoom-coin-outcomes">
+                  <div className="zoom-coin-row zoom-coin-ball">
+                    <span className="zoom-coin-ico">⚽</span>
+                    <span><b>Piłka:</b> {card.activationEffect?.ball?.message || '—'}</span>
+                  </div>
+                  <div className="zoom-coin-row zoom-coin-glove">
+                    <span className="zoom-coin-ico">🧤</span>
+                    <span><b>Rękawica:</b> {card.activationEffect?.glove?.message || '—'}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {card.noActivationDescription && card.abilityType !== 'passive' && (
+              <div className="zoom-noact">
+                <span className="zoom-noact-lbl">Brak aktywacji: </span>
+                {card.noActivationDescription}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Bottom actions ── */}
+        <div className="zoom-bottom-actions">
+          {isPlayerField && onSubstitute && (
+            <button className="zoom-act-btn zoom-act-btn--sub" onClick={onSubstitute}>
+              ⇄ Zmień zawodnika
+            </button>
+          )}
+          <button className="zoom-close" onClick={onClose}>Zamknij</button>
+        </div>
       </div>
     </div>
   )

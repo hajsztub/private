@@ -986,11 +986,32 @@ export default function MatchScreen({ matchParams = {} }) {
         />
       )}
 
+      {/* ── Turn bar (between field and hand) ───────────────────────────── */}
+      <div className="ms-turn-bar">
+        <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+          {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+        </span>
+        <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+          {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+        </span>
+        <div className="ms-timer-track">
+          <div
+            className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+            style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }}
+          />
+        </div>
+      </div>
+
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      {(playerA.hand.length > 0 || handCollapsed) && (
-        <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
+      {handCollapsed ? (
+        <div className="ms-hand-collapsed-bar">
+          <span className="ms-hand-collapsed-text">🃏 Brak kart na ręce</span>
+          <button className="ms-hand-expand-btn" onClick={() => setHandCollapsed(false)}>▲ Rozwiń rękę</button>
+        </div>
+      ) : playerA.hand.length > 0 ? (
+        <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
           <div className="ms-hand-scroll">
-            {!handCollapsed && playerA.hand.map(card => (
+            {playerA.hand.map(card => (
               <FieldCard
                 key={card.instanceId}
                 card={card}
@@ -1015,36 +1036,22 @@ export default function MatchScreen({ matchParams = {} }) {
                 onDragStart={handleDragStart}
               />
             ))}
-            <div className="ms-hand-right">
-              <button className="ms-hand-chevron" onClick={() => setHandCollapsed(h => !h)}>
-                {handCollapsed ? '▲' : '⌄'}
-              </button>
-              <div
-                ref={deckBadgeRef}
-                className="ms-deck-stack"
-                onClick={() => setShowDeckPopup(p => !p)}
-              >{playerA.deck.length}</div>
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* ── Action bar ──────────────────────────────────────────────────── */}
-      <div className="ms-action-bar">
-        <div className="ms-turn-header">
-          <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
-            {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
-          </span>
-          <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
-            {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
-          </span>
-          <div className="ms-timer-track">
+          <div className="ms-hand-right">
+            <button className="ms-hand-chevron" onClick={() => setHandCollapsed(true)}>
+              ⌄⌄
+            </button>
             <div
-              className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
-              style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }}
-            />
+              ref={deckBadgeRef}
+              className="ms-deck-stack"
+              onClick={() => setShowDeckPopup(p => !p)}
+            >{playerA.deck.length}</div>
           </div>
         </div>
+      ) : null}
+
+      {/* ── Action bar (buttons only) ────────────────────────────────────── */}
+      <div className="ms-action-bar">
         <div className="ms-action-row">
           <button
             className={`ms-forfeit-btn${!isPlayerTurn ? ' ms-forfeit-btn--dim' : ''}`}

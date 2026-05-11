@@ -320,8 +320,17 @@
   padding: 4px 0;
 }
 
-.ms-hand-area--collapsed .ms-hand-scroll {
-  display: none;
+/* ── Turn bar (above hand) ───────────────────────────────────────────────── */
+
+.ms-turn-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  background: rgba(6,9,18,0.97);
+  border-top: 1px solid rgba(255,255,255,0.07);
 }
 
 /* ── Field wrap ──────────────────────────────────────────────────────────── */
@@ -365,25 +374,15 @@
 }
 
 .ms-goal--ai .ms-goal-inner {
-  background: linear-gradient(90deg,
-    rgba(100,0,0,0.55) 0%,
-    rgba(30,8,8,0.92) 20%,
-    rgba(30,8,8,0.92) 80%,
-    rgba(180,30,30,0.4) 100%
-  );
-  border-top: 1px solid rgba(229,57,53,0.35);
-  border-bottom: 1px solid rgba(229,57,53,0.35);
+  background: #0b0f1a;
+  border-top: 1px solid rgba(229,57,53,0.2);
+  border-bottom: 1px solid rgba(229,57,53,0.2);
 }
 
 .ms-goal--player .ms-goal-inner {
-  background: linear-gradient(90deg,
-    rgba(0,50,140,0.55) 0%,
-    rgba(8,16,38,0.92) 20%,
-    rgba(8,16,38,0.92) 80%,
-    rgba(30,100,220,0.4) 100%
-  );
-  border-top: 1px solid rgba(66,165,245,0.35);
-  border-bottom: 1px solid rgba(66,165,245,0.35);
+  background: #0b0f1a;
+  border-top: 1px solid rgba(66,165,245,0.2);
+  border-bottom: 1px solid rgba(66,165,245,0.2);
 }
 
 .ms-goal-inner {
@@ -702,13 +701,50 @@
 
 /* ── Hand area ───────────────────────────────────────────────────────────── */
 
+/* ── Hand collapsed bar ──────────────────────────────────────────────────── */
+
+.ms-hand-collapsed-bar {
+  flex-shrink: 0;
+  height: 44px;
+  background: #0d1117;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  gap: 10px;
+}
+
+.ms-hand-collapsed-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.5px;
+}
+
+.ms-hand-expand-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #00e676;
+  background: rgba(0,230,118,0.1);
+  border: 1px solid rgba(0,230,118,0.25);
+  border-radius: 8px;
+  padding: 4px 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+/* ── Hand area (expanded) ────────────────────────────────────────────────── */
+
 .ms-hand-area {
   flex-shrink: 0;
   background: #0d1117;
   border-top: 1px solid rgba(255,255,255,0.08);
   display: flex;
-  flex-direction: column;
-  padding-bottom: max(0px, env(safe-area-inset-bottom));
+  flex-direction: row;
+  align-items: stretch;
 }
 
 .ms-place-hint {
@@ -748,16 +784,16 @@
 .mph-btn--x   { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); }
 
 .ms-hand-scroll {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: row;
   gap: 8px;
-  padding: 8px 10px 6px;
+  padding: 8px 8px 8px 10px;
   overflow-x: auto;
   overflow-y: visible;
   scrollbar-width: none;
-  position: relative;
   align-items: center;
-  justify-content: center;
 }
 
 .ms-hand-scroll::-webkit-scrollbar { display: none; }
@@ -789,35 +825,38 @@
 /* ── Hand right controls (chevron + deck stack) ──────────────────────────── */
 
 .ms-hand-right {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  position: sticky;
-  right: 0;
-  flex-shrink: 0;
-  padding-left: 4px;
-  background: linear-gradient(to left, #0d1117 60%, transparent 100%);
-  z-index: 2;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #0a0e18;
+  border-left: 1px solid rgba(255,255,255,0.07);
 }
 
 .ms-hand-chevron {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.7);
-  font-size: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: -1px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
 }
 
-.ms-hand-chevron:active { background: rgba(255,255,255,0.2); }
+.ms-hand-chevron:active { background: rgba(255,255,255,0.18); }
 
 .ms-deck-stack {
   width: 32px;
@@ -851,22 +890,10 @@
 
 .ms-action-bar {
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   padding: 8px 10px;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
   background: rgba(6,9,18,0.97);
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-/* ── Turn header (label + timer + bar) ───────────────────────────────────── */
-
-.ms-turn-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .ms-turn-label {

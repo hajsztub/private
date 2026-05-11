@@ -1003,51 +1003,65 @@ export default function MatchScreen({ matchParams = {} }) {
       </div>
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      {handCollapsed ? (
-        <div className="ms-hand-collapsed-bar">
-          <span className="ms-hand-collapsed-text">🃏 Brak kart na ręce</span>
-          <button className="ms-hand-expand-btn" onClick={() => setHandCollapsed(false)}>▲ Rozwiń rękę</button>
-        </div>
-      ) : playerA.hand.length > 0 ? (
-        <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
-          <div className="ms-hand-scroll">
-            {playerA.hand.map(card => (
-              <FieldCard
-                key={card.instanceId}
-                card={card}
-                selected={selectedCard?.instanceId === card.instanceId}
-                onTap={() => {
-                  const now = Date.now()
-                  const last = lastTapRef.current[`h_${card.instanceId}`] || 0
-                  lastTapRef.current[`h_${card.instanceId}`] = now
-                  if (isPlayerTurn && now - last < 360) {
-                    const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
-                    const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
-                    if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
-                    else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
-                    else showNotif('Brak wolnego miejsca!')
-                    setSelectedCard(null)
-                  } else {
-                    SFX.cardSelect()
-                    setZoomCard({ card, isPlayerField: false, fromHand: true })
-                  }
-                }}
-                onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
-                onDragStart={handleDragStart}
-              />
-            ))}
+      {playerA.hand.length > 0 ? (
+        handCollapsed ? (
+          <div className="ms-hand-collapsed-bar">
+            <span className="ms-hand-collapsed-text">🃏 Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
+            <button className="ms-hand-expand-btn" onClick={() => setHandCollapsed(false)}>▲ Rozwiń</button>
           </div>
-          <div className="ms-hand-right">
-            <button className="ms-hand-chevron" onClick={() => setHandCollapsed(true)}>
-              ⌄⌄
-            </button>
-            <div
-              ref={deckBadgeRef}
-              className="ms-deck-stack"
-              onClick={() => setShowDeckPopup(p => !p)}
-            >{playerA.deck.length}</div>
+        ) : (
+          <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
+            <div className="ms-hand-scroll">
+              {playerA.hand.map((card, idx) => {
+                const n = playerA.hand.length
+                const t = n > 1 ? (idx - (n - 1) / 2) / ((n - 1) / 2) : 0
+                const rotate = t * 10
+                const ty = Math.abs(t) * 6
+                const isSelected = selectedCard?.instanceId === card.instanceId
+                return (
+                  <div
+                    key={card.instanceId}
+                    className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
+                    style={{ transform: `rotate(${rotate}deg) translateY(${ty}px)` }}
+                  >
+                    <FieldCard
+                      card={card}
+                      selected={isSelected}
+                      onTap={() => {
+                        const now = Date.now()
+                        const last = lastTapRef.current[`h_${card.instanceId}`] || 0
+                        lastTapRef.current[`h_${card.instanceId}`] = now
+                        if (isPlayerTurn && now - last < 360) {
+                          const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
+                          const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
+                          if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
+                          else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
+                          else showNotif('Brak wolnego miejsca!')
+                          setSelectedCard(null)
+                        } else {
+                          SFX.cardSelect()
+                          setZoomCard({ card, isPlayerField: false, fromHand: true })
+                        }
+                      }}
+                      onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
+                      onDragStart={handleDragStart}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+            <div className="ms-hand-right">
+              <button className="ms-hand-chevron" onClick={() => setHandCollapsed(true)}>
+                ⌄⌄
+              </button>
+              <div
+                ref={deckBadgeRef}
+                className="ms-deck-stack"
+                onClick={() => setShowDeckPopup(p => !p)}
+              >{playerA.deck.length}</div>
+            </div>
           </div>
-        </div>
+        )
       ) : null}
 
       {/* ── Action bar (buttons only) ────────────────────────────────────── */}

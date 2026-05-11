@@ -610,13 +610,14 @@ export default function MarketScreen() {
           {/* Featured row: Free Pack + Premium side by side */}
           <div className="featured-row">
             <div className={`fp-card ${freePackSecsLeft > 0 ? 'fp-card--cooldown' : ''}`} onClick={handleClaimFreePack}>
-              <div className="fp-card-icon">🎁</div>
-              <div className="fp-card-title">DARMOWA PACZKA</div>
-              <div className="fp-card-desc">1 zawodnik + 30 monet</div>
-              {freePackSecsLeft > 0 && <div className="fp-card-timer">{fmtCountdown(freePackSecsLeft)}</div>}
-              <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
-                {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
-              </button>
+              <img className="fp-bag-img" src="/packs/pack-free.png" alt="Darmowa paczka" onError={e => { e.target.style.display='none' }} />
+              <div className="fp-card-body">
+                <div className="fp-card-title">DARMOWA</div>
+                <div className="fp-card-desc">1 zawodnik + 30🪙</div>
+                <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
+                  {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
+                </button>
+              </div>
             </div>
 
             {(() => {
@@ -624,21 +625,17 @@ export default function MarketScreen() {
               const canAfford = gems >= prem.cost
               return (
                 <div className="prem-card">
-                  <div className="prem-card-badge">💎 PREMIUM</div>
-                  <div className="prem-card-bag">
-                    <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" />
-                  </div>
+                  <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" />
                   <div className="prem-card-info">
+                    <div className="prem-card-badge">💎 PREMIUM</div>
                     <div className="prem-card-name">PACZKA PREMIUM</div>
-                    <div className="prem-card-desc">5 kart + Gwarantowana Legendarna!</div>
-                    <div className="prem-card-btns">
-                      <button
-                        className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
-                        onClick={() => handleBuyPack(prem)}
-                      >
-                        💎 {prem.cost}
-                      </button>
-                    </div>
+                    <div className="prem-card-desc">5 kart • Gwarantowana Legenda!</div>
+                    <button
+                      className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
+                      onClick={() => handleBuyPack(prem)}
+                    >
+                      💎 {prem.cost}
+                    </button>
                   </div>
                 </div>
               )

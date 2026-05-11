@@ -454,34 +454,35 @@
   z-index: 2;
 }
 
-/* ── Pack card: vertical layout ──────────────────────────────────────────── */
+/* ── Pack card: horizontal layout ────────────────────────────────────────── */
 
-.pc-img-area {
+.pc-main {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 12px 16px 4px;
-  height: 88px;
+  gap: 10px;
+  padding: 10px 10px 8px;
 }
 
-.pack-card--mega .pc-img-area { padding-top: 18px; height: 82px; }
+.pc-img-col {
+  flex-shrink: 0;
+  width: 62px;
+}
 
 .pc-bag-img {
-  height: 100%;
-  width: auto;
-  max-width: 80%;
+  width: 100%;
+  height: auto;
   display: block;
   filter: drop-shadow(0 4px 14px var(--pk-glow, rgba(255,255,255,0.3)));
-  object-fit: contain;
 }
 
-.pc-info {
-  padding: 2px 10px 6px;
+.pc-text-col {
+  flex: 1;
+  min-width: 0;
 }
 
 .pc-name {
   font-family: 'Bangers', cursive;
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 1.5px;
   color: white;
   line-height: 1;
@@ -506,21 +507,20 @@
 
 .pc-actions {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 4px 10px 12px;
-  margin-top: auto;
+  flex-direction: row;
+  gap: 6px;
+  padding: 0 10px 10px;
 }
 
 .pc-buy-coin {
-  width: 100%;
-  padding: 11px 0;
+  flex: 1;
+  padding: 10px 0;
   border-radius: 10px;
   background: var(--pk-btn, linear-gradient(135deg,#1565c0,#0d47a1));
   border: none;
   color: white;
   font-family: 'Bangers', cursive;
-  font-size: 17px;
+  font-size: 15px;
   letter-spacing: 1.2px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -531,20 +531,22 @@
 .pc-buy-coin:active { opacity: 0.82; }
 
 .pc-buy-gem {
-  width: 100%;
-  padding: 7px 0;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.4);
-  font-size: 11px;
-  font-weight: 700;
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6a1b9a, #4a148c);
+  border: none;
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 1.2px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s;
+  box-shadow: 0 3px 12px rgba(106,27,154,0.45);
 }
 
-.pc-buy-gem:active { opacity: 0.75; }
+.pc-buy-gem:active { opacity: 0.82; }
 
 .pc-buy--locked { opacity: 0.32; cursor: not-allowed; }
 
@@ -790,13 +792,12 @@
   gap: 5px;
 }
 
-.poc-back-ball { font-size: 26px; opacity: 0.65; }
-
-.poc-back-label {
-  font-family: 'Bangers', cursive;
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  color: rgba(0,230,118,0.4);
+.poc-back-logo {
+  width: 65%;
+  height: auto;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 8px rgba(0,230,118,0.25));
+  display: block;
 }
 
 .poc-front {

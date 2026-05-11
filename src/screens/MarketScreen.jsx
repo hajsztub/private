@@ -261,8 +261,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
               >
                 <div className="poc-inner">
                   <div className="poc-back">
-                    <span className="poc-back-ball">⚽</span>
-                    <span className="poc-back-label">GOAL TCG</span>
+                    <img className="poc-back-logo" src="/logo.png" alt="GOAL TCG" onError={e => { e.target.style.display = 'none' }} />
                   </div>
                   <div className="poc-front">
                     <FieldCard card={card} fieldSize />
@@ -682,20 +681,22 @@ export default function MarketScreen() {
                 return (
                   <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
                     {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA WARTOŚĆ!</div>}
-                    <div className="pc-img-area">
-                      <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
-                    </div>
-                    <div className="pc-info">
-                      <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
-                      <div className="pc-karta-count">{cardCount}</div>
-                      <div className="pc-short-desc">{descMap[pack.id]}</div>
+                    <div className="pc-main">
+                      <div className="pc-img-col">
+                        <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
+                      </div>
+                      <div className="pc-text-col">
+                        <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
+                        <div className="pc-karta-count">{cardCount}</div>
+                        <div className="pc-short-desc">{descMap[pack.id]}</div>
+                      </div>
                     </div>
                     <div className="pc-actions">
                       <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
                         🪙 {pack.cost}
                       </button>
                       <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
-                        lub 💎 {pack.gemCost}
+                        💎 {pack.gemCost}
                       </button>
                     </div>
                   </div>

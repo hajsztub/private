@@ -892,7 +892,7 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* === AI FIELD === */}
         <div className="ms-half ms-half--ai">
           <Zone
-            label="⚔ ATAK"
+            label="ATAK PRZECIWNIKA"
             cards={playerB.offenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
@@ -900,7 +900,7 @@ export default function MatchScreen({ matchParams = {} }) {
           />
           <div className="ms-zone-sep" />
           <Zone
-            label="🛡 OBRONA"
+            label="OBRONA PRZECIWNIKA"
             cards={playerB.defenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
@@ -924,7 +924,7 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* === PLAYER FIELD === */}
         <div className="ms-half ms-half--player">
           <Zone
-            label="🛡 OBRONA"
+            label="TWOJA OBRONA"
             cards={playerA.defenseSector}
             side="player"
             zone="defense"
@@ -938,7 +938,7 @@ export default function MatchScreen({ matchParams = {} }) {
           />
           <div className="ms-zone-sep" />
           <Zone
-            label="⚔ ATAK"
+            label="TWÓJ ATAK"
             cards={playerA.offenseSector}
             side="player"
             zone="offense"
@@ -1013,16 +1013,11 @@ export default function MatchScreen({ matchParams = {} }) {
           <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
             <div className="ms-hand-scroll">
               {playerA.hand.map((card, idx) => {
-                const n = playerA.hand.length
-                const t = n > 1 ? (idx - (n - 1) / 2) / ((n - 1) / 2) : 0
-                const rotate = t * 10
-                const ty = Math.abs(t) * 6
                 const isSelected = selectedCard?.instanceId === card.instanceId
                 return (
                   <div
                     key={card.instanceId}
                     className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
-                    style={{ transform: `rotate(${rotate}deg) translateY(${ty}px)` }}
                   >
                     <FieldCard
                       card={card}

@@ -422,8 +422,8 @@
 .gk-card {
   flex: 1;
   min-width: 0;
-  max-width: 160px;
-  height: 90px;
+  max-width: 180px;
+  height: 120px;
   border-radius: 10px;
   overflow: hidden;
   border: 2px solid var(--rarity-b, rgba(255,255,255,0.25));
@@ -444,7 +444,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 90px;
+  height: 120px;
 }
 
 /* Full-bleed avatar */

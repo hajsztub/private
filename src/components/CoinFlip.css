@@ -311,7 +311,7 @@
 /* ── Waiting ── */
 
 .cf-waiting {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 14px;
   color: rgba(255,255,255,0.4);
@@ -345,7 +345,7 @@
   width: 100%;
   border: none;
   border-radius: 16px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

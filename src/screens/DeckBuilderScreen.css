@@ -4,7 +4,7 @@
   height: 100dvh;
   background: #070b14;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -470,7 +470,7 @@
   color: rgba(255,255,255,0.45);
   border-radius: 20px;
   padding: 4px 10px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
@@ -506,7 +506,7 @@
   color: rgba(255,255,255,0.6);
   border-radius: 14px;
   padding: 3px 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
@@ -720,7 +720,7 @@
   border: none;
   border-radius: 12px;
   padding: 11px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   font-size: 12px;
   letter-spacing: 0.5px;
@@ -736,7 +736,7 @@
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   padding: 11px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   font-size: 12px;
   letter-spacing: 0.5px;
@@ -751,7 +751,7 @@
   border: none;
   border-radius: 12px;
   padding: 14px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   font-size: 14px;
   cursor: pointer;

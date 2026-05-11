@@ -12,7 +12,7 @@
   flex-shrink: 0;
   cursor: pointer;
   position: relative;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -187,8 +187,9 @@
 }
 
 .fc-pos-badge {
+  font-family: 'Inter', sans-serif;
   font-size: 8px;
-  font-weight: 900;
+  font-weight: 700;
   color: white;
   background: var(--type-c);
   border-radius: 4px;
@@ -221,7 +222,8 @@
 .fc-name {
   font-family: 'Bangers', cursive;
   font-size: 12px;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: white;
   white-space: nowrap;
   overflow: hidden;
@@ -238,8 +240,9 @@
 }
 
 .fc-mini-stat {
+  font-family: 'Inter', sans-serif;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 700;
   color: white;
   text-shadow: 0 1px 4px rgba(0,0,0,1);
   letter-spacing: 0.2px;
@@ -429,7 +432,7 @@
   border: 2px solid var(--rarity-b, rgba(255,255,255,0.25));
   box-shadow: var(--rarity-s, 0 3px 10px rgba(0,0,0,0.4));
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   position: relative;
   background: linear-gradient(160deg, var(--gk-color, #0d1f12), #07090e);
 }
@@ -457,7 +460,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 38%;
   display: block;
 }
 

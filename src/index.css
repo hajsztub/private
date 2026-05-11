@@ -34,7 +34,7 @@ body {
   overflow: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   background: var(--c-bg);
   color: var(--c-text);

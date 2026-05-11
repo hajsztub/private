@@ -1,5 +1,21 @@
 export const CHANGELOG = [
   {
+    version: '5.9',
+    date: '2026-05-11',
+    changes: [
+      'Ekran meczu: tablica wyników wyższa (68px) z wyraźnym separatorem od boiska',
+      'Ekran meczu: tło boiska z CSS (naprzemienne paski trawy) — usunięto pitch.jpg',
+      'Ekran meczu: naprawiono start gry — gracz otrzymuje 3 karty na ręce (wcześniej bywało 2 przy brakującym typie)',
+      'Ekran meczu: liczba kart w talii widoczna również gdy ręka jest pusta',
+      'Ekran meczu: avatar bramkarza obniżony — widoczne oczy i twarz (object-position 38%)',
+      'Czcionki: zamiana Outfit → Inter (body), dodano Lilita One; wszystkie pliki CSS zaktualizowane',
+      'Czcionki: nazwy kart — Bangers uppercase; pozycja — Inter Bold; stats — Bangers; małe wartości — Inter Bold',
+      'Czcionki: CTA (ZAKOŃCZ TURĘ, NOWA RĘKA) — Bangers; tura/czas — Inter Bold; opisy — Inter SemiBold',
+      'Emoji: zamiana większości emoji na symbole Unicode (●, ◎, ▶, ☰, ★, ↺, ≡); zachowano ⚽, 💎, 🧤',
+      'Ekran meczu: ikony drużyn w scoreboard — stylowane kółka z tekstem AI/TY zamiast emoji',
+    ],
+  },
+  {
     version: '5.8',
     date: '2026-05-11',
     changes: [

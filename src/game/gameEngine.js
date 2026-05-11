@@ -92,6 +92,8 @@ export function selectGoalkeeper(state, playerId, gkInstanceId) {
   return updated
 }
 
+const STARTING_HAND_SIZE = 3
+
 function dealStartingHand(deck) {
   const types = ['defense', 'midfield', 'attack']
   const hand = []
@@ -101,6 +103,10 @@ function dealStartingHand(deck) {
     if (idx !== -1) {
       hand.push(...remaining.splice(idx, 1))
     }
+  }
+  // Fill to STARTING_HAND_SIZE if some types were missing
+  while (hand.length < STARTING_HAND_SIZE && remaining.length > 0) {
+    hand.push(...remaining.splice(0, 1))
   }
   return { hand, deck: remaining }
 }

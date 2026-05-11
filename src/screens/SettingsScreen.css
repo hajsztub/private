@@ -7,7 +7,7 @@
     url('/bg.jpg') center top / cover no-repeat;
   background-color: #07090e;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -57,7 +57,7 @@
   width: 100%;
   text-align: left;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .settings-row--name {
@@ -111,7 +111,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 700;
   padding: 8px 12px;
@@ -126,7 +126,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 900;
   padding: 8px 16px;
@@ -198,7 +198,7 @@
   border: 1px solid var(--c-border);
   border-radius: 8px;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 700;
   padding: 6px 10px;

@@ -124,7 +124,7 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
                 className="zoom-ability-icon"
                 style={{ background: card.abilityType === 'passive' ? 'rgba(68,138,255,0.25)' : `color-mix(in srgb, ${typeColor} 25%, transparent)` }}
               >
-                {card.abilityType === 'passive' ? '🔵' : card.abilityType === 'active_coin' ? '🎯' : '⚡'}
+                {card.abilityType === 'passive' ? '●' : card.abilityType === 'active_coin' ? '◎' : '▶'}
               </div>
               <div className="zoom-ability-title-group">
                 <span className="zoom-ability-header-lbl">
@@ -170,7 +170,7 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
             {/* Activate button */}
             {showActivate && (
               <button className="zoom-act-btn zoom-act-btn--activate zoom-act-btn--inline" onClick={onActivate}>
-                ⚡ Aktywuj umiejętność
+                ▶ Aktywuj umiejętność
               </button>
             )}
           </div>
@@ -220,7 +220,7 @@ function MatchLogPanel({ log, round, onClose }) {
     <div className="mlog-overlay" onClick={onClose}>
       <div className="mlog-panel" onClick={e => e.stopPropagation()}>
         <div className="mlog-header">
-          <span className="mlog-title">📋 Dziennik meczu</span>
+          <span className="mlog-title">≡ Dziennik meczu</span>
           <button className="mlog-close" onClick={onClose}>✕</button>
         </div>
         <div className="mlog-body">
@@ -640,7 +640,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
     const primaryGkId = assignments.gk1
     const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
-    const MATCH_TYPE_LABEL = { league: '🏆 MECZ LIGOWY', training_amateur: '🟢 TRENING AMATOR', training_pro: '🔴 TRENING PRO' }
+    const MATCH_TYPE_LABEL = { league: 'MECZ LIGOWY', training_amateur: 'TRENING AMATOR', training_pro: 'TRENING PRO' }
     const TYPE_C = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#ffa000' }
     const TYPE_L = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'G' }
 
@@ -823,7 +823,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Scoreboard ──────────────────────────────────────────────────── */}
       <div className="ms-scoreboard">
         <div className="msb-side msb-side--left">
-          <div className="msb-team-icon msb-team-icon--ai">⚡</div>
+          <div className="msb-team-icon msb-team-icon--ai">AI</div>
           <span className={`msb-dot ${currentPlayer === 'B' ? 'msb-dot--on' : ''}`} />
           <span className="msb-name">{opponentName}</span>
         </div>
@@ -852,7 +852,7 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
           <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
-          <div className="msb-team-icon msb-team-icon--player">🛡</div>
+          <div className="msb-team-icon msb-team-icon--player">TY</div>
         </div>
       </div>
 
@@ -861,7 +861,7 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-field-markings" aria-hidden="true" />
         {!isPlayerTurn && phase === 'playing' && (
           <div className="ms-turn-banner">
-            {aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika'}
+            {aiThinking ? '· · · Przeciwnik myśli' : 'Tura przeciwnika'}
           </div>
         )}
 
@@ -911,9 +911,9 @@ export default function MatchScreen({ matchParams = {} }) {
           <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
           <div className="ms-mid-line" />
           {upcomingSpecial
-            ? <div className="ms-mid-event ms-mid-event--special">🃏 Karta specjalna po rundzie!</div>
+            ? <div className="ms-mid-event ms-mid-event--special">★ Karta specjalna!</div>
             : upcomingDraw
-            ? <div className="ms-mid-event ms-mid-event--draw">📤 Dobierasz kartę po rundzie</div>
+            ? <div className="ms-mid-event ms-mid-event--draw">+ Dobierasz kartę</div>
             : <div className="ms-mid-ball">⚽</div>
           }
           <div className="ms-mid-line" />
@@ -1000,7 +1000,7 @@ export default function MatchScreen({ matchParams = {} }) {
                 </div>
               </div>
               <div className="ms-hand-collapsed-inner">
-                <span className="ms-hand-collapsed-text">🃏 Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
+                <span className="ms-hand-collapsed-text">☰ Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
               </div>
             </div>
             <div className="ms-hand-right">
@@ -1091,7 +1091,12 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="ms-hand-collapsed-text">Brak kart na ręce</span>
             </div>
           </div>
-          <div className="ms-hand-right ms-hand-right--empty" />
+          <div className="ms-hand-right">
+            <div
+              className="ms-deck-stack"
+              onClick={() => setShowDeckPopup(p => !p)}
+            >{playerA.deck.length}</div>
+          </div>
         </div>
       )}
 
@@ -1101,13 +1106,13 @@ export default function MatchScreen({ matchParams = {} }) {
           <button
             className={`ms-forfeit-btn${!isPlayerTurn ? ' ms-forfeit-btn--dim' : ''}`}
             onClick={() => isPlayerTurn && setShowForfeit(true)}
-          >🚩</button>
+          >✕</button>
           {matchState.redraws < 2 ? (
             <button
               className={`ms-redraw-btn${!isPlayerTurn ? ' ms-redraw-btn--dim' : ''}`}
               onClick={() => isPlayerTurn && setShowRedrawConfirm(true)}
             >
-              <span className="ms-redraw-icon">🃏</span>
+              <span className="ms-redraw-icon">☰</span>
               <span className="ms-redraw-text">
                 <span className="ms-redraw-title">NOWA RĘKA</span>
                 <span className="ms-redraw-sub">{playerA.hand.length} nowe karty</span>
@@ -1115,7 +1120,7 @@ export default function MatchScreen({ matchParams = {} }) {
             </button>
           ) : (
             <button className="ms-redraw-btn ms-redraw-btn--used" disabled>
-              <span className="ms-redraw-icon">🃏</span>
+              <span className="ms-redraw-icon">☰</span>
               <span className="ms-redraw-text">
                 <span className="ms-redraw-title">NOWA RĘKA</span>
                 <span className="ms-redraw-sub">wyczerpane</span>
@@ -1127,7 +1132,7 @@ export default function MatchScreen({ matchParams = {} }) {
             onClick={handleEndTurn}
             disabled={!isPlayerTurn || !!coinFlipState?.pending}
           >
-            {!isPlayerTurn ? (aiThinking ? '🤔 Myśli...' : '⏳ Czeka') : 'ZAKOŃCZ TURĘ'}
+            {!isPlayerTurn ? (aiThinking ? '· · ·' : 'Czeka') : 'ZAKOŃCZ TURĘ'}
           </button>
         </div>
       </div>
@@ -1136,7 +1141,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {showRedrawConfirm && (
         <div className="ms-forfeit-confirm">
           <div className="ms-forfeit-panel">
-            <div className="ms-forfeit-title">🔄 Przetasować rękę?</div>
+            <div className="ms-forfeit-title">↺ Przetasować rękę?</div>
             <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Zostało przetasowań: {2 - matchState.redraws}/2</div>
             <div className="ms-forfeit-btns">
               <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'REDRAW_HAND' }); setShowRedrawConfirm(false) }}>
@@ -1154,7 +1159,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {showForfeit && (
         <div className="ms-forfeit-confirm">
           <div className="ms-forfeit-panel">
-            <div className="ms-forfeit-title">🏳 Poddać mecz?</div>
+            <div className="ms-forfeit-title">◈ Poddać mecz?</div>
             <div className="ms-forfeit-sub">Wynik zostanie zapisany jako 0:3</div>
             <div className="ms-forfeit-btns">
               <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'FORFEIT' }); setShowForfeit(false) }}>
@@ -1198,9 +1203,9 @@ export default function MatchScreen({ matchParams = {} }) {
         const placements = []
         if (zoomCard.fromHand && isPlayerTurn) {
           if (canPlaceInSector(zc, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE)
-            placements.push({ label: '⚔ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
+            placements.push({ label: '▶ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
           if (canPlaceInSector(zc, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE)
-            placements.push({ label: '🛡 Wystaw w Obronie', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'defense' }); setZoomCard(null) } })
+            placements.push({ label: '◈ Wystaw w Obronie', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'defense' }); setZoomCard(null) } })
         }
         return (
           <CardZoomModal

@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   padding: max(28px, env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: white;
   overflow-y: auto;
   gap: 14px;

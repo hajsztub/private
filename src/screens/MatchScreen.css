@@ -364,57 +364,39 @@
   z-index: 1;
 }
 
-.ms-goal--ai   { flex-direction: column; }
-.ms-goal--player { flex-direction: column-reverse; }
-
-/* Colour-coded goal panels matching coin-flip theme */
 .ms-goal--ai .ms-goal-inner {
   background: linear-gradient(90deg,
-    rgba(127,0,0,0.22) 0%,
-    rgba(45,15,15,0.85) 25%,
-    rgba(45,15,15,0.85) 75%,
-    rgba(229,57,53,0.18) 100%
+    rgba(100,0,0,0.55) 0%,
+    rgba(30,8,8,0.92) 20%,
+    rgba(30,8,8,0.92) 80%,
+    rgba(180,30,30,0.4) 100%
   );
-  border-top: 1px solid rgba(229,57,53,0.25);
-  border-bottom: 1px solid rgba(229,57,53,0.25);
+  border-top: 1px solid rgba(229,57,53,0.35);
+  border-bottom: 1px solid rgba(229,57,53,0.35);
 }
 
 .ms-goal--player .ms-goal-inner {
   background: linear-gradient(90deg,
-    rgba(13,71,161,0.22) 0%,
-    rgba(10,22,40,0.9) 25%,
-    rgba(10,22,40,0.9) 75%,
-    rgba(66,165,245,0.18) 100%
+    rgba(0,50,140,0.55) 0%,
+    rgba(8,16,38,0.92) 20%,
+    rgba(8,16,38,0.92) 80%,
+    rgba(30,100,220,0.4) 100%
   );
-  border-top: 1px solid rgba(66,165,245,0.25);
-  border-bottom: 1px solid rgba(66,165,245,0.25);
+  border-top: 1px solid rgba(66,165,245,0.35);
+  border-bottom: 1px solid rgba(66,165,245,0.35);
 }
-
-.goal-posts {
-  width: 100%;
-  height: 14px;
-  opacity: 0.5;
-  overflow: hidden;
-  max-height: 20px;
-  transition: max-height 0.28s ease;
-}
-
-.goal-posts svg { width: 100%; height: 100%; display: block; }
 
 .ms-goal-inner {
   display: grid;
-  grid-template-columns: 108px 1fr 108px;
+  grid-template-columns: 90px 1fr 90px;
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
-  overflow: hidden;
-  max-height: 160px;
-  transition: max-height 0.28s ease, padding 0.28s ease;
 }
 
 .ms-stat-box {
-  width: 108px;
-  height: 90px;
+  width: 90px;
+  height: 82px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -430,19 +412,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   min-width: 0;
 }
-
-.ms-gk-glove {
-  font-size: 20px;
-  flex-shrink: 0;
-  line-height: 1;
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
-}
-
-.ms-gk-glove--left  { transform: scaleX(-1); }
-.ms-gk-glove--right { transform: scaleX(1); }
 
 /* ── Stat boxes with field-graphic effects ───────────────────────────────── */
 
@@ -813,6 +784,67 @@
   letter-spacing: 0.5px;
   white-space: nowrap;
   align-self: center;
+}
+
+/* ── Hand right controls (chevron + deck stack) ──────────────────────────── */
+
+.ms-hand-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: sticky;
+  right: 0;
+  flex-shrink: 0;
+  padding-left: 4px;
+  background: linear-gradient(to left, #0d1117 60%, transparent 100%);
+  z-index: 2;
+}
+
+.ms-hand-chevron {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.ms-hand-chevron:active { background: rgba(255,255,255,0.2); }
+
+.ms-deck-stack {
+  width: 32px;
+  height: 40px;
+  border-radius: 6px;
+  background: linear-gradient(160deg, #1a2a1a, #0d1a0d);
+  border: 1.5px solid rgba(0,230,118,0.35);
+  color: #00e676;
+  font-family: 'Bangers', cursive;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.ms-deck-stack::before {
+  content: '';
+  position: absolute;
+  inset: 2px 2px -3px 2px;
+  border-radius: 4px;
+  background: rgba(0,230,118,0.07);
+  z-index: -1;
 }
 
 /* ── Action bar ──────────────────────────────────────────────────────────── */

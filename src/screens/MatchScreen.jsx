@@ -298,7 +298,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
-  const [goalsCollapsed, setGoalsCollapsed] = useState(false)
+  // goalsCollapsed removed — GK areas always visible
   const [handCollapsed, setHandCollapsed] = useState(false)
   const [showDeckPopup, setShowDeckPopup] = useState(false)
   const [turnSecsLeft, setTurnSecsLeft] = useState(45)
@@ -866,8 +866,7 @@ export default function MatchScreen({ matchParams = {} }) {
         )}
 
         {/* === AI GOAL (top) === */}
-        <div className={`ms-goal ms-goal--ai${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
-          <GoalPosts side="ai" />
+        <div className="ms-goal ms-goal--ai">
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
@@ -875,13 +874,11 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="msb-icon">⚔️</span>
             </div>
             <div className="ms-gk-wrap">
-              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
               <GKCard
                 card={playerB.activeGoalkeeper}
                 side="ai"
                 onTap={() => playerB.activeGoalkeeper && setZoomCard({ card: playerB.activeGoalkeeper, isPlayerField: false })}
               />
-              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
             </div>
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
@@ -889,11 +886,7 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="msb-icon">🛡️</span>
             </div>
           </div>
-          {aiThinking && !goalsCollapsed && <div className="ms-thinking">🤔 myśli...</div>}
-          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
-            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▼' : '▲'}</span>
-            <span className="ms-goal-tab-label">{goalsCollapsed ? `BOT ${aiTotalAtk}⚔ ${aiTotalDef}🛡` : 'ZWIŃ'}</span>
-          </div>
+          {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
         </div>
 
         {/* === AI FIELD === */}
@@ -959,12 +952,8 @@ export default function MatchScreen({ matchParams = {} }) {
           />
         </div>
 
-        {/* === PLAYER GOAL (bottom) — column-reverse: first=bottom, last=top === */}
-        <div className={`ms-goal ms-goal--player${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
-          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
-            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▲' : '▼'}</span>
-            <span className="ms-goal-tab-label">{goalsCollapsed ? `TY ${myTotalDef}🛡 ${myTotalAtk}⚔` : 'ZWIŃ'}</span>
-          </div>
+        {/* === PLAYER GOAL (bottom) === */}
+        <div className="ms-goal ms-goal--player">
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
@@ -972,13 +961,11 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="msb-icon">🛡️</span>
             </div>
             <div className="ms-gk-wrap">
-              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
               <GKCard
                 card={playerA.activeGoalkeeper}
                 side="player"
                 onTap={() => playerA.activeGoalkeeper && setZoomCard({ card: playerA.activeGoalkeeper, isPlayerField: false })}
               />
-              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
             </div>
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
@@ -986,7 +973,6 @@ export default function MatchScreen({ matchParams = {} }) {
               <span className="msb-icon">⚔️</span>
             </div>
           </div>
-          <GoalPosts side="player" />
         </div>
 
       </div>{/* end ms-field-wrap */}
@@ -1001,53 +987,47 @@ export default function MatchScreen({ matchParams = {} }) {
       )}
 
       {/* ── Hand ────────────────────────────────────────────────────────── */}
-      <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
-        <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
-          <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
-          <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
-          <div className="ms-hand-chips" onClick={e => e.stopPropagation()}>
-            {turnActionsUsed.placedOffense  ? <span className="mac done">✓ ATK</span> : isPlayerTurn ? <span className="mac todo">ATK</span> : null}
-            {turnActionsUsed.placedDefense  ? <span className="mac done">✓ DEF</span> : isPlayerTurn ? <span className="mac todo">DEF</span> : null}
-            {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
+      {(playerA.hand.length > 0 || handCollapsed) && (
+        <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
+          <div className="ms-hand-scroll">
+            {!handCollapsed && playerA.hand.map(card => (
+              <FieldCard
+                key={card.instanceId}
+                card={card}
+                selected={selectedCard?.instanceId === card.instanceId}
+                onTap={() => {
+                  const now = Date.now()
+                  const last = lastTapRef.current[`h_${card.instanceId}`] || 0
+                  lastTapRef.current[`h_${card.instanceId}`] = now
+                  if (isPlayerTurn && now - last < 360) {
+                    const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
+                    const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
+                    if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
+                    else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
+                    else showNotif('Brak wolnego miejsca!')
+                    setSelectedCard(null)
+                  } else {
+                    SFX.cardSelect()
+                    setZoomCard({ card, isPlayerField: false, fromHand: true })
+                  }
+                }}
+                onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
+                onDragStart={handleDragStart}
+              />
+            ))}
+            <div className="ms-hand-right">
+              <button className="ms-hand-chevron" onClick={() => setHandCollapsed(h => !h)}>
+                {handCollapsed ? '▲' : '⌄'}
+              </button>
+              <div
+                ref={deckBadgeRef}
+                className="ms-deck-stack"
+                onClick={() => setShowDeckPopup(p => !p)}
+              >{playerA.deck.length}</div>
+            </div>
           </div>
-          <span
-            ref={deckBadgeRef}
-            className="ms-deck-badge-sm ms-deck-badge-sm--tap"
-            onClick={e => { e.stopPropagation(); setShowDeckPopup(p => !p) }}
-          >🃏 {playerA.deck.length}</span>
         </div>
-        <div className="ms-hand-scroll">
-          {playerA.hand.map(card => (
-            <FieldCard
-              key={card.instanceId}
-              card={card}
-              selected={selectedCard?.instanceId === card.instanceId}
-              onTap={() => {
-                const now = Date.now()
-                const last = lastTapRef.current[`h_${card.instanceId}`] || 0
-                lastTapRef.current[`h_${card.instanceId}`] = now
-                if (isPlayerTurn && now - last < 360) {
-                  // Double tap → auto-place
-                  const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
-                  const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
-                  if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
-                  else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
-                  else showNotif('Brak wolnego miejsca!')
-                  setSelectedCard(null)
-                } else {
-                  // Single tap → zoom stats
-                  SFX.cardSelect()
-                  setZoomCard({ card, isPlayerField: false, fromHand: true })
-                }
-              }}
-              onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
-              onDragStart={handleDragStart}
-            />
-          ))}
-          {playerA.hand.length === 0 && <div className="ms-hand-empty">Brak kart</div>}
-          <div className="ms-deck-badge">🃏 {playerA.deck.length}</div>
-        </div>
-      </div>
+      )}
 
       {/* ── Action bar ──────────────────────────────────────────────────── */}
       <div className="ms-action-bar">

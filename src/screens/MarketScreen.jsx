@@ -582,67 +582,94 @@ export default function MarketScreen() {
 
           {/* Ad banner */}
           <div className={`ad-banner ${adSecsLeft > 0 ? 'ad-banner--cooldown' : ''}`} onClick={handleWatchAd}>
+            <div className="ad-play-wrap">
+              <span className="ad-play-icon">▶</span>
+            </div>
             <div className="ad-text">
-              <div className="ad-title">
-                OBEJRZYJ <span className="ad-kw">REKLAMĘ</span>
+              <div className="ad-title">OBEJRZYJ <span className="ad-kw">REKLAMĘ</span></div>
+              <div className="ad-desc">{adSecsLeft > 0 ? `Dostępna za ${fmtCountdown(adSecsLeft)}` : 'Zdobądź nagrodę!'}</div>
+            </div>
+            <div className="ad-rewards">
+              <div className="ad-reward-chip">
+                <span className="ad-reward-icon">🪙</span>
+                <span className="ad-reward-amount">+50</span>
+                <span className="ad-reward-label">MONET</span>
               </div>
-              <div className="ad-desc">
-                {adSecsLeft > 0
-                  ? `Dostępna za ${fmtCountdown(adSecsLeft)}`
-                  : 'Zdobądź 50 monet lub 💎 klejnoty'}
+              <span className="ad-reward-sep">lub</span>
+              <div className="ad-reward-chip ad-reward-chip--gem">
+                <span className="ad-reward-icon">💎</span>
+                <span className="ad-reward-amount">+1</span>
+                <span className="ad-reward-label">DIAMENT</span>
               </div>
             </div>
-            <div className="ad-ball">⚽</div>
             <div className={`ad-cta ${adSecsLeft > 0 ? 'ad-cta--wait' : ''}`}>
-              {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OBEJRZYJ →'}
+              {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OGLĄDAJ →'}
             </div>
           </div>
 
-          {/* Free pack */}
-          <div
-            className={`free-pack ${freePackSecsLeft > 0 ? 'free-pack--cooldown' : ''}`}
-            onClick={handleClaimFreePack}
-          >
-            <div className="fp-icon">🎁</div>
-            <div className="fp-info">
-              <div className="fp-title">DARMOWA PACZKA</div>
-              <div className="fp-desc">1 zawodnik + 30 monet • co 12 godzin</div>
+          {/* Featured row: Free Pack + Premium side by side */}
+          <div className="featured-row">
+            <div className={`fp-card ${freePackSecsLeft > 0 ? 'fp-card--cooldown' : ''}`} onClick={handleClaimFreePack}>
+              <div className="fp-card-icon">🎁</div>
+              <div className="fp-card-title">DARMOWA PACZKA</div>
+              <div className="fp-card-desc">1 zawodnik + 30 monet</div>
+              {freePackSecsLeft > 0 && <div className="fp-card-timer">{fmtCountdown(freePackSecsLeft)}</div>}
+              <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
+                {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
+              </button>
             </div>
-            <div className={`fp-cta ${freePackSecsLeft > 0 ? 'fp-cta--wait' : ''}`}>
-              {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
-            </div>
-          </div>
 
-          {/* Premium pack — full width */}
-          {(() => {
-            const prem = PACKS.find(p => p.id === 'premium')
-            const canAfford = gems >= prem.cost
-            return (
-              <div className="pack-premium-card" style={{ background: prem.itemBg }}>
-                <div className="ppc-badge">💎 PREMIUM</div>
-                <div className="ppc-icon">{prem.icon}</div>
-                <div className="ppc-info">
-                  <div className="ppc-name">{prem.label}</div>
-                  <div className="ppc-desc">{prem.desc}</div>
+            {(() => {
+              const prem = PACKS.find(p => p.id === 'premium')
+              const canAfford = gems >= prem.cost
+              return (
+                <div className="prem-card">
+                  <div className="prem-card-badge">💎 PREMIUM</div>
+                  <div className="prem-card-bag">
+                    <div className="prem-bag-crimp" />
+                    <div className="prem-bag-body">
+                      <div className="prem-bag-shine" />
+                      <div className="prem-bag-logo">G</div>
+                    </div>
+                  </div>
+                  <div className="prem-card-info">
+                    <div className="prem-card-name">PACZKA PREMIUM</div>
+                    <div className="prem-card-desc">5 kart + Gwarantowana Legendarna!</div>
+                    <div className="prem-card-btns">
+                      <button
+                        className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
+                        onClick={() => handleBuyPack(prem)}
+                      >
+                        💎 {prem.cost}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button className={`ppc-buy${!canAfford ? ' ppc-buy--locked' : ''}`} onClick={() => handleBuyPack(prem)}>
-                  💎 {prem.cost}
-                </button>
-              </div>
-            )
-          })()}
+              )
+            })()}
+          </div>
 
-          {/* Coin pack grid */}
+          {/* Section label */}
+          <div className="packs-section-label">🎲 PACZKI</div>
+
+          {/* 3-column pack grid */}
           <div className="packs-grid">
             {PACKS.filter(p => p.currency === 'coins').map(pack => {
               const canAffordCoins = profile.coins >= pack.cost
               const canAffordGems = gems >= pack.gemCost
               return (
-                <div key={pack.id} className="pack-card" style={{ background: pack.itemBg }}>
-                  <div className="pc-header" style={{ background: pack.iconBg }}>
-                    <span className="pc-icon">{pack.icon}</span>
+                <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
+                  {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA!</div>}
+                  <div className="pc-bag-area">
+                    <div className="pc-bag">
+                      <div className="pc-bag-crimp" />
+                      <div className="pc-bag-body">
+                        <div className="pc-bag-shine" />
+                        <span className="pc-bag-icon">{pack.icon}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="pc-body">
+                  <div className="pc-info">
                     <div className="pc-name">{pack.label}</div>
                     <div className="pc-desc">{pack.desc}</div>
                   </div>
@@ -657,13 +684,15 @@ export default function MarketScreen() {
                       className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`}
                       onClick={() => handleBuyPack(pack, true)}
                     >
-                      lub 💎 {pack.gemCost}
+                      💎 {pack.gemCost}
                     </button>
                   </div>
                 </div>
               )
             })}
           </div>
+
+          <div className="packs-footer">ⓘ Karty są dodawane do Twojej kolekcji od razu po zakupie.</div>
         </div>
       ) : (
         <SellTab profile={profile} sellCard={sellCard} showNotif={showNotif} />

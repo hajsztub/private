@@ -655,7 +655,7 @@ export default function MarketScreen() {
 
           {/* Section label */}
           <div className="packs-section-label">
-            <span className="psl-text">PACZKI ZAWODNIKÓW</span>
+            <span className="psl-text">📦 PACZKI ZAWODNIKÓW</span>
             <div className="psl-line" />
           </div>
 
@@ -721,7 +721,7 @@ export default function MarketScreen() {
                 <div className="sp-reward-row">
                   <div className="sp-chip">+ <b>10 000</b> M</div>
                   <div className="sp-chip sp-chip--gem">💎 <b>200</b></div>
-                  <div className="sp-chip sp-chip--pack">⬡ <b>5×</b></div>
+                  <div className="sp-chip sp-chip--pack">📦 <b>5×</b></div>
                 </div>
               </div>
               <button className="sp-price-btn" disabled>

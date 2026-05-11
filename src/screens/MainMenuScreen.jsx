@@ -23,7 +23,7 @@ function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
     <div className="mm-notif-overlay" onClick={onClose}>
       <div className="mm-notif-panel" onClick={e => e.stopPropagation()}>
         <div className="mm-notif-header">
-          <span className="mm-notif-title">◆ Powiadomienia</span>
+          <span className="mm-notif-title">🔔 Powiadomienia</span>
           <div className="mm-notif-header-actions">
             {notifications.length > 0 && (
               <button className="mm-notif-clear-all" onClick={onClearAll}>Wyczyść wszystkie</button>
@@ -53,14 +53,14 @@ function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
 
 function SeasonPopup({ onClose }) {
   const NODES = [
-    { lvl: 5,  free: { icon: '¢', text: '100 monet' },              prem: { icon: '¢', text: '300 monet' } },
-    { lvl: 10, free: { icon: '⬡', text: 'Paczka kart' },             prem: { icon: '≡', text: 'Kontrakt\nsponsorski' } },
-    { lvl: 15, free: { icon: '¢', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
+    { lvl: 5,  free: { icon: '🪙', text: '100 monet' },              prem: { icon: '🪙', text: '300 monet' } },
+    { lvl: 10, free: { icon: '📦', text: 'Paczka kart' },             prem: { icon: '★', text: 'Kontrakt\nsponsorski' } },
+    { lvl: 15, free: { icon: '🪙', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
     { lvl: 20, free: { icon: '★', text: 'Karta\nspecjalna', sp: true }, prem: { icon: '◈', text: 'Kit\n"Thunder"', sp: true } },
     { lvl: 25, free: { icon: '💎', text: '1 klejnot' },                prem: { icon: '◈', text: 'Herb\ndrużyny' } },
-    { lvl: 30, free: { icon: '◆', text: 'Tło\nstadionu' },           prem: { icon: '⬡', text: 'Mega\nPaczka' } },
-    { lvl: 35, free: { icon: '¢', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
-    { lvl: 40, free: { icon: '☰', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '◆', text: '"El Capitán\nPRO"', sp: true } },
+    { lvl: 30, free: { icon: '◆', text: 'Tło\nstadionu' },           prem: { icon: '📦', text: 'Mega\nPaczka' } },
+    { lvl: 35, free: { icon: '🪙', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
+    { lvl: 40, free: { icon: '★', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '◆', text: '"El Capitán\nPRO"', sp: true } },
   ]
   return (
     <div className="mm-season-overlay" onClick={onClose}>
@@ -195,7 +195,7 @@ function HistoryModal({ history, onClose }) {
                   <span className="hist-date">{fmtMatchDate(m.date)}</span>
                 </div>
                 <div className="hist-entry-bot">
-                  {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} ¢</span>}
+                  {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} 🪙</span>}
                   {m.ratingChange !== 0 && m.matchType === 'league' && (
                     <span className={`hist-rating ${m.ratingChange > 0 ? 'hist-rating--up' : 'hist-rating--down'}`}>
                       {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ★

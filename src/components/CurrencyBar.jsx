@@ -9,7 +9,7 @@ export default function CurrencyBar({ onGemsClick }) {
   return (
     <div className="cb-bar">
       <div className="cb-item cb-item--coins">
-        <span className="cb-icon">M</span>
+        <span className="cb-icon">🪙</span>
         <span className="cb-val">{profile.coins.toLocaleString()}</span>
       </div>
       <div className="cb-divider" />

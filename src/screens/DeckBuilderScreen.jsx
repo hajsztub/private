@@ -641,7 +641,7 @@ function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
               )}
             </div>
           </div>
-          {injured && <div className="fs-slot-injury">+</div>}
+          {injured && <div className="fs-slot-injury">🩹</div>}
         </>
       ) : (
         <div className="fs-slot-empty-inner">
@@ -690,11 +690,11 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injur
         <div className="cp-stats">
           <span className="cp-atk">★ {atk}</span>
           <span className="cp-def">♥ {def}</span>
-          {injured && <span className="cp-injury-badge">+ {injuryLeft}</span>}
+          {injured && <span className="cp-injury-badge">🩹 {injuryLeft}</span>}
         </div>
       </div>
       <div className={`cp-badge ${assigned ? 'cp-badge--on' : ''}`}>
-        {injured ? '+' : assigned ? '✓' : '+'}
+        {injured ? '🩹' : assigned ? '✓' : '+'}
       </div>
     </div>
   )

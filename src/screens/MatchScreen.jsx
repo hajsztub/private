@@ -170,7 +170,7 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
             {/* Activate button */}
             {showActivate && (
               <button className="zoom-act-btn zoom-act-btn--activate zoom-act-btn--inline" onClick={onActivate}>
-                ▶ Aktywuj umiejętność
+                {'▶︎'} Aktywuj umiejętność
               </button>
             )}
           </div>
@@ -912,7 +912,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
         {/* === MIDFIELD LINE === */}
         <div className="ms-midfield">
-          <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
+          <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">{'ℹ︎'}</button>
           <div className="ms-mid-line" />
           {upcomingSpecial
             ? <div className="ms-mid-event ms-mid-event--special">★ Karta specjalna!</div>

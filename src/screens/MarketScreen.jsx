@@ -690,7 +690,7 @@ export default function MarketScreen() {
                     </div>
                     <div className="pc-actions">
                       <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
-                        {pack.cost} M
+                        🪙 {pack.cost}
                       </button>
                       <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
                         💎 {pack.gemCost}

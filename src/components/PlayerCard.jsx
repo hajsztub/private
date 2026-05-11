@@ -128,7 +128,7 @@ export default function PlayerCard({
           className="pc-activate"
           onClick={e => { e.stopPropagation(); onActivate?.(card.instanceId) }}
         >
-          ▶ Aktywuj
+          {'▶︎'} Aktywuj
         </button>
       )}
 

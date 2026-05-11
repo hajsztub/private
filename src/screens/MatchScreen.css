@@ -511,7 +511,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 8px 2px;
+  padding: 4px 5px 2px;
   overflow-y: hidden;
   overflow-x: auto;
   scrollbar-width: none;
@@ -535,7 +535,7 @@
 }
 
 .ms-zone-sep {
-  width: 6px;
+  width: 4px;
   background: transparent;
   flex-shrink: 0;
   align-self: stretch;
@@ -544,10 +544,10 @@
 /* ── Zone type borders ───────────────────────────────────────────────────── */
 
 /* Zone borders via ::before so overflow:hidden doesn't clip card corners */
-.ms-half--ai > .ms-zone:first-child      { margin: 4px 0 4px 4px; position: relative; }
-.ms-half--ai > .ms-zone:last-child       { margin: 4px 4px 4px 0; position: relative; }
-.ms-half--player > .ms-zone[data-zone="defense"] { margin: 4px 0 4px 4px; position: relative; }
-.ms-half--player > .ms-zone[data-zone="offense"] { margin: 4px 4px 4px 0; position: relative; }
+.ms-half--ai > .ms-zone:first-child      { margin: 3px 0 3px 3px; position: relative; }
+.ms-half--ai > .ms-zone:last-child       { margin: 3px 3px 3px 0; position: relative; }
+.ms-half--player > .ms-zone[data-zone="defense"] { margin: 3px 0 3px 3px; position: relative; }
+.ms-half--player > .ms-zone[data-zone="offense"] { margin: 3px 3px 3px 0; position: relative; }
 
 .ms-half--ai > .ms-zone:first-child::before,
 .ms-half--ai > .ms-zone:last-child::before,
@@ -1213,7 +1213,10 @@
   padding: 8px 22px;
   z-index: 30;
   pointer-events: none;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+  width: max-content;
+  max-width: calc(100% - 20px);
   border: 1px solid rgba(255,255,255,0.18);
   box-shadow: 0 4px 24px rgba(0,0,0,0.5);
   animation: notif-in 0.2s ease;

@@ -480,8 +480,8 @@ export default function MainMenuScreen() {
 
           <div className="mm-tp-currencies">
             <div className="mm-tp-cur">
-              <span className="mm-tp-cur-icon">¢</span>
-              <span className="mm-tp-cur-val">{profile.coins}</span>
+              <span className="mm-tp-cur-icon">🪙</span>
+              <span className="mm-tp-cur-val">{profile.coins.toLocaleString()}</span>
             </div>
             <div className="mm-tp-cur">
               <span className="mm-tp-cur-icon">💎</span>
@@ -490,7 +490,7 @@ export default function MainMenuScreen() {
           </div>
 
           <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
-            ◆
+            🔔
             {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
           </button>
         </div>

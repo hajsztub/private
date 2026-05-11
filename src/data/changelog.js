@@ -1,5 +1,18 @@
 export const CHANGELOG = [
   {
+    version: '5.3',
+    date: '2026-05-11',
+    changes: [
+      'Sklep paczek: siatka 2 kolumny, Premium full-width na górze; monety = duży przycisk główny, klejnoty = mały wtórny "lub 💎X" — mniej przypadkowych zakupów',
+      'Cenzura nazwy: filtr działa też przy zmianie nazwy z poziomu Ustawień',
+      'Inflacja kart: ceny kart w sklepie i wartość sprzedaży ×1.7 (proporcjonalnie do cen paczek)',
+      'Nagrody za mecze: liga wygrana 200→280🪙 (+do 60 bonus), PRO wygrana 100→150🪙, Amator wygrana 15→30🪙',
+      'Nagrody za misje dzienne ×1.5 (np. wygraj 1 mecz: 80🪙, wygraj 3: 320🪙)',
+      'Misje tygodniowe: twardsze targety (7-12 wygranych, 30-50 goli itp.), 6 misji/tydzień zamiast 4 — ostatnie 2 zablokowane do odblokowania po ukończeniu pierwszych 4',
+      'Nagroda za pierwszą wygraną: 200→350🪙',
+    ],
+  },
+  {
     version: '5.2',
     date: '2026-05-10',
     changes: [

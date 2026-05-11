@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: '5.7',
+    date: '2026-05-11',
+    changes: [
+      'Ekran meczu: zielona murawa CSS z poziomymi paskami i ulepszonym środkowym kręgiem',
+      'Ekran meczu: kolorowe obwódki stref — pomarańczowa (ATK przeciwnika), niebieska (DEF przeciwnika), zielona (Twoja obrona), złota (Twój atak)',
+      'Ekran meczu: etykiety stref w dopasowanych kolorach, większy wynik w tablicy (40px)',
+      'Ekran meczu: nowy action bar — TWOJA TURA + timer MM:SS + zielony pasek, trzy przyciski: 🚩 / NOWA RĘKA / ZAKOŃCZ TURĘ',
+      'Market: pełny redesign — baner reklamowy z ad-reward.png, siatka paczek 2 kolumny, sekcja Ofert Specjalnych',
+      'Dev panel: +10 diamentów i awans w lidze (Bronze→Silver→…→Diamond z popupem zmiany)',
+    ],
+  },
+  {
     version: '5.6',
     date: '2026-05-11',
     changes: [

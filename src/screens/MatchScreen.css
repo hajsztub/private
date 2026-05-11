@@ -320,18 +320,7 @@
   padding: 4px 0;
 }
 
-/* ── Turn bar (above hand) ───────────────────────────────────────────────── */
-
-.ms-turn-bar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 12px;
-  background: #060a14;
-  border-top: 1px solid rgba(0,0,0,0.5);
-}
+/* ── Turn bar styles (shared) — defined inside ms-hand-main below ──────── */
 
 /* ── Field wrap ──────────────────────────────────────────────────────────── */
 
@@ -341,7 +330,7 @@
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
-  background: url('/pitch.jpg') center center / 100% 100% no-repeat, #1b5e20;
+  background: url('/pitch.jpg') center 54% / cover no-repeat, #1b5e20;
   position: relative;
 }
 
@@ -732,7 +721,7 @@
   flex-shrink: 0;
 }
 
-/* ── Hand area (expanded) ────────────────────────────────────────────────── */
+/* ── Hand area wrapper (row: main column + right controls) ───────────────── */
 
 .ms-hand-area {
   flex-shrink: 0;
@@ -743,6 +732,57 @@
   align-items: stretch;
   overflow: visible;
 }
+
+/* Left column: turn bar on top + cards below */
+.ms-hand-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Turn bar — now inside ms-hand-main, does NOT span full width */
+.ms-turn-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 10px;
+  background: #060a14;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Collapsed inner row (no cards visible) */
+.ms-hand-collapsed-inner {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.ms-hand-collapsed-inner--empty {
+  justify-content: center;
+}
+
+/* Small expand button in the right column when collapsed */
+.ms-hand-expand-btn-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0,230,118,0.12);
+  border: 1px solid rgba(0,230,118,0.3);
+  color: #00e676;
+  font-family: 'Bangers', cursive;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-hand-right--empty { width: 52px; background: transparent; border: none; }
 
 .ms-place-hint {
   display: flex;
@@ -2202,11 +2242,11 @@
   }
   .ms-stat-box {
     width: 80px;
-    height: 65px;
+    height: 100px;
   }
+  .gk-card, .gk-card--empty { height: 100px; }
   .msb-lbl  { font-size: 7px; letter-spacing: 1.5px; }
-  .msb-num  { font-size: 20px; }
-  .msb-icon { font-size: 11px; }
+  .msb-num  { font-size: 28px; }
   .ms-gk-glove { font-size: 16px; }
   .goal-posts { height: 10px; }
 
@@ -2246,22 +2286,15 @@
     grid-template-columns: 68px 1fr 68px;
     gap: 5px;
     padding: 3px 6px;
-    max-height: 110px;
   }
   .ms-stat-box {
     width: 68px;
-    height: 52px;
+    height: 100px;
   }
+  .gk-card, .gk-card--empty { height: 100px; }
   .msb-lbl  { font-size: 7px; letter-spacing: 1px; }
-  .msb-num  { font-size: 17px; min-width: 16px; }
-  .msb-icon { font-size: 10px; }
-
-  /* Hide gloves — saves horizontal + gives GK card more room */
+  .msb-num  { font-size: 24px; min-width: 16px; }
   .ms-gk-glove { display: none; }
-
-  /* GK card shorter */
-  .gk-card       { height: 62px; }
-  .gk-card--empty { height: 62px; }
 
   /* Goal post bar slimmer */
   .goal-posts { height: 8px; max-height: 8px; }

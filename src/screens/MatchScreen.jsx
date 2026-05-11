@@ -982,64 +982,80 @@ export default function MatchScreen({ matchParams = {} }) {
         />
       )}
 
-      {/* ── Turn bar (between field and hand) ───────────────────────────── */}
-      <div className="ms-turn-bar">
-        <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
-          {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
-        </span>
-        <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
-          {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
-        </span>
-        <div className="ms-timer-track">
-          <div
-            className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
-            style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }}
-          />
-        </div>
-      </div>
-
-      {/* ── Hand ────────────────────────────────────────────────────────── */}
+      {/* ── Hand + Turn bar (combined two-column section) ─────────────── */}
       {playerA.hand.length > 0 ? (
         handCollapsed ? (
-          <div className="ms-hand-collapsed-bar">
-            <span className="ms-hand-collapsed-text">🃏 Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
-            <button className="ms-hand-expand-btn" onClick={() => setHandCollapsed(false)}>▲ Rozwiń</button>
+          <div className="ms-hand-area">
+            <div className="ms-hand-main">
+              <div className="ms-turn-bar">
+                <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                  {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+                </span>
+                <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                  {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+                </span>
+                <div className="ms-timer-track">
+                  <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                       style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+                </div>
+              </div>
+              <div className="ms-hand-collapsed-inner">
+                <span className="ms-hand-collapsed-text">🃏 Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
+              </div>
+            </div>
+            <div className="ms-hand-right">
+              <button className="ms-hand-expand-btn-sm" onClick={() => setHandCollapsed(false)}>▲</button>
+            </div>
           </div>
         ) : (
           <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
-            <div className="ms-hand-scroll">
-              {playerA.hand.map((card, idx) => {
-                const isSelected = selectedCard?.instanceId === card.instanceId
-                return (
-                  <div
-                    key={card.instanceId}
-                    className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
-                  >
-                    <FieldCard
-                      card={card}
-                      selected={isSelected}
-                      onTap={() => {
-                        const now = Date.now()
-                        const last = lastTapRef.current[`h_${card.instanceId}`] || 0
-                        lastTapRef.current[`h_${card.instanceId}`] = now
-                        if (isPlayerTurn && now - last < 360) {
-                          const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
-                          const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
-                          if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
-                          else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
-                          else showNotif('Brak wolnego miejsca!')
-                          setSelectedCard(null)
-                        } else {
-                          SFX.cardSelect()
-                          setZoomCard({ card, isPlayerField: false, fromHand: true })
-                        }
-                      }}
-                      onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
-                      onDragStart={handleDragStart}
-                    />
-                  </div>
-                )
-              })}
+            <div className="ms-hand-main">
+              <div className="ms-turn-bar">
+                <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                  {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+                </span>
+                <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                  {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+                </span>
+                <div className="ms-timer-track">
+                  <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                       style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+                </div>
+              </div>
+              <div className="ms-hand-scroll">
+                {playerA.hand.map((card, idx) => {
+                  const isSelected = selectedCard?.instanceId === card.instanceId
+                  return (
+                    <div
+                      key={card.instanceId}
+                      className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
+                    >
+                      <FieldCard
+                        card={card}
+                        selected={isSelected}
+                        onTap={() => {
+                          const now = Date.now()
+                          const last = lastTapRef.current[`h_${card.instanceId}`] || 0
+                          lastTapRef.current[`h_${card.instanceId}`] = now
+                          if (isPlayerTurn && now - last < 360) {
+                            const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
+                            const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
+                            if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
+                            else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
+                            else showNotif('Brak wolnego miejsca!')
+                            setSelectedCard(null)
+                          } else {
+                            SFX.cardSelect()
+                            setZoomCard({ card, isPlayerField: false, fromHand: true })
+                          }
+                        }}
+                        onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
+                        onDragStart={handleDragStart}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
             </div>
             <div className="ms-hand-right">
               <button className="ms-hand-chevron" onClick={() => setHandCollapsed(true)}>
@@ -1057,8 +1073,25 @@ export default function MatchScreen({ matchParams = {} }) {
           </div>
         )
       ) : (
-        <div className="ms-hand-collapsed-bar ms-hand-collapsed-bar--empty">
-          <span className="ms-hand-collapsed-text">Brak kart na ręce</span>
+        <div className="ms-hand-area">
+          <div className="ms-hand-main">
+            <div className="ms-turn-bar">
+              <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+              </span>
+              <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+              </span>
+              <div className="ms-timer-track">
+                <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                     style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+              </div>
+            </div>
+            <div className="ms-hand-collapsed-inner ms-hand-collapsed-inner--empty">
+              <span className="ms-hand-collapsed-text">Brak kart na ręce</span>
+            </div>
+          </div>
+          <div className="ms-hand-right ms-hand-right--empty" />
         </div>
       )}
 

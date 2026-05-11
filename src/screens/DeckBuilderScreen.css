@@ -700,7 +700,7 @@
 
 .db-footer {
   flex-shrink: 0;
-  padding: 10px 14px max(84px, calc(env(safe-area-inset-bottom) + 74px));
+  padding: 10px 14px max(72px, calc(env(safe-area-inset-bottom) + 62px));
   background: #0d1117;
   border-top: 1px solid rgba(255,255,255,0.06);
   display: flex;

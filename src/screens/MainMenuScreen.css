@@ -12,7 +12,7 @@
   align-items: center;
   font-family: 'Outfit', sans-serif;
   overflow-y: auto;
-  padding-bottom: max(88px, calc(env(safe-area-inset-bottom) + 78px));
+  padding-bottom: max(72px, calc(env(safe-area-inset-bottom) + 62px));
 }
 
 /* ── Stadium hero ─────────────────────────────────────────────────────────── */

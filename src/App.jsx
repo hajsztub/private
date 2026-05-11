@@ -91,37 +91,20 @@ function ProfileNamePopup({ onDone }) {
   )
 }
 
-const SCREEN_ANIM_STYLE = {
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  animation: 'screenSlideIn 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-}
-
 function ScreenRouter() {
   const { screen, params } = useRouter()
 
-  const content = (() => {
-    switch (screen) {
-      case 'main_menu':    return <MainMenuScreen />
-      case 'match':        return <MatchScreen key={params.matchId} matchParams={params} />
-      case 'post_match':   return <PostMatchScreen result={params} />
-      case 'deck_builder': return <DeckBuilderScreen />
-      case 'market':       return <MarketScreen />
-      case 'league':       return <LeagueScreen />
-      case 'players':      return <PlayersScreen />
-      case 'settings':     return <SettingsScreen />
-      default:             return <MainMenuScreen />
-    }
-  })()
-
-  const noAnim = screen === 'match' || screen === 'post_match'
-
   return (
     <>
-      <div key={screen} style={noAnim ? undefined : SCREEN_ANIM_STYLE}>
-        {content}
-      </div>
+      {screen === 'main_menu'    && <MainMenuScreen    key="main_menu" />}
+      {screen === 'match'        && <MatchScreen        key={params.matchId} matchParams={params} />}
+      {screen === 'post_match'   && <PostMatchScreen    key="post_match" result={params} />}
+      {screen === 'deck_builder' && <DeckBuilderScreen  key="deck_builder" />}
+      {screen === 'market'       && <MarketScreen       key="market" />}
+      {screen === 'league'       && <LeagueScreen       key="league" />}
+      {screen === 'players'      && <PlayersScreen      key="players" />}
+      {screen === 'settings'     && <SettingsScreen     key="settings" />}
+      {!['main_menu','match','post_match','deck_builder','market','league','players','settings'].includes(screen) && <MainMenuScreen key="main_menu" />}
       <FloatingDock />
     </>
   )

@@ -111,13 +111,16 @@ body {
 
 /* ── Screen transition animation ─────────────────────────────────────────── */
 
-@keyframes screenSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes screenFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.main-menu,
+.deckbuilder,
+.market-screen,
+.league-screen,
+.ps-screen,
+.settings-screen {
+  animation: screenFadeIn 0.18s ease-out;
 }

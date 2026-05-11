@@ -2,30 +2,28 @@
 
 .fdock {
   position: fixed;
-  bottom: max(14px, env(safe-area-inset-bottom));
+  bottom: max(12px, env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   z-index: 600;
   pointer-events: none;
-  display: flex;
-  align-items: flex-end;
 }
 
 .fdock-pill {
   display: flex;
   align-items: center;
-  gap: 0;
-  background: rgba(8, 12, 22, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 12, 22, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 99px;
-  padding: 8px 10px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  padding: 8px 8px;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   box-shadow:
     0 8px 40px rgba(0, 0, 0, 0.65),
-    0 2px 12px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 2px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
   pointer-events: all;
+  gap: 4px;
 }
 
 /* ── Side buttons ─────────────────────────────────────────────────────────── */
@@ -35,24 +33,25 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 6px 20px;
+  padding: 8px 20px;
   border: none;
   background: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border-radius: 40px;
-  transition: transform 0.12s;
+  transition: transform 0.13s;
+  flex-shrink: 0;
 }
 
 .fdock-btn:active {
-  transform: scale(0.86);
+  transform: scale(0.84);
 }
 
 .fdock-icon {
   width: 22px;
   height: 22px;
-  color: rgba(255, 255, 255, 0.3);
-  transition: color 0.18s;
+  color: rgba(255, 255, 255, 0.28);
+  transition: color 0.2s;
   flex-shrink: 0;
 }
 
@@ -61,49 +60,47 @@
   font-size: 9px;
   font-weight: 900;
   letter-spacing: 0.8px;
-  color: rgba(255, 255, 255, 0.28);
-  transition: color 0.18s;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.2s;
   white-space: nowrap;
 }
 
 .fdock-btn--active .fdock-icon {
   color: #00e676;
-  filter: drop-shadow(0 0 4px rgba(0, 230, 118, 0.5));
+  filter: drop-shadow(0 0 5px rgba(0, 230, 118, 0.55));
 }
 
 .fdock-btn--active .fdock-label {
   color: #00e676;
 }
 
-/* ── Center ball ──────────────────────────────────────────────────────────── */
+/* ── Center ball — inside pill, no elevation ──────────────────────────────── */
 
 .fdock-center-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  margin: 0 4px;
-  position: relative;
+  margin: 0 2px;
+  gap: 4px;
 }
 
 .fdock-center {
-  position: relative;
-  bottom: 18px;
-  width: 62px;
-  height: 62px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(150deg, #1b2236 0%, #0d1117 100%);
+  border: 2px solid rgba(255, 255, 255, 0.13);
+  background: linear-gradient(150deg, #1c2235 0%, #0d1117 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   box-shadow:
-    0 6px 24px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: transform 0.12s, border-color 0.18s, box-shadow 0.18s;
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  transition: transform 0.13s, border-color 0.2s, box-shadow 0.2s;
   flex-shrink: 0;
+  pointer-events: all;
 }
 
 .fdock-center:active {
@@ -113,27 +110,25 @@
 .fdock-center--active {
   border-color: rgba(0, 230, 118, 0.5);
   box-shadow:
-    0 6px 28px rgba(0, 230, 118, 0.22),
-    0 0 0 5px rgba(0, 230, 118, 0.08),
+    0 4px 20px rgba(0, 230, 118, 0.25),
+    0 0 0 4px rgba(0, 230, 118, 0.09),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .fdock-ball {
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1;
 }
 
-.fdock-center-dot {
-  position: absolute;
-  bottom: -12px;
-  width: 5px;
-  height: 5px;
+.fdock-dot {
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  transition: background 0.18s, box-shadow 0.18s;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
-.fdock-center-dot--on {
+.fdock-dot--on {
   background: #00e676;
-  box-shadow: 0 0 8px rgba(0, 230, 118, 0.8);
+  box-shadow: 0 0 6px rgba(0, 230, 118, 0.8);
 }

@@ -91,24 +91,37 @@ function ProfileNamePopup({ onDone }) {
   )
 }
 
+const SCREEN_ANIM_STYLE = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  animation: 'screenSlideIn 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+}
+
 function ScreenRouter() {
   const { screen, params } = useRouter()
 
+  const content = (() => {
+    switch (screen) {
+      case 'main_menu':    return <MainMenuScreen />
+      case 'match':        return <MatchScreen key={params.matchId} matchParams={params} />
+      case 'post_match':   return <PostMatchScreen result={params} />
+      case 'deck_builder': return <DeckBuilderScreen />
+      case 'market':       return <MarketScreen />
+      case 'league':       return <LeagueScreen />
+      case 'players':      return <PlayersScreen />
+      case 'settings':     return <SettingsScreen />
+      default:             return <MainMenuScreen />
+    }
+  })()
+
+  const noAnim = screen === 'match' || screen === 'post_match'
+
   return (
     <>
-      {(() => {
-        switch (screen) {
-          case 'main_menu':    return <MainMenuScreen />
-          case 'match':        return <MatchScreen key={params.matchId} matchParams={params} />
-          case 'post_match':   return <PostMatchScreen result={params} />
-          case 'deck_builder': return <DeckBuilderScreen />
-          case 'market':       return <MarketScreen />
-          case 'league':       return <LeagueScreen />
-          case 'players':      return <PlayersScreen />
-          case 'settings':     return <SettingsScreen />
-          default:             return <MainMenuScreen />
-        }
-      })()}
+      <div key={screen} style={noAnim ? undefined : SCREEN_ANIM_STYLE}>
+        {content}
+      </div>
       <FloatingDock />
     </>
   )

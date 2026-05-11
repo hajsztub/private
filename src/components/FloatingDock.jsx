@@ -57,7 +57,7 @@ export default function FloatingDock() {
           >
             <span className="fdock-ball">⚽</span>
           </button>
-          <div className={`fdock-center-dot ${isHome ? 'fdock-center-dot--on' : ''}`} />
+          <div className={`fdock-dot ${isHome ? 'fdock-dot--on' : ''}`} />
         </div>
 
         <button

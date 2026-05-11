@@ -645,24 +645,26 @@ export default function MarketScreen() {
           {/* Section label */}
           <div className="packs-section-label">PACZKI</div>
 
-          {/* 2-column pack grid */}
+          {/* 3-column pack grid */}
           <div className="packs-grid">
             {PACKS.filter(p => p.currency === 'coins').map(pack => {
               const canAffordCoins = profile.coins >= pack.cost
               const canAffordGems = gems >= pack.gemCost
-              const countLabel = pack.id === 'mega' || pack.id === 'premium' ? '5 kart' : '3 karty'
+              const shortName = { random:'LOSOWA', attack:'ATAK', defense:'OBRONA', midfield:'ŚRODEK', gk:'BRAMKARZ', mega:'MEGA' }[pack.id] || pack.label
               return (
                 <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
-                  {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA!</div>}
-                  <div className="pc-header">
-                    <span className="pc-icon">{pack.icon}</span>
-                    <div className="pc-title-group">
-                      <div className="pc-name">{pack.label}</div>
-                      <div className="pc-cards-count">{countLabel}</div>
-                    </div>
+                  {pack.id === 'mega' && <div className="pack-card-best-badge">BEST!</div>}
+                  <div className="pc-name-row">
+                    <span className="pc-name">{shortName}</span>
+                    <span className="pc-cards-count">{pack.id === 'mega' ? '5 KART' : '3 KARTY'}</span>
                   </div>
-                  <div className="pc-desc-row">
-                    <div className="pc-desc">{pack.desc}</div>
+                  <div className="pc-img-area">
+                    <img
+                      className="pc-bag-img"
+                      src={`/packs/pack-${pack.id}.png`}
+                      alt={pack.label}
+                      onError={e => { e.target.style.display = 'none' }}
+                    />
                   </div>
                   <div className="pc-actions">
                     <button

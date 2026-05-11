@@ -388,12 +388,12 @@
   text-transform: uppercase;
 }
 
-/* ── 2-column pack grid ──────────────────────────────────────────────────── */
+/* ── 3-column pack grid ──────────────────────────────────────────────────── */
 
 .packs-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
 }
 
 .pack-card--random   { --pk-card-bg: linear-gradient(160deg,#0a1428,#13204e); --pk-hdr: linear-gradient(135deg,#1565c0,#283593); --pk-glow: rgba(21,101,192,0.55); --pk-btn: linear-gradient(135deg,#1565c0,#0d47a1); }
@@ -407,13 +407,14 @@
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.1);
   background: var(--pk-card-bg, #0d1b3e);
-  box-shadow: 0 0 20px var(--pk-glow, transparent);
+  box-shadow: 0 0 16px var(--pk-glow, transparent);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
   transition: transform 0.1s;
   -webkit-tap-highlight-color: transparent;
+  min-height: 160px;
 }
 
 .pack-card:active { transform: scale(0.97); }
@@ -431,104 +432,84 @@
   z-index: 2;
 }
 
-/* ── Pack header: icon + title ─────────────────────────────────────────────── */
+/* ── Pack name row ─────────────────────────────────────────────────────────── */
 
-.pc-header {
-  background: var(--pk-hdr, linear-gradient(135deg,#1565c0,#0d47a1));
-  padding: 14px 12px 10px;
+.pc-name-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.pc-header::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.pc-icon {
-  font-size: 28px;
-  line-height: 1;
-  flex-shrink: 0;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-}
-
-.pc-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 8px 2px;
 }
 
 .pc-name {
   font-family: 'Bangers', cursive;
-  font-size: 16px;
-  letter-spacing: 1.2px;
+  font-size: 14px;
+  letter-spacing: 1.5px;
   color: white;
   line-height: 1;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
 .pc-cards-count {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.5);
   letter-spacing: 0.3px;
 }
 
-/* ── Pack desc ───────────────────────────────────────────────────────────── */
+/* ── Pack image area ─────────────────────────────────────────────────────── */
 
-.pc-desc-row {
-  padding: 6px 10px 4px;
+.pc-img-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px 4px;
+  min-height: 72px;
 }
 
-.pc-desc {
-  font-size: 10px;
-  color: rgba(255,255,255,0.42);
-  line-height: 1.35;
+.pc-bag-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px var(--pk-glow, rgba(255,255,255,0.3)));
 }
 
 /* ── Pack action buttons ─────────────────────────────────────────────────── */
 
 .pc-actions {
-  padding: 4px 10px 10px;
+  padding: 2px 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   margin-top: auto;
 }
 
 .pc-buy-coin {
   width: 100%;
-  padding: 10px 0;
-  border-radius: 10px;
+  padding: 8px 0;
+  border-radius: 8px;
   background: var(--pk-btn, linear-gradient(135deg,#1565c0,#0d47a1));
   border: none;
   color: white;
   font-family: 'Bangers', cursive;
-  font-size: 16px;
-  letter-spacing: 1.2px;
+  font-size: 14px;
+  letter-spacing: 1px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .pc-buy-coin:active { opacity: 0.82; }
 
 .pc-buy-gem {
   width: 100%;
-  padding: 5px 0;
-  border-radius: 8px;
+  padding: 4px 0;
+  border-radius: 7px;
   background: rgba(106,27,154,0.14);
   border: 1px solid rgba(156,39,176,0.28);
   color: rgba(255,255,255,0.42);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

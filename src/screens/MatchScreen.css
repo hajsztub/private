@@ -22,10 +22,11 @@
   justify-content: space-between;
   padding: 0 12px;
   padding-top: max(8px, env(safe-area-inset-top));
-  height: max(52px, calc(44px + env(safe-area-inset-top)));
-  background: #0d1117;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  height: max(56px, calc(48px + env(safe-area-inset-top)));
+  background: rgba(6,9,18,0.96);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   z-index: 5;
+  backdrop-filter: blur(6px);
 }
 
 .msb-score-wrap {
@@ -89,10 +90,10 @@
 
 .msb-num {
   font-family: 'Bangers', cursive;
-  font-size: 34px;
+  font-size: 40px;
   color: white;
   line-height: 1;
-  min-width: 26px;
+  min-width: 30px;
   text-align: center;
   transition: color 0.3s;
 }
@@ -331,7 +332,15 @@
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
-  background: linear-gradient(180deg, #0d2e14 0%, #0f3918 50%, #0d2e14 100%);
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,0.022) 0px,
+      rgba(255,255,255,0.022) 38px,
+      transparent 38px,
+      transparent 76px
+    ),
+    linear-gradient(180deg, #1b5e20 0%, #2e7d32 25%, #1b5e20 50%, #2e7d32 75%, #1b5e20 100%);
   position: relative;
 }
 
@@ -341,8 +350,9 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(circle at 50% 50%, transparent 46px, rgba(255,255,255,0.07) 46px, rgba(255,255,255,0.07) 48px, transparent 48px),
-    linear-gradient(transparent calc(50% - 0.5px), rgba(255,255,255,0.1) calc(50% - 0.5px), rgba(255,255,255,0.1) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    radial-gradient(circle at 50% 50%, transparent 56px, rgba(255,255,255,0.14) 56px, rgba(255,255,255,0.14) 58px, transparent 58px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18) 4px, transparent 4px),
+    linear-gradient(transparent calc(50% - 0.5px), rgba(255,255,255,0.18) calc(50% - 0.5px), rgba(255,255,255,0.18) calc(50% + 0.5px), transparent calc(50% + 0.5px));
 }
 
 /* ── Goal area ───────────────────────────────────────────────────────────── */
@@ -543,8 +553,8 @@
   z-index: 1;
 }
 
-.ms-half--ai     { background: rgba(180,28,28,0.07); }
-.ms-half--player { background: rgba(21,101,192,0.07); }
+.ms-half--ai     { background: transparent; }
+.ms-half--player { background: transparent; }
 
 .ms-zone {
   flex: 1;
@@ -575,20 +585,57 @@
 }
 
 .ms-zone-sep {
-  width: 1px;
-  background: rgba(255,255,255,0.1);
+  width: 6px;
+  background: transparent;
   flex-shrink: 0;
   align-self: stretch;
+}
+
+/* ── Zone type borders ───────────────────────────────────────────────────── */
+
+.ms-half--ai > .ms-zone:first-child {
+  border: 1.5px solid rgba(255,140,0,0.42);
+  border-radius: 8px;
+  margin: 3px 0 3px 3px;
+  background: rgba(180,80,0,0.07);
+}
+
+.ms-half--ai > .ms-zone:last-child {
+  border: 1.5px solid rgba(66,165,245,0.42);
+  border-radius: 8px;
+  margin: 3px 3px 3px 0;
+  background: rgba(21,101,192,0.07);
+}
+
+.ms-half--player > .ms-zone[data-zone="defense"] {
+  border: 1.5px solid rgba(0,200,100,0.45);
+  border-radius: 8px;
+  margin: 3px 0 3px 3px;
+  background: rgba(0,150,70,0.07);
+}
+
+.ms-half--player > .ms-zone[data-zone="offense"] {
+  border: 1.5px solid rgba(255,200,0,0.48);
+  border-radius: 8px;
+  margin: 3px 3px 3px 0;
+  background: rgba(180,130,0,0.07);
 }
 
 .msz-label {
   font-size: 8px;
   font-weight: 900;
-  letter-spacing: 1px;
-  color: rgba(255,255,255,0.3);
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.5);
   margin-bottom: 3px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
 }
+
+.ms-half--ai > .ms-zone:first-child .msz-label    { color: rgba(255,160,50,0.95); }
+.ms-half--ai > .ms-zone:last-child .msz-label     { color: rgba(100,180,255,0.95); }
+.ms-half--player > .ms-zone[data-zone="defense"] .msz-label { color: rgba(0,220,110,0.95); }
+.ms-half--player > .ms-zone[data-zone="offense"] .msz-label { color: rgba(255,220,50,0.95); }
 
 .msz-cards {
   display: flex;
@@ -774,49 +821,67 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 6px 10px;
-  padding-bottom: max(6px, env(safe-area-inset-bottom));
-  background: #0d1117;
+  gap: 6px;
+  padding: 8px 10px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  background: rgba(6,9,18,0.97);
   border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-.ms-timer-bar {
-  position: relative;
-  height: 4px;
+/* ── Turn header (label + timer + bar) ───────────────────────────────────── */
+
+.ms-turn-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 20px;
+}
+
+.ms-turn-label {
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.28);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ms-turn-label--active { color: #00e676; }
+
+.ms-turn-time {
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.55);
+  flex-shrink: 0;
+  min-width: 38px;
+}
+
+.ms-turn-time--urgent { color: #ff5252; }
+
+.ms-timer-track {
+  flex: 1;
+  height: 6px;
   background: rgba(255,255,255,0.08);
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .ms-timer-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
   height: 100%;
-  background: #69f0ae;
-  border-radius: 2px;
+  background: #00e676;
+  border-radius: 3px;
   transition: width 1s linear, background 0.3s;
 }
 
 .ms-timer-fill--urgent { background: #ff5252; }
 
-.ms-timer-text {
-  position: absolute;
-  right: 4px;
-  top: -10px;
-  font-size: 8px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.4);
-  line-height: 1;
-}
-
-.ms-timer-text--urgent { color: #ff5252; }
+/* ── Buttons row ─────────────────────────────────────────────────────────── */
 
 .ms-action-row {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
+  gap: 8px;
 }
 
 .ms-hand-chips {
@@ -852,31 +917,104 @@
   color: rgba(255,255,255,0.4);
 }
 
-.ms-end-btn {
+.ms-forfeit-btn {
+  width: 46px;
+  min-height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #c62828, #7f0000);
   border: none;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #f9a825, #f57f17);
-  color: #1a0900;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  padding: 12px 18px;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(198,40,40,0.4);
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.ms-forfeit-btn--dim { opacity: 0.38; cursor: default; }
+.ms-forfeit-btn:active:not(.ms-forfeit-btn--dim) { opacity: 0.78; }
+
+.ms-redraw-btn {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  box-shadow: 0 3px 10px rgba(21,101,192,0.4);
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.ms-redraw-btn:active:not(:disabled):not(.ms-redraw-btn--dim) { opacity: 0.8; }
+.ms-redraw-btn--dim { opacity: 0.42; }
+.ms-redraw-btn--used { opacity: 0.26; cursor: not-allowed; }
+
+.ms-redraw-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+
+.ms-redraw-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.ms-redraw-title {
+  font-family: 'Bangers', cursive;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  color: white;
+  line-height: 1;
+}
+
+.ms-redraw-sub {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.3px;
+}
+
+.ms-end-btn {
+  flex: 1.5;
+  min-height: 46px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+  color: #1a0900;
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
   transition: opacity 0.15s;
   -webkit-tap-highlight-color: transparent;
   box-shadow: 0 4px 14px rgba(249,168,37,0.4);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
 }
 
 .ms-end-btn:active { opacity: 0.8; }
 
 .ms-end-btn--wait {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.28);
   box-shadow: none;
   cursor: default;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0;
 }
 
 /* ── Field card action popup ─────────────────────────────────────────────── */

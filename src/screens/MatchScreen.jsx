@@ -1051,32 +1051,51 @@ export default function MatchScreen({ matchParams = {} }) {
 
       {/* ── Action bar ──────────────────────────────────────────────────── */}
       <div className="ms-action-bar">
-        {isPlayerTurn && (
-          <div className="ms-timer-bar">
+        <div className="ms-turn-header">
+          <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+            {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+          </span>
+          <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+            {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+          </span>
+          <div className="ms-timer-track">
             <div
               className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
-              style={{ width: `${(turnSecsLeft / 45) * 100}%` }}
+              style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }}
             />
-            <span className={`ms-timer-text${turnSecsLeft <= 10 ? ' ms-timer-text--urgent' : ''}`}>{turnSecsLeft}s</span>
           </div>
-        )}
+        </div>
         <div className="ms-action-row">
-          <div className="ms-action-chips">
-            {matchState.redraws < 2 && (
-              <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
-                🔄 Dobierz 4 ({2 - matchState.redraws}/2)
-              </button>
-            )}
-            {isPlayerTurn && (
-              <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
-            )}
-          </div>
           <button
-            className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
+            className={`ms-forfeit-btn${!isPlayerTurn ? ' ms-forfeit-btn--dim' : ''}`}
+            onClick={() => isPlayerTurn && setShowForfeit(true)}
+          >🚩</button>
+          {matchState.redraws < 2 ? (
+            <button
+              className={`ms-redraw-btn${!isPlayerTurn ? ' ms-redraw-btn--dim' : ''}`}
+              onClick={() => isPlayerTurn && setShowRedrawConfirm(true)}
+            >
+              <span className="ms-redraw-icon">🃏</span>
+              <span className="ms-redraw-text">
+                <span className="ms-redraw-title">NOWA RĘKA</span>
+                <span className="ms-redraw-sub">{playerA.hand.length} nowe karty</span>
+              </span>
+            </button>
+          ) : (
+            <button className="ms-redraw-btn ms-redraw-btn--used" disabled>
+              <span className="ms-redraw-icon">🃏</span>
+              <span className="ms-redraw-text">
+                <span className="ms-redraw-title">NOWA RĘKA</span>
+                <span className="ms-redraw-sub">wyczerpane</span>
+              </span>
+            </button>
+          )}
+          <button
+            className={`ms-end-btn${!isPlayerTurn ? ' ms-end-btn--wait' : ''}`}
             onClick={handleEndTurn}
             disabled={!isPlayerTurn || !!coinFlipState?.pending}
           >
-            {!isPlayerTurn ? (aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika') : '→ Zakończ turę'}
+            {!isPlayerTurn ? (aiThinking ? '🤔 Myśli...' : '⏳ Czeka') : 'ZAKOŃCZ TURĘ'}
           </button>
         </div>
       </div>

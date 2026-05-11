@@ -17,14 +17,13 @@ export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefen
   const playerChance = computeGoalChance(playerAttack, aiDefense)
   const aiChance = computeGoalChance(aiAttack, playerDefense)
 
-  let playerGoal = false
-  let aiGoal = false
+  let playerGoal = currentScore.player < MAX_GOALS_PER_TEAM && Math.random() < playerChance
+  let aiGoal     = currentScore.ai    < MAX_GOALS_PER_TEAM && Math.random() < aiChance
 
-  if (currentScore.player < MAX_GOALS_PER_TEAM) {
-    playerGoal = Math.random() < playerChance
-  }
-  if (currentScore.ai < MAX_GOALS_PER_TEAM) {
-    aiGoal = Math.random() < aiChance
+  // Both sides scored — mutual block, neither goal stands
+  if (playerGoal && aiGoal) {
+    playerGoal = false
+    aiGoal = false
   }
 
   return { playerGoal, aiGoal, playerChance, aiChance }

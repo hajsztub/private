@@ -19,7 +19,6 @@ const FORMATION = [
   { id: 'def3', type: 'defense',    pos: 'DEF', row: 2 },
   { id: 'def4', type: 'defense',    pos: 'DEF', row: 2 },
   { id: 'gk1',  type: 'goalkeeper', pos: 'GK',  row: 3 },
-  // Reserve bench (optional, any outfield type)
   { id: 'res1', type: 'reserve',    pos: 'RES', row: 4 },
   { id: 'res2', type: 'reserve',    pos: 'RES', row: 4 },
   { id: 'res3', type: 'reserve',    pos: 'RES', row: 4 },
@@ -28,7 +27,6 @@ const FORMATION = [
 const MAIN_SLOTS = FORMATION.filter(s => s.type !== 'reserve')
 const RESERVE_SLOTS = FORMATION.filter(s => s.type === 'reserve')
 
-// Which card types each slot accepts
 const SLOT_ACCEPTS = {
   attack:     ['attack', 'midfield'],
   midfield:   ['midfield', 'attack', 'defense'],
@@ -46,11 +44,10 @@ const FILTER_ACCEPTS = {
 }
 
 const TYPE_COLOR = {
-  attack: '#ff5252', midfield: '#aa40ff', defense: '#448aff', goalkeeper: '#ffa000',
+  attack: '#ff5252', midfield: '#aa40ff', defense: '#448aff', goalkeeper: '#00c853',
 }
 
 const ROWS = [0, 1, 2, 3]
-const TYPE_COLOR_RESERVE = '#546e7a'
 
 function buildCard(owned, def) {
   const level = owned.upgradeLevel || 0
@@ -74,7 +71,6 @@ function initAssignments(allCards, activeDeck, savedAssignments, injuries) {
   const now = Date.now()
   const isInjured = (id) => injuries && id && injuries[id] && injuries[id] > now
 
-  // Use saved layout if available, just validate cards still exist and aren't injured
   if (savedAssignments) {
     const ownedIds = new Set(allCards.map(({ owned }) => owned.instanceId))
     for (const slot of FORMATION) {
@@ -168,7 +164,7 @@ export default function DeckBuilderScreen() {
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [manualFilter, setManualFilter] = useState('all')
   const [infoCard, setInfoCard] = useState(null)
-  const [collectionSort, setCollectionSort] = useState(null) // null | 'atk' | 'def'
+  const [collectionSort, setCollectionSort] = useState('atk')
 
   const allCards = useMemo(() =>
     profile.ownedCards.map(o => {
@@ -186,16 +182,33 @@ export default function DeckBuilderScreen() {
     () => new Set(Object.values(assignments).filter(Boolean)),
     [assignments]
   )
-  const mainFilledCount = useMemo(
-    () => MAIN_SLOTS.filter(s => assignments[s.id]).length,
+  const totalFilledCount = useMemo(
+    () => FORMATION.filter(s => assignments[s.id]).length,
     [assignments]
   )
-  const reserveFilledCount = useMemo(
-    () => RESERVE_SLOTS.filter(s => assignments[s.id]).length,
-    [assignments]
-  )
-  const totalFilledCount = mainFilledCount + reserveFilledCount
   const filledCount = assignedIds.size
+
+  const totalAtk = useMemo(() =>
+    MAIN_SLOTS
+      .filter(s => s.type === 'attack' || s.type === 'midfield')
+      .reduce((sum, slot) => {
+        const card = assignments[slot.id]
+          ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+          : null
+        return sum + (card?.currentAttackStat ?? 0)
+      }, 0)
+  , [assignments, allCards])
+
+  const totalDef = useMemo(() =>
+    MAIN_SLOTS
+      .filter(s => s.type === 'defense' || s.type === 'goalkeeper')
+      .reduce((sum, slot) => {
+        const card = assignments[slot.id]
+          ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+          : null
+        return sum + (card?.currentDefenseStat ?? 0)
+      }, 0)
+  , [assignments, allCards])
 
   const showNotif = (msg, ok) => {
     setNotification({ msg, ok })
@@ -229,7 +242,6 @@ export default function DeckBuilderScreen() {
       return
     }
     if (assignments[slotId]) {
-      // Tap occupied slot → deselect card from it
       setAssignments(prev => ({ ...prev, [slotId]: null }))
       setSelectedSlot(slotId)
     } else {
@@ -242,14 +254,12 @@ export default function DeckBuilderScreen() {
     if (!entry) return
     const { card } = entry
 
-    // Block injured cards
     const injuredUntil = injuries[instanceId]
     if (injuredUntil && injuredUntil > Date.now()) {
       showNotif(`${card.name} jest kontuzjowany! (${injuryTimeLeft(injuredUntil)})`, false)
       return
     }
 
-    // Prevent duplicate cardId in deck
     const alreadyInDeck = Object.values(assignments).some(id => {
       if (!id || id === instanceId) return false
       const entry2 = allCards.find(({ owned }) => owned.instanceId === id)
@@ -274,7 +284,6 @@ export default function DeckBuilderScreen() {
         next[selectedSlot] = instanceId
         return next
       })
-      // Advance to next empty slot of same type
       const sameType = FORMATION.filter(s => s.type === slot.type && s.id !== selectedSlot)
       const next = sameType.find(s => !assignments[s.id])
       if (next) {
@@ -284,8 +293,6 @@ export default function DeckBuilderScreen() {
         setManualFilter('all')
       }
     } else {
-      // Auto-assign to first compatible empty slot
-      // If already in deck (same instance), do nothing
       if (assignedIds.has(instanceId)) {
         showNotif(`${card.name} już jest w składzie!`, false)
         return
@@ -321,7 +328,6 @@ export default function DeckBuilderScreen() {
   }
 
   const autoFill = () => {
-    // Score a card for a given slot type — higher = better fit
     const scoreFor = (card, slotType) => {
       const atk = card.currentAttackStat ?? card.attackStat ?? 0
       const def = card.currentDefenseStat ?? card.defenseStat ?? 0
@@ -330,13 +336,11 @@ export default function DeckBuilderScreen() {
         case 'defense':    return def * 2 + atk
         case 'midfield':   return atk + def
         case 'attack':     return atk * 2 + def
-        default:           return atk + def   // reserve
+        default:           return atk + def
       }
     }
 
-    // Build full card objects (with upgrade bonuses) for scoring
     const cardMap = new Map(allCards.map(({ owned, card }) => [owned.instanceId, card]))
-
     const next = {}
     FORMATION.forEach(s => { next[s.id] = null })
     const usedIds = new Set()
@@ -344,14 +348,12 @@ export default function DeckBuilderScreen() {
     const fillSlots = (slots) => {
       for (const slot of slots) {
         const accepts = SLOT_ACCEPTS[slot.type]
-        // Collect candidates: right type, not yet used, no duplicate card id
         const candidates = allCards
           .filter(({ owned, card }) => {
             if (usedIds.has(owned.instanceId)) return false
             if (!accepts.includes(card.type)) return false
             const injuredUntil = injuries[owned.instanceId]
             if (injuredUntil && injuredUntil > Date.now()) return false
-            // Disallow same card id already placed in another slot
             const alreadyPlaced = Object.values(next).some(id => {
               if (!id) return false
               const c = cardMap.get(id)
@@ -369,7 +371,6 @@ export default function DeckBuilderScreen() {
       }
     }
 
-    // Fill main slots first (priority order: GK → DEF → MID → ATK), then reserve
     const ordered = [
       ...MAIN_SLOTS.filter(s => s.type === 'goalkeeper'),
       ...MAIN_SLOTS.filter(s => s.type === 'defense'),
@@ -386,27 +387,91 @@ export default function DeckBuilderScreen() {
 
   const formationRows = ROWS.map(r => FORMATION.filter(s => s.row === r))
 
+  const FILTERS = [
+    { id: 'all',        label: 'WSZYSCY' },
+    { id: 'attack',     label: '✕ ATK' },
+    { id: 'midfield',   label: '○ MID' },
+    { id: 'defense',    label: '○ DEF' },
+    { id: 'goalkeeper', label: '🧤 GK' },
+  ]
+
   return (
     <div className="deckbuilder">
 
       {/* Header */}
       <div className="db-header">
         <button className="back-btn" onClick={goBack}>←</button>
-        <h1 className="db-title">Ustaw Skład</h1>
-        <div className={`db-count ${totalFilledCount === 14 ? 'db-count--full' : ''}`}>
-          {totalFilledCount}<span className="db-count-total">/14</span>
+        <h1 className="db-title">USTAW SKŁAD</h1>
+        <div className="db-count-wrap">
+          <div className={`db-count ${filledCount === 14 ? 'db-count--full' : ''}`}>{filledCount}/14</div>
+          <div className="db-count-sub">ZAWODNIKÓW</div>
         </div>
       </div>
 
-      {/* Scrollable body */}
       <div className="db-body">
 
-      {/* Formation pitch */}
-      <div className="db-pitch">
-        <div className="db-pitch-label db-pitch-label--top">ATK</div>
-        {formationRows.map((row, ri) => (
-          <div key={ri} className="db-row">
-            {row.map(slot => {
+        {/* Stats bar */}
+        <div className="db-stats-bar">
+          <div className="dsb-block dsb-block--atk">
+            <div className="dsb-icon dsb-icon--atk">✕</div>
+            <div className="dsb-inner">
+              <div className="dsb-label">ATAK</div>
+              <div className="dsb-val">{totalAtk}</div>
+            </div>
+            <div className="dsb-segments">
+              {[0,1,2,3,4].map(i => (
+                <div key={i} className={`dsb-seg dsb-seg--atk ${totalAtk / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
+              ))}
+            </div>
+          </div>
+          <div className="dsb-block dsb-block--def">
+            <div className="dsb-icon dsb-icon--def">🛡</div>
+            <div className="dsb-inner">
+              <div className="dsb-label">OBRONA</div>
+              <div className="dsb-val">{totalDef}</div>
+            </div>
+            <div className="dsb-segments">
+              {[0,1,2,3,4].map(i => (
+                <div key={i} className={`dsb-seg dsb-seg--def ${totalDef / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Formation pitch */}
+        <div className="db-pitch">
+          <div className="db-formation-label">FORMACJA: 4-4-2</div>
+          {formationRows.map((row, ri) => (
+            <div key={ri} className="db-row">
+              {row.map(slot => {
+                const card = assignments[slot.id]
+                  ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+                  : null
+                const slotInstanceId = assignments[slot.id]
+                const isSlotInjured = slotInstanceId
+                  ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
+                  : false
+                return (
+                  <FormationSlot
+                    key={slot.id}
+                    slot={slot}
+                    card={card}
+                    selected={selectedSlot === slot.id}
+                    injured={isSlotInjured}
+                    onClick={() => handleSlotClick(slot.id)}
+                    onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
+                  />
+                )
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* Reserve bench */}
+        <div className="db-reserve">
+          <span className="db-reserve-label">REZERWA</span>
+          <div className="db-reserve-slots">
+            {RESERVE_SLOTS.map(slot => {
               const card = assignments[slot.id]
                 ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
                 : null
@@ -427,115 +492,87 @@ export default function DeckBuilderScreen() {
               )
             })}
           </div>
-        ))}
-        <div className="db-pitch-label db-pitch-label--bot">GK</div>
-      </div>
+          <div className="db-reserve-hint">
+            ⓘ Pomocnicy liczeni są według wyższej wartości (ATAK lub OBRONA).
+          </div>
+        </div>
 
-      {/* Reserve bench */}
-      <div className="db-reserve">
-        <span className="db-reserve-label">REZERWA</span>
-        <div className="db-reserve-slots">
-          {RESERVE_SLOTS.map(slot => {
-            const card = assignments[slot.id]
-              ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+        {/* Filter tabs + sort */}
+        <div className="db-filter-row">
+          <div className="db-filter-tabs">
+            {FILTERS.map(f => (
+              <button
+                key={f.id}
+                className={`db-filter-tab ${filterType === f.id || (f.id === 'all' && !activeSlot && manualFilter === 'all') ? 'db-filter-tab--active' : ''}`}
+                onClick={() => { setManualFilter(f.id); setSelectedSlot(null) }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div className="db-sort-wrap">
+            <span className="db-sort-label">SORTUJ:</span>
+            <button
+              className="db-sort-sel"
+              onClick={() => setCollectionSort(s => s === 'atk' ? 'def' : 'atk')}
+            >
+              {collectionSort === 'def' ? 'DEF ↓' : 'ATK ↓'}
+            </button>
+          </div>
+        </div>
+
+        {/* Picker hint when slot selected */}
+        {activeSlot && (
+          <div className="db-slot-hint">
+            <span>Wybierz kartę dla pozycji</span>
+            <span className="db-hint-pos" style={{ color: TYPE_COLOR[activeSlot.type] }}>
+              {activeSlot.pos}
+            </span>
+            <button className="db-hint-cancel" onClick={() => { setSelectedSlot(null); setManualFilter('all') }}>✕</button>
+          </div>
+        )}
+
+        {/* 2-column card picker */}
+        <div className="db-picker">
+          {filteredCards.map(({ owned, card }) => {
+            const isAssigned = assignedIds.has(owned.instanceId)
+            const slotLabel = isAssigned
+              ? FORMATION.find(s => assignments[s.id] === owned.instanceId)?.pos
               : null
-            const slotInstanceId = assignments[slot.id]
-            const isSlotInjured = slotInstanceId
-              ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
-              : false
+            const injuredUntil = injuries[owned.instanceId]
+            const isInjured = injuredUntil && injuredUntil > Date.now()
             return (
-              <FormationSlot
-                key={slot.id}
-                slot={slot}
+              <CardPickerRow
+                key={owned.instanceId}
                 card={card}
-                selected={selectedSlot === slot.id}
-                injured={isSlotInjured}
-                onClick={() => handleSlotClick(slot.id)}
-                onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
+                assigned={isAssigned}
+                slotLabel={slotLabel}
+                hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
+                injured={isInjured}
+                injuryLeft={isInjured ? injuryTimeLeft(injuredUntil) : null}
+                onClick={() => handleCardPick(owned.instanceId)}
               />
             )
           })}
+          {filteredCards.length === 0 && (
+            <div className="db-empty">Brak kart dla tej pozycji</div>
+          )}
         </div>
-      </div>
-
-      {/* Filter tabs */}
-      <div className="db-filter-row">
-        {['all', 'attack', 'midfield', 'defense', 'goalkeeper'].map(f => (
-          <button
-            key={f}
-            className={`db-filter-tab ${filterType === f || (f === 'all' && !activeSlot && manualFilter === 'all') ? 'db-filter-tab--active' : ''}`}
-            onClick={() => { setManualFilter(f); setSelectedSlot(null) }}
-          >
-            {f === 'all' ? 'Wszyscy' : f === 'attack' ? '⚔' : f === 'midfield' ? '🔮' : f === 'defense' ? '🛡' : '🥅'}
-          </button>
-        ))}
-      </div>
-
-      {/* Picker hint */}
-      {activeSlot && (
-        <div className="db-slot-hint">
-          <span>Wybierz kartę dla pozycji</span>
-          <span className="db-hint-pos" style={{ color: TYPE_COLOR[activeSlot.type] }}>
-            {activeSlot.pos}
-          </span>
-          <button className="db-hint-cancel" onClick={() => { setSelectedSlot(null); setManualFilter('all') }}>✕</button>
-        </div>
-      )}
-
-      {/* Sort buttons */}
-      <div className="db-sort-row">
-        <span className="db-sort-label">Sortuj:</span>
-        <button
-          className={`db-sort-btn ${collectionSort === 'atk' ? 'db-sort-btn--active' : ''}`}
-          onClick={() => setCollectionSort(s => s === 'atk' ? null : 'atk')}
-        >⚔ ATK</button>
-        <button
-          className={`db-sort-btn ${collectionSort === 'def' ? 'db-sort-btn--active' : ''}`}
-          onClick={() => setCollectionSort(s => s === 'def' ? null : 'def')}
-        >🛡 DEF</button>
-      </div>
-
-      {/* Card picker list */}
-      <div className="db-picker">
-        {filteredCards.map(({ owned, card }) => {
-          const isAssigned = assignedIds.has(owned.instanceId)
-          const slotLabel = isAssigned
-            ? FORMATION.find(s => assignments[s.id] === owned.instanceId)?.pos
-            : null
-          const injuredUntil = injuries[owned.instanceId]
-          const isInjured = injuredUntil && injuredUntil > Date.now()
-          return (
-            <CardPickerRow
-              key={owned.instanceId}
-              card={card}
-              assigned={isAssigned}
-              slotLabel={slotLabel}
-              hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
-              injured={isInjured}
-              injuryLeft={isInjured ? injuryTimeLeft(injuredUntil) : null}
-              onClick={() => handleCardPick(owned.instanceId)}
-            />
-          )
-        })}
-        {filteredCards.length === 0 && (
-          <div className="db-empty">Brak kart dla tej pozycji</div>
-        )}
-      </div>
 
       </div>{/* end db-body */}
 
       {/* Footer */}
       <div className="db-footer">
         <div className="db-footer-row">
-          <button className="db-auto-btn" onClick={autoFill} title="Uzupełnij skład automatycznie">
-            ⚡ AUTO
+          <button className="db-auto-btn" onClick={autoFill}>
+            ⚡ AUTO UZUPEŁNIJ
           </button>
-          <button className="db-clear-btn" onClick={clearDeck} title="Wyczyść skład">
-            🗑 WYCZYŚĆ
+          <button className="db-clear-btn" onClick={clearDeck}>
+            🗑 WYCZYŚĆ SKŁAD
           </button>
         </div>
         <button className="db-save-btn" onClick={saveDeck}>
-          Zapisz Skład ({totalFilledCount}/14)
+          💾 ZAPISZ SKŁAD ({filledCount}/14)
         </button>
       </div>
 
@@ -554,6 +591,12 @@ export default function DeckBuilderScreen() {
 
 function FormationSlot({ slot, card, selected, onClick, onInfo, injured }) {
   const [imgFailed, setImgFailed] = React.useState(false)
+  const atk = card ? (card.currentAttackStat ?? 0) : 0
+  const def = card ? (card.currentDefenseStat ?? 0) : 0
+  const mainStat = card
+    ? ((slot.type === 'attack' || slot.type === 'midfield') ? atk : def)
+    : null
+
   return (
     <div
       className={`fs-slot ${selected ? 'fs-slot--selected' : ''} ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
@@ -562,21 +605,33 @@ function FormationSlot({ slot, card, selected, onClick, onInfo, injured }) {
     >
       {card ? (
         <>
-          {!imgFailed ? (
-            <img
-              className="fs-slot-img"
-              src={`/avatars/${card.id}.png`}
-              alt=""
-              onError={() => setImgFailed(true)}
-              draggable={false}
-            />
-          ) : (
-            <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
-          )}
-          <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
+          <div className="fs-slot-topbar">
+            <span className="fs-slot-typebadge">{slot.pos}</span>
+            <span className="fs-slot-mainstat">{mainStat}</span>
+          </div>
+          <div className="fs-slot-avatar">
+            {!imgFailed ? (
+              <img
+                className="fs-slot-img"
+                src={`/avatars/${card.id}.png`}
+                alt=""
+                onError={() => setImgFailed(true)}
+                draggable={false}
+              />
+            ) : (
+              <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
+            )}
+          </div>
+          <div className="fs-slot-footer">
+            <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
+            <div className="fs-slot-smallstats">
+              <span className="fss-atk">★{atk}</span>
+              <span className="fss-def">♥{def}</span>
+            </div>
+          </div>
           {injured && <div className="fs-slot-injury">🩹</div>}
           {onInfo && (
-            <button className="fs-info-btn" onClick={onInfo} title="Info">ⓘ</button>
+            <button className="fs-info-btn" onClick={onInfo}>ⓘ</button>
           )}
         </>
       ) : (
@@ -595,10 +650,12 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injur
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card.currentAttackStat ?? card.attackStat ?? 0
   const def = card.currentDefenseStat ?? card.defenseStat ?? 0
-  const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
 
   return (
-    <div className={`cp-row ${assigned ? 'cp-row--assigned' : ''} ${hasDuplicate ? 'cp-row--duplicate' : ''} ${injured ? 'cp-row--injured' : ''}`} onClick={onClick}>
+    <div
+      className={`cp-row ${assigned ? 'cp-row--assigned' : ''} ${hasDuplicate ? 'cp-row--duplicate' : ''} ${injured ? 'cp-row--injured' : ''}`}
+      onClick={onClick}
+    >
       <div className="cp-avatar">
         {!imgFailed ? (
           <img
@@ -613,27 +670,22 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injur
         )}
       </div>
       <div className="cp-info">
-        <div className="cp-header">
+        <div className="cp-top">
           <span className="cp-type-badge" style={{ background: TYPE_COLOR[card.type] }}>
             {card.typeLabel || card.type.slice(0, 3).toUpperCase()}
           </span>
-          <span className="cp-name">{card.name}</span>
-          {card.upgradeLevel > 0 && (
-            <span className="cp-upgrade">+{card.upgradeLevel}</span>
-          )}
+          {assigned && <span className="cp-assigned-tag">{slotLabel}</span>}
+          {card.upgradeLevel > 0 && <span className="cp-upgrade">+{card.upgradeLevel}</span>}
         </div>
+        <div className="cp-name">{card.name}</div>
         <div className="cp-stats">
-          <span className="cp-atk">⚔ {atk}</span>
-          <span className="cp-def">🛡 {def}</span>
-          <span className="cp-rarity" style={{ color: RARITY_C[card.rarity] }}>
-            {card.rarity === 'legendary' ? '★★★' : card.rarity === 'rare' ? '★★' : '★'}
-          </span>
-          {hasDuplicate && <span className="cp-dup-badge" title="Masz duplikat - możliwy upgrade">🔄</span>}
+          <span className="cp-atk">★ {atk}</span>
+          <span className="cp-def">♥ {def}</span>
           {injured && <span className="cp-injury-badge">🩹 {injuryLeft}</span>}
         </div>
       </div>
       <div className={`cp-badge ${assigned ? 'cp-badge--on' : ''}`}>
-        {injured ? '🩹' : assigned ? slotLabel : '+'}
+        {injured ? '🩹' : assigned ? '✓' : '+'}
       </div>
     </div>
   )

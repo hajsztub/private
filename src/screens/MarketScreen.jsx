@@ -31,7 +31,7 @@ const PACKS = [
     id: 'random',
     label: 'Losowa Paczka',
     desc: '3 losowe karty • min. 1 Rzadka',
-    icon: '🎲',
+    icon: '◎',
     cost: 450,
     gemCost: 2,
     currency: 'coins',
@@ -43,7 +43,7 @@ const PACKS = [
     id: 'attack',
     label: 'Paczka Ataku',
     desc: '3 karty napastników',
-    icon: '⚔️',
+    icon: '▶',
     cost: 550,
     gemCost: 3,
     currency: 'coins',
@@ -55,7 +55,7 @@ const PACKS = [
     id: 'defense',
     label: 'Paczka Obrony',
     desc: '3 karty obrońców',
-    icon: '🛡️',
+    icon: '◈',
     cost: 550,
     gemCost: 3,
     currency: 'coins',
@@ -67,7 +67,7 @@ const PACKS = [
     id: 'midfield',
     label: 'Paczka Środka',
     desc: '3 karty pomocników',
-    icon: '🔮',
+    icon: '◉',
     cost: 550,
     gemCost: 3,
     currency: 'coins',
@@ -91,7 +91,7 @@ const PACKS = [
     id: 'mega',
     label: 'Mega Paczka',
     desc: '5 kart • 15% Legendarny • ~50% Rzadkie',
-    icon: '🏆',
+    icon: '★',
     cost: 950,
     gemCost: 5,
     currency: 'coins',
@@ -120,7 +120,7 @@ const FREE_PACK_META = {
   id: 'free',
   label: 'Darmowa Paczka',
   desc: '1 losowa karta + 30 monet',
-  icon: '🎁',
+  icon: '★',
   iconBg: 'linear-gradient(160deg, #1a4a10, #2d6e1a)',
 }
 
@@ -279,7 +279,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
             <p className="pack-prompt">Dotknij kartę aby dodać do kolekcji</p>
             {onTakeCoins && (
               <button className="pack-coins-btn" onClick={handleCoins}>
-                🪙 +{PACK_REFUND} MONET ZAMIAST KARTY
+                + {PACK_REFUND} MONET ZAMIAST KARTY
               </button>
             )}
           </div>
@@ -287,7 +287,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
 
         {done && (
           <div className="pack-done">
-            {picked ? `✅ Dodano ${picked.name} do kolekcji!` : `🪙 Otrzymano ${PACK_REFUND} monet!`}
+            {picked ? `✓ Dodano ${picked.name} do kolekcji!` : `+ Otrzymano ${PACK_REFUND} monet!`}
           </div>
         )}
       </div>
@@ -303,7 +303,7 @@ function AdRewardOverlay({ reward, onDismiss }) {
     <div className="ar-overlay" onClick={onDismiss}>
       <div className="ar-panel" onClick={e => e.stopPropagation()}>
         <div className="ar-icon-wrap">
-          <span className="ar-icon">{isGem ? '💎' : '🪙'}</span>
+          <span className="ar-icon">{isGem ? '💎' : '+'}</span>
         </div>
         <div className="ar-amount">+{reward.amount}</div>
         <div className="ar-label">{isGem ? 'KLEJNOT' : 'MONET'}</div>
@@ -346,14 +346,14 @@ function SellTab({ profile, sellCard, showNotif }) {
   const SORTS = [
     { id: 'dupes', label: '2× Duplikaty' },
     { id: 'name',  label: 'A–Z Nazwa' },
-    { id: 'price', label: '🪙 Cena' },
+    { id: 'price', label: 'Cena ↓' },
   ]
 
   return (
     <div className="sell-tab">
       {sellableCards.length === 0 ? (
         <div className="market-empty">
-          <div className="market-empty-icon">📤</div>
+          <div className="market-empty-icon">◎</div>
           <p>Brak kart do sprzedania.</p>
           <p>Karty startowe nie mogą być sprzedane.<br/>Otwórz paczki aby zdobyć nowe karty.</p>
         </div>
@@ -392,7 +392,7 @@ function SellTab({ profile, sellCard, showNotif }) {
                       <span className="sr-lvl">+{owned.upgradeLevel}</span>
                     )}
                     <div className="sr-ability">{def.abilityName}</div>
-                    <div className="sr-price">🪙 {def.sellPrice}</div>
+                    <div className="sr-price">+ {def.sellPrice}</div>
                   </div>
                   {isSelected && (
                     <button
@@ -400,7 +400,7 @@ function SellTab({ profile, sellCard, showNotif }) {
                       onClick={e => {
                         e.stopPropagation()
                         sellCard(owned.instanceId)
-                        showNotif(`Sprzedano ${def.name} za ${def.sellPrice} 🪙`, true)
+                        showNotif(`Sprzedano ${def.name} za ${def.sellPrice} monet`, true)
                         setSelected(null)
                       }}
                     >
@@ -448,12 +448,12 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
   return (
     <div className="shop-tab">
       <div className="shop-header">
-        <div className="shop-title">🛒 SKLEP ZAWODNIKÓW</div>
+        <div className="shop-title">SKLEP ZAWODNIKÓW</div>
         <div className="shop-refresh">{secsLeft > 0 ? `Odświeżenie za ${fmtTime(secsLeft)}` : 'Odświeżanie...'}</div>
       </div>
       {shopCards.length === 0 ? (
         <div className="market-empty">
-          <div className="market-empty-icon">🛒</div>
+          <div className="market-empty-icon">◈</div>
           <p>Ładowanie sklepu...</p>
         </div>
       ) : (
@@ -473,11 +473,11 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
                   {alreadyOwned && <div className="shop-row-owned">Już posiadasz ✓</div>}
                 </div>
                 <div className="shop-row-buy">
-                  <div className="shop-row-price">🪙 {price}</div>
+                  <div className="shop-row-price">+ {price}</div>
                   <button
                     className={`shop-buy-btn ${!canAfford ? 'shop-buy-btn--locked' : ''}`}
                     disabled={!canAfford}
-                    onClick={() => { buyShopCard(def.id); showNotif(`🛒 ${def.name} kupiony!`) }}
+                    onClick={() => { buyShopCard(def.id); showNotif(`✓ ${def.name} kupiony!`) }}
                   >
                     KUP
                   </button>
@@ -487,7 +487,7 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
           })}
         </div>
       )}
-      <div className="shop-hint">💡 3 zawodników zmienia się co 12h • cena = 2× wartość sprzedaży</div>
+      <div className="shop-hint">▸ 3 zawodników zmienia się co 12h • cena = 2× wartość sprzedaży</div>
     </div>
   )
 }
@@ -516,7 +516,7 @@ export default function MarketScreen() {
       if (gems < cost) { showNotif('Za mało klejnotów! 💎', false); return }
       update(prev => ({ ...prev, gems: (prev.gems ?? 0) - cost }))
     } else {
-      if (profile.coins < pack.cost) { showNotif('Za mało monet! 🪙', false); return }
+      if (profile.coins < pack.cost) { showNotif('Za mało monet!', false); return }
       spendCoins(pack.cost)
     }
     const drawn = drawCards(pack)
@@ -528,21 +528,21 @@ export default function MarketScreen() {
     const isFree = openingPack?.isFree
     setOpeningPack(null)
     if (isFree) addCoins(30)
-    showNotif(`🎉 ${def.name}${isFree ? ' + 30 🪙' : ''} dodany do kolekcji!`)
+    showNotif(`★ ${def.name}${isFree ? ' + 30 monet' : ''} dodany do kolekcji!`)
   }
 
   const handleTakeCoins = () => {
     addCoins(PACK_REFUND)
     setOpeningPack(null)
-    showNotif(`🪙 +${PACK_REFUND} monet!`)
+    showNotif(`+ ${PACK_REFUND} monet!`)
   }
 
   const handleWatchAd = () => {
     if (adSecsLeft > 0) {
-      showNotif(`⏳ Następna reklama za ${fmtCountdown(adSecsLeft)}`, false)
+      showNotif(`○ Następna reklama za ${fmtCountdown(adSecsLeft)}`, false)
       return
     }
-    showNotif('📺 Oglądasz reklamę...', true)
+    showNotif('▶ Oglądasz reklamę...', true)
     recordAdWatched()
     setTimeout(() => {
       if (Math.random() < 0.4) {
@@ -557,7 +557,7 @@ export default function MarketScreen() {
 
   const handleClaimFreePack = () => {
     if (freePackSecsLeft > 0) {
-      showNotif(`⏳ Następna paczka za ${fmtCountdown(freePackSecsLeft)}`, false)
+      showNotif(`○ Następna paczka za ${fmtCountdown(freePackSecsLeft)}`, false)
       return
     }
     const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0 && d.rarity !== 'legendary')
@@ -576,13 +576,13 @@ export default function MarketScreen() {
 
       <div className="market-tabs">
         <button className={`market-tab ${tab === 'packs' ? 'market-tab--active' : ''}`} onClick={() => setTab('packs')}>
-          📦 PACZKI
+          PACZKI
         </button>
         <button className={`market-tab ${tab === 'shop' ? 'market-tab--active' : ''}`} onClick={() => setTab('shop')}>
-          🛒 SKLEP
+          SKLEP
         </button>
         <button className={`market-tab ${tab === 'sell' ? 'market-tab--active' : ''}`} onClick={() => setTab('sell')}>
-          💰 SPRZEDAJ
+          SPRZEDAJ
         </button>
       </div>
 
@@ -599,7 +599,7 @@ export default function MarketScreen() {
             <div className="ad-body">
               <div className="ad-title">OBEJRZYJ <span className="ad-kw">REKLAMĘ</span></div>
               <div className="ad-reward-row">
-                <span className="ad-rew-coin">+50 🪙</span>
+                <span className="ad-rew-coin">+50 monet</span>
                 <span className="ad-rew-sep">LUB</span>
                 <span className="ad-rew-gem">+1 💎</span>
               </div>
@@ -623,7 +623,7 @@ export default function MarketScreen() {
                   <div className="fp-card-desc">Codzienna paczka zawodników.</div>
                 </div>
               </div>
-              {freePackSecsLeft > 0 && <div className="fp-timer">⏱ {fmtCountdown(freePackSecsLeft)}</div>}
+              {freePackSecsLeft > 0 && <div className="fp-timer">○ {fmtCountdown(freePackSecsLeft)}</div>}
               <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
                 {freePackSecsLeft > 0 ? 'NIEDOSTĘPNA' : 'ODBIERZ'}
               </button>
@@ -655,7 +655,7 @@ export default function MarketScreen() {
 
           {/* Section label */}
           <div className="packs-section-label">
-            <span className="psl-text">📦 PACZKI ZAWODNIKÓW</span>
+            <span className="psl-text">PACZKI ZAWODNIKÓW</span>
             <div className="psl-line" />
           </div>
 
@@ -690,7 +690,7 @@ export default function MarketScreen() {
                     </div>
                     <div className="pc-actions">
                       <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
-                        🪙 {pack.cost}
+                        {pack.cost} M
                       </button>
                       <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
                         💎 {pack.gemCost}
@@ -704,12 +704,12 @@ export default function MarketScreen() {
 
           {/* Special offers */}
           <div className="packs-section-label">
-            <span className="psl-text">⭐ OFERTY SPECJALNE</span>
+            <span className="psl-text">★ OFERTY SPECJALNE</span>
             <div className="psl-line" />
-            <div className="offers-timer-badge">⏱ KOŃCZY SIĘ ZA: 2D 12H</div>
+            <div className="offers-timer-badge">○ KOŃCZY SIĘ ZA: 2D 12H</div>
           </div>
           <div className="starter-pack-card">
-            <div className="sp-top-badge">⭐ JEDNORAZOWA OFERTA</div>
+            <div className="sp-top-badge">★ JEDNORAZOWA OFERTA</div>
             <div className="sp-body">
               <div className="sp-img-col">
                 <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
@@ -719,9 +719,9 @@ export default function MarketScreen() {
                 <div className="sp-name">PAKIET STARTOWY</div>
                 <div className="sp-tagline">Idealny start dla każdego menedżera!</div>
                 <div className="sp-reward-row">
-                  <div className="sp-chip">🪙 <b>10 000</b></div>
+                  <div className="sp-chip">+ <b>10 000</b> M</div>
                   <div className="sp-chip sp-chip--gem">💎 <b>200</b></div>
-                  <div className="sp-chip sp-chip--pack">📦 <b>5×</b></div>
+                  <div className="sp-chip sp-chip--pack">⬡ <b>5×</b></div>
                 </div>
               </div>
               <button className="sp-price-btn" disabled>

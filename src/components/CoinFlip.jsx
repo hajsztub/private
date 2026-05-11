@@ -34,13 +34,13 @@ export default function CoinFlip({ coinFlipState, card, onFlip, onDismiss }) {
 
         {/* Owner badge */}
         <div className={`cf-owner-badge ${isPlayer ? 'cf-owner-badge--player' : 'cf-owner-badge--opponent'}`}>
-          {isPlayer ? '🎯 TWÓJ RZUT' : '⚡ RZUT PRZECIWNIKA'}
+          {isPlayer ? '◎ TWÓJ RZUT' : '▶ RZUT PRZECIWNIKA'}
         </div>
 
         {/* Ability name */}
         {card?.abilityName && (
           <div className="cf-ability-name">
-            ⚡ {card.abilityName.toUpperCase()}
+            ▶ {card.abilityName.toUpperCase()}
           </div>
         )}
 

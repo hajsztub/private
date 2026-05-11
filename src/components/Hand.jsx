@@ -56,12 +56,12 @@ export default function Hand({
           <div className="hand__place-buttons">
             {(selectedCard.type === 'attack' || selectedCard.type === 'midfield') && !placedOffense && (
               <button className="place-btn place-btn--offense" onClick={() => handlePlace('offense')}>
-                ⚔️ Ofensywa
+                ▶ Ofensywa
               </button>
             )}
             {(selectedCard.type === 'defense' || selectedCard.type === 'midfield') && !placedDefense && (
               <button className="place-btn place-btn--defense" onClick={() => handlePlace('defense')}>
-                🛡️ Defensywa
+                ◈ Defensywa
               </button>
             )}
             <button className="place-btn place-btn--cancel" onClick={() => setSelectedCard(null)}>

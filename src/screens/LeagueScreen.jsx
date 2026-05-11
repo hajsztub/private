@@ -149,8 +149,8 @@ export default function LeagueScreen() {
       {/* CTA */}
       <div className="league-cta">
         <div className="league-cta-info">
-          <span>🏆 Wygrana: +{profile.wins > 0 ? '28' : '20'} pkt ratingu</span>
-          <span>🪙 Nagroda: 190–250 monet</span>
+          <span>◆ Wygrana: +{profile.wins > 0 ? '28' : '20'} pkt ratingu</span>
+          <span>+ Nagroda: 190–250 monet</span>
         </div>
         <button className="league-start-btn" onClick={handleStartMatch}>
           ⚽ Rozpocznij Mecz
@@ -168,7 +168,7 @@ export default function LeagueScreen() {
         return (
           <div className="league-popup-overlay" onClick={dismiss}>
             <div className={`league-popup tier-change-popup ${isPromo ? 'tcp--promo' : 'tcp--relegate'}`} onClick={e => e.stopPropagation()}>
-              <div className="tcp-icon">{isPromo ? '🎉' : '😔'}</div>
+              <div className="tcp-icon">{isPromo ? '★' : '↓'}</div>
               <div className="tcp-tier-icons">
                 <span style={{ color: fromTier?.color }}>{fromTier?.icon} {fromTier?.label}</span>
                 <span className="tcp-arrow">{isPromo ? '→' : '→'}</span>
@@ -181,7 +181,7 @@ export default function LeagueScreen() {
                   : `Spadłeś do ligi ${toTier?.label}. Popraw skład i wróć na wyższy poziom!`}
               </p>
               <button className="tcp-btn" onClick={dismiss}>
-                {isPromo ? '🚀 GRAJ DALEJ' : '💪 SPRÓBUJ PONOWNIE'}
+                {isPromo ? 'GRAJ DALEJ' : 'SPRÓBUJ PONOWNIE'}
               </button>
             </div>
           </div>
@@ -192,13 +192,13 @@ export default function LeagueScreen() {
       {showFirstLeaguePopup && (
         <div className="league-popup-overlay" onClick={() => setShowFirstLeaguePopup(false)}>
           <div className="league-popup" onClick={e => e.stopPropagation()}>
-            <div className="league-popup-icon">🏆</div>
+            <div className="league-popup-icon">◆</div>
             <h2 className="league-popup-title">Gry rankingowe</h2>
             <p className="league-popup-body">
               Mecze ligowe wpływają na Twój <strong>ranking</strong> i są trudniejsze niż trening.
             </p>
             <p className="league-popup-hint">
-              💡 Jeśli dopiero zaczynasz — rozegraj najpierw kilka treningów, żeby poznać zasady i zebrać monety na lepsze karty.
+              ▸ Jeśli dopiero zaczynasz — rozegraj najpierw kilka treningów, żeby poznać zasady i zebrać monety na lepsze karty.
             </p>
             <div className="league-popup-actions">
               <button className="league-popup-btn league-popup-btn--cancel" onClick={() => setShowFirstLeaguePopup(false)}>

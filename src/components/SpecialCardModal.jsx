@@ -11,7 +11,7 @@ const CARD_ICON = {
 export { SpecialCardModal }
 export default function SpecialCardModal({ card, onDismiss }) {
   if (!card) return null
-  const icon = CARD_ICON[card.id] || '🃏'
+  const icon = CARD_ICON[card.id] || '☰'
 
   return (
     <div className="sc-overlay" onClick={onDismiss}>

@@ -23,7 +23,7 @@ function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
     <div className="mm-notif-overlay" onClick={onClose}>
       <div className="mm-notif-panel" onClick={e => e.stopPropagation()}>
         <div className="mm-notif-header">
-          <span className="mm-notif-title">🔔 Powiadomienia</span>
+          <span className="mm-notif-title">◆ Powiadomienia</span>
           <div className="mm-notif-header-actions">
             {notifications.length > 0 && (
               <button className="mm-notif-clear-all" onClick={onClearAll}>Wyczyść wszystkie</button>
@@ -53,44 +53,44 @@ function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
 
 function SeasonPopup({ onClose }) {
   const NODES = [
-    { lvl: 5,  free: { icon: '🪙', text: '100 monet' },              prem: { icon: '🪙', text: '300 monet' } },
-    { lvl: 10, free: { icon: '📦', text: 'Paczka kart' },             prem: { icon: '📋', text: 'Kontrakt\nsponsorski' } },
-    { lvl: 15, free: { icon: '🪙', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
-    { lvl: 20, free: { icon: '⭐', text: 'Karta\nspecjalna', sp: true }, prem: { icon: '🎽', text: 'Kit\n"Thunder"', sp: true } },
-    { lvl: 25, free: { icon: '💎', text: '1 klejnot' },                prem: { icon: '🛡️', text: 'Herb\ndrużyny' } },
-    { lvl: 30, free: { icon: '🏟️', text: 'Tło\nstadionu' },           prem: { icon: '📦', text: 'Mega\nPaczka' } },
-    { lvl: 35, free: { icon: '🪙', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
-    { lvl: 40, free: { icon: '🃏', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '🏆', text: '"El Capitán\nPRO"', sp: true } },
+    { lvl: 5,  free: { icon: '¢', text: '100 monet' },              prem: { icon: '¢', text: '300 monet' } },
+    { lvl: 10, free: { icon: '⬡', text: 'Paczka kart' },             prem: { icon: '≡', text: 'Kontrakt\nsponsorski' } },
+    { lvl: 15, free: { icon: '¢', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
+    { lvl: 20, free: { icon: '★', text: 'Karta\nspecjalna', sp: true }, prem: { icon: '◈', text: 'Kit\n"Thunder"', sp: true } },
+    { lvl: 25, free: { icon: '💎', text: '1 klejnot' },                prem: { icon: '◈', text: 'Herb\ndrużyny' } },
+    { lvl: 30, free: { icon: '◆', text: 'Tło\nstadionu' },           prem: { icon: '⬡', text: 'Mega\nPaczka' } },
+    { lvl: 35, free: { icon: '¢', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
+    { lvl: 40, free: { icon: '☰', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '◆', text: '"El Capitán\nPRO"', sp: true } },
   ]
   return (
     <div className="mm-season-overlay" onClick={onClose}>
       <div className="mm-season-panel" onClick={e => e.stopPropagation()}>
         <div className="mm-season-soon-badge">WKRÓTCE</div>
-        <div className="mm-season-title">⚡ SEZON 1</div>
+        <div className="mm-season-title">▶ SEZON 1</div>
         <div className="mm-season-subtitle">Battle Pass · 40 poziomów</div>
 
         <div className="mm-season-highlights">
           <div className="mm-season-hl">
             <div className="mm-season-hl-lvl">LVL 20</div>
-            <div className="mm-season-hl-icon">⭐</div>
+            <div className="mm-season-hl-icon">★</div>
             <div className="mm-season-hl-name">Karta specjalna</div>
             <div className="mm-season-hl-sub">Połowa sezonu</div>
           </div>
           <div className="mm-season-hl mm-season-hl--prem">
             <div className="mm-season-hl-lvl">LVL 20</div>
-            <div className="mm-season-hl-icon">🎽</div>
+            <div className="mm-season-hl-icon">◈</div>
             <div className="mm-season-hl-name">Kit "Thunder"</div>
             <div className="mm-season-hl-sub">Tylko Premium</div>
           </div>
           <div className="mm-season-hl">
             <div className="mm-season-hl-lvl">LVL 40</div>
-            <div className="mm-season-hl-icon">🃏</div>
+            <div className="mm-season-hl-icon">☰</div>
             <div className="mm-season-hl-name">Karta legendarna</div>
             <div className="mm-season-hl-sub">Koniec sezonu</div>
           </div>
           <div className="mm-season-hl mm-season-hl--prem">
             <div className="mm-season-hl-lvl">LVL 40</div>
-            <div className="mm-season-hl-icon">🏆</div>
+            <div className="mm-season-hl-icon">◆</div>
             <div className="mm-season-hl-name">El Capitán PRO</div>
             <div className="mm-season-hl-sub">Tylko Premium</div>
           </div>
@@ -124,12 +124,12 @@ function SeasonPopup({ onClose }) {
 }
 
 const TUTORIAL_SECTIONS = [
-  { icon: '🃏', title: 'Czym jest GOAL TCG?', text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.' },
+  { icon: '☰', title: 'Czym jest GOAL TCG?', text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.' },
   { icon: '⚽', title: 'Jak przebiega mecz?', text: 'Mecz trwa 10 rund. Każda runda to wymiana kart — ty i rywal gracie po jednej karcie z ręki. Wyższy Atak pokonuje niższą Obronę. Za każde trafienie dostajesz punkt.' },
-  { icon: '🗂️', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
-  { icon: '✨', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
-  { icon: '🏆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
-  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 12 godzin!' },
+  { icon: '≡', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
+  { icon: '★', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
+  { icon: '◆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
+  { icon: '⬡', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 12 godzin!' },
 ]
 
 function TutorialModal({ onClose }) {
@@ -179,7 +179,7 @@ function HistoryModal({ history, onClose }) {
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal hist-modal" onClick={e => e.stopPropagation()}>
         <div className="cl-header">
-          <span className="cl-title">📋 OSTATNIE MECZE</span>
+          <span className="cl-title">≡ OSTATNIE MECZE</span>
           <button className="cl-close" onClick={onClose}>✕</button>
         </div>
         {last3.length === 0 ? (
@@ -189,19 +189,19 @@ function HistoryModal({ history, onClose }) {
             {last3.map((m, i) => (
               <div key={i} className={`hist-entry hist-entry--${m.type}`}>
                 <div className="hist-entry-top">
-                  <span className="hist-result-icon">{m.type === 'win' ? '🏆' : m.type === 'loss' ? '❌' : '🤝'}</span>
+                  <span className="hist-result-icon">{m.type === 'win' ? '◆' : m.type === 'loss' ? '✕' : '—'}</span>
                   <span className="hist-score">{m.score?.player ?? 0} : {m.score?.ai ?? 0}</span>
                   <span className="hist-type">{matchTypeLabel(m.matchType)}</span>
                   <span className="hist-date">{fmtMatchDate(m.date)}</span>
                 </div>
                 <div className="hist-entry-bot">
-                  {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} 🪙</span>}
+                  {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} ¢</span>}
                   {m.ratingChange !== 0 && m.matchType === 'league' && (
                     <span className={`hist-rating ${m.ratingChange > 0 ? 'hist-rating--up' : 'hist-rating--down'}`}>
-                      {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ⭐
+                      {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ★
                     </span>
                   )}
-                  {m.mvpName && <span className="hist-mvp">⭐ MVP: {m.mvpName}</span>}
+                  {m.mvpName && <span className="hist-mvp">★ MVP: {m.mvpName}</span>}
                 </div>
               </div>
             ))}
@@ -233,7 +233,7 @@ function ChangelogModal({ onClose }) {
     setDevPassword('')
   }
 
-  const devAddGold = () => { addCoins(5000); showMsg('🪙 +5 000 monet') }
+  const devAddGold = () => { addCoins(5000); showMsg('¢ +5 000 monet') }
 
   const devAddAllPlayers = () => {
     update(prev => {
@@ -243,7 +243,7 @@ function ChangelogModal({ onClose }) {
         .map(d => ({ instanceId: `dev_${d.id}_${Date.now()}_${Math.random().toString(36).slice(2)}`, cardId: d.id, isStarter: false, upgradeLevel: 0 }))
       return { ...prev, ownedCards: [...prev.ownedCards, ...newCards] }
     })
-    showMsg('👥 Wszyscy zawodnicy dodani')
+    showMsg('◈ Wszyscy zawodnicy dodani')
   }
 
   const devCompleteDailyMissions = () => {
@@ -251,7 +251,7 @@ function ChangelogModal({ onClose }) {
       if (!prev.dailyMissions) return prev
       return { ...prev, dailyMissions: { ...prev.dailyMissions, missions: prev.dailyMissions.missions.map(m => ({ ...m, progress: m.target })) } }
     })
-    showMsg('✅ Misje dzienne ukończone')
+    showMsg('✓ Misje dzienne ukończone')
   }
 
   const devCompleteWeeklyMissions = () => {
@@ -259,7 +259,7 @@ function ChangelogModal({ onClose }) {
       if (!prev.weeklyMissions) return prev
       return { ...prev, weeklyMissions: { ...prev.weeklyMissions, missions: prev.weeklyMissions.missions.map(m => ({ ...m, progress: m.target, locked: false })) } }
     })
-    showMsg('📅 Misje tygodniowe ukończone')
+    showMsg('◆ Misje tygodniowe ukończone')
   }
 
   const devAddGems = () => {
@@ -281,14 +281,14 @@ function ChangelogModal({ onClose }) {
         lastTierChange: { from: oldTier.id, to: newTier.id, timestamp: Date.now() },
       }
     })
-    showMsg('🏆 Awans do wyższej ligi!')
+    showMsg('◆ Awans do wyższej ligi!')
   }
 
   return (
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal" onClick={e => e.stopPropagation()}>
         <div className="cl-header">
-          <span className="cl-title">📋 CO NOWEGO?</span>
+          <span className="cl-title">≡ CO NOWEGO?</span>
           <div className="cl-header-right">
             <button className={`cl-dev-btn${devUnlocked ? ' cl-dev-btn--on' : ''}`} onClick={handleDevBtn}>DEV</button>
             <button className="cl-close" onClick={onClose}>✕</button>
@@ -311,15 +311,15 @@ function ChangelogModal({ onClose }) {
 
         {devUnlocked && (
           <div className="cl-dev-panel">
-            <div className="cl-dev-header">⚙️ PANEL DEV</div>
+            <div className="cl-dev-header">◉ PANEL DEV</div>
             {devMsg && <div className="cl-dev-msg">{devMsg}</div>}
             <div className="cl-dev-btns">
-              <button className="cl-dev-action" onClick={devAddGold}>🪙 +5 000 monet</button>
-              <button className="cl-dev-action" onClick={devAddAllPlayers}>👥 Wszyscy zawodnicy</button>
-              <button className="cl-dev-action" onClick={devCompleteDailyMissions}>✅ Misje dzienne</button>
-              <button className="cl-dev-action" onClick={devCompleteWeeklyMissions}>📅 Misje tygodniowe</button>
+              <button className="cl-dev-action" onClick={devAddGold}>¢ +5 000 monet</button>
+              <button className="cl-dev-action" onClick={devAddAllPlayers}>◈ Wszyscy zawodnicy</button>
+              <button className="cl-dev-action" onClick={devCompleteDailyMissions}>✓ Misje dzienne</button>
+              <button className="cl-dev-action" onClick={devCompleteWeeklyMissions}>◆ Misje tygodniowe</button>
               <button className="cl-dev-action" onClick={devAddGems}>💎 +10 diamentów</button>
-              <button className="cl-dev-action" onClick={devAdvanceTier}>🏆 Awans w lidze</button>
+              <button className="cl-dev-action" onClick={devAdvanceTier}>◆ Awans w lidze</button>
             </div>
           </div>
         )}
@@ -418,7 +418,7 @@ export default function MainMenuScreen() {
           const owned = profile.ownedCards.find(c => c.instanceId === instanceId)
           if (owned) {
             const def = ALL_DEFS_MM.find(d => d.id === owned.cardId)
-            newNotifs.push({ id: notifId, type: 'recovery', message: `💪 ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`, timestamp: now, read: false })
+            newNotifs.push({ id: notifId, type: 'recovery', message: `+ ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`, timestamp: now, read: false })
           }
         }
       }
@@ -428,7 +428,7 @@ export default function MainMenuScreen() {
     if (freePackAvailable) {
       const notifId = `free_pack_${Math.floor((profile.lastFreePackAt || 0) / 1000)}`
       if (!notifications.some(n => n.id === notifId)) {
-        newNotifs.push({ id: notifId, type: 'free_pack', message: '📦 Darmowa paczka jest dostępna w Markecie!', timestamp: now, read: false })
+        newNotifs.push({ id: notifId, type: 'free_pack', message: '⬡ Darmowa paczka jest dostępna w Markecie!', timestamp: now, read: false })
       }
     }
 
@@ -480,7 +480,7 @@ export default function MainMenuScreen() {
 
           <div className="mm-tp-currencies">
             <div className="mm-tp-cur">
-              <span className="mm-tp-cur-icon">🪙</span>
+              <span className="mm-tp-cur-icon">¢</span>
               <span className="mm-tp-cur-val">{profile.coins}</span>
             </div>
             <div className="mm-tp-cur">
@@ -490,7 +490,7 @@ export default function MainMenuScreen() {
           </div>
 
           <button className="mm-bell-btn" onClick={openNotifs} aria-label="Powiadomienia">
-            🔔
+            ◆
             {unreadCount > 0 && <span className="mm-bell-badge">{unreadCount}</span>}
           </button>
         </div>
@@ -511,7 +511,7 @@ export default function MainMenuScreen() {
           </div>
           <div className="mm-stats-sep" />
           <button className="mm-stats-rank" onClick={() => setShowHistory(true)}>
-            📊 RANK #{profile.rating}
+            ≡ RANK #{profile.rating}
           </button>
         </div>
       </div>
@@ -548,17 +548,17 @@ export default function MainMenuScreen() {
               </div>
               <button className="mm-tmode-inline mm-tmode-inline--amateur" onClick={() => startTraining('training_amateur')}>
                 <div className="mm-tmode-inline-body">
-                  <span className="mm-tmode-inline-name">🟢 AMATOR</span>
+                  <span className="mm-tmode-inline-name">● AMATOR</span>
                   <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+40🪙</span>
+                <span className="mm-tmode-inline-reward">+40¢</span>
               </button>
               <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
                 <div className="mm-tmode-inline-body">
-                  <span className="mm-tmode-inline-name">🔴 PRO</span>
+                  <span className="mm-tmode-inline-name">● PRO</span>
                   <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+150🪙</span>
+                <span className="mm-tmode-inline-reward">+150¢</span>
               </button>
             </div>
           )}
@@ -571,13 +571,13 @@ export default function MainMenuScreen() {
       {/* ── Missions ── */}
       {allMissionsDone && !missionsExpanded ? (
         <button className="mm-missions-done-bar" onClick={() => setMissionsExpanded(true)}>
-          <span>✅ Misje dzienne ukończone</span>
+          <span>✓ Misje dzienne ukończone</span>
           <span className="mm-missions-done-bar-arrow">›</span>
         </button>
       ) : (
         <div className="mm-missions-section">
           <div className="mm-missions-hdr">
-            <span className="mm-missions-hdr-title">🎯 MISJE</span>
+            <span className="mm-missions-hdr-title">◆ MISJE</span>
             <div className="mm-missions-tabs">
               <button className={`mm-mtab ${missionTab === 'daily' ? 'mm-mtab--active' : ''}`} onClick={() => setMissionTab('daily')}>
                 DZIENNE {claimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
@@ -585,7 +585,7 @@ export default function MainMenuScreen() {
               <button className={`mm-mtab ${missionTab === 'weekly' ? 'mm-mtab--active' : ''}`} onClick={() => setMissionTab('weekly')}>
                 TYGODN. {weeklyClaimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
               </button>
-              <button className="mm-mtab mm-mtab--season" onClick={() => setShowSeasonPopup(true)}>SEZON 🔒</button>
+              <button className="mm-mtab mm-mtab--season" onClick={() => setShowSeasonPopup(true)}>SEZON ●</button>
             </div>
           </div>
           {missionTab === 'daily' && (
@@ -605,7 +605,7 @@ export default function MainMenuScreen() {
                       {m.claimed
                         ? <span className="mm-mc-check">✓</span>
                         : <button className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`} onClick={() => ready && claimMission(m.id)} disabled={!ready}>
-                            +{m.reward}🪙
+                            +{m.reward}
                           </button>
                       }
                     </div>
@@ -627,7 +627,7 @@ export default function MainMenuScreen() {
                 if (m.locked) {
                   return (
                     <div key={m.id} className="mm-mc mm-mc--locked-mystery">
-                      <div className="mm-mc-mystery-icon">🔒</div>
+                      <div className="mm-mc-mystery-icon">●</div>
                       <div className="mm-mc-mystery-label">Ukończ pozostałe misje</div>
                     </div>
                   )
@@ -647,7 +647,7 @@ export default function MainMenuScreen() {
                       {m.claimed
                         ? <span className="mm-mc-check">✓</span>
                         : <button className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''} ${isGem ? 'mm-mc-claim--gem' : ''}`} onClick={() => ready && claimWeeklyMission(m.id)} disabled={!ready}>
-                            +{m.reward}{isGem ? '💎' : '🪙'}
+                            +{m.reward}{isGem ? ' 💎' : ''}
                           </button>
                       }
                     </div>
@@ -665,28 +665,28 @@ export default function MainMenuScreen() {
       {/* ── Grid navigation ── */}
       <div className="mm-grid">
         <button className="mm-grid-btn" onClick={() => navigate('deck_builder')}>
-          <span className="mm-grid-icon">🃏</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
           <span className="mm-grid-label">SKŁAD</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('players')}>
-          <span className="mm-grid-icon">👥</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></span>
           <span className="mm-grid-label">ZAWODNICY</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('market')}>
-          <span className="mm-grid-icon">🛒</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.2 14.8l.03-.12.9-1.68h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20.03 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5 16.18 5 17h15v-2H7.42c-.14 0-.22-.08-.22-.2z"/></svg></span>
           <span className="mm-grid-label">MARKET</span>
         </button>
         <button className="mm-grid-btn mm-grid-btn--soon" onClick={() => setShowStadion(true)}>
-          <span className="mm-grid-icon">🏟️</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></span>
           <span className="mm-grid-label">STADION</span>
           <span className="mm-grid-soon-badge">wkrótce</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('settings')}>
-          <span className="mm-grid-icon">⚙️</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></span>
           <span className="mm-grid-label">USTAWIENIA</span>
         </button>
         <button className="mm-grid-btn" onClick={() => setShowTutorial(true)}>
-          <span className="mm-grid-icon">❓</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
           <span className="mm-grid-label">JAK GRAĆ?</span>
         </button>
       </div>
@@ -708,13 +708,13 @@ export default function MainMenuScreen() {
       {showStadion && (
         <div className="mm-stadion-overlay" onClick={() => setShowStadion(false)}>
           <div className="mm-stadion-panel" onClick={e => e.stopPropagation()}>
-            <div className="mm-stadion-icon">🏟️</div>
+            <div className="mm-stadion-icon">◆</div>
             <div className="mm-stadion-title">STADION</div>
             <div className="mm-stadion-features">
-              <div className="mm-stadion-feat">🎽 Edytor strojów</div>
-              <div className="mm-stadion-feat">🛡️ Herb i kolory klubu</div>
-              <div className="mm-stadion-feat">🏗️ Ulepszenia stadionu</div>
-              <div className="mm-stadion-feat">🤝 Kontrakty sponsorów</div>
+              <div className="mm-stadion-feat">▸ Edytor strojów</div>
+              <div className="mm-stadion-feat">▸ Herb i kolory klubu</div>
+              <div className="mm-stadion-feat">▸ Ulepszenia stadionu</div>
+              <div className="mm-stadion-feat">▸ Kontrakty sponsorów</div>
             </div>
             <div className="mm-stadion-soon-msg">wkrótce!</div>
             <button className="mm-weekly-close-btn" onClick={() => setShowStadion(false)}>Zamknij</button>
@@ -726,7 +726,7 @@ export default function MainMenuScreen() {
         <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
           <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
             <div className="mm-missions-header">
-              <span className="mm-missions-title">⚡ MISJE DZIENNE</span>
+              <span className="mm-missions-title">▶ MISJE DZIENNE</span>
               <span className="mm-missions-reset">Reset za {resetIn}</span>
               <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
             </div>
@@ -752,7 +752,7 @@ export default function MainMenuScreen() {
                           className={`mm-mission-claim ${ready ? 'mm-mission-claim--ready' : ''}`}
                           onClick={() => ready && claimMission(m.id)}
                           disabled={!ready}
-                        >+{m.reward} 🪙</button>
+                        >+{m.reward}</button>
                       )}
                     </div>
                   </div>

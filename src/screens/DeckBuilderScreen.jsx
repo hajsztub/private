@@ -425,7 +425,7 @@ export default function DeckBuilderScreen() {
             </div>
           </div>
           <div className="dsb-block dsb-block--def">
-            <div className="dsb-icon dsb-icon--def">🛡</div>
+            <div className="dsb-icon dsb-icon--def">◈</div>
             <div className="dsb-inner">
               <div className="dsb-label">OBRONA</div>
               <div className="dsb-val">{totalDef}</div>
@@ -562,10 +562,10 @@ export default function DeckBuilderScreen() {
       <div className="db-footer">
         <div className="db-footer-row">
           <button className="db-auto-btn" onClick={autoFill}>
-            ⚡ AUTO UZUPEŁNIJ
+            ▶ AUTO UZUPEŁNIJ
           </button>
           <button className="db-clear-btn" onClick={clearDeck}>
-            🗑 WYCZYŚĆ SKŁAD
+            ✕ WYCZYŚĆ SKŁAD
           </button>
         </div>
         <button className="db-save-btn" onClick={saveDeck}>
@@ -641,7 +641,7 @@ function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
               )}
             </div>
           </div>
-          {injured && <div className="fs-slot-injury">🩹</div>}
+          {injured && <div className="fs-slot-injury">+</div>}
         </>
       ) : (
         <div className="fs-slot-empty-inner">
@@ -690,11 +690,11 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injur
         <div className="cp-stats">
           <span className="cp-atk">★ {atk}</span>
           <span className="cp-def">♥ {def}</span>
-          {injured && <span className="cp-injury-badge">🩹 {injuryLeft}</span>}
+          {injured && <span className="cp-injury-badge">+ {injuryLeft}</span>}
         </div>
       </div>
       <div className={`cp-badge ${assigned ? 'cp-badge--on' : ''}`}>
-        {injured ? '🩹' : assigned ? '✓' : '+'}
+        {injured ? '+' : assigned ? '✓' : '+'}
       </div>
     </div>
   )

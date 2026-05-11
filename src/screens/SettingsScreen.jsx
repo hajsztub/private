@@ -149,7 +149,7 @@ export default function SettingsScreen() {
 
         <button className="settings-row settings-row--danger" onClick={handleReset}>
           <div className="settings-row-info">
-            <span className="settings-row-icon">🗑️</span>
+            <span className="settings-row-icon">✕</span>
             <div className="settings-row-labels">
               <div className="settings-row-label">Resetuj postęp</div>
               <div className="settings-row-desc">Usuwa wszystkie dane gry</div>

@@ -147,7 +147,7 @@ export default function FieldCard({
           <div className="fc-name">{card.name}</div>
           <div className="fc-stats-row">
             <span className="fc-mini-stat fc-mini-stat--atk">×{atkVal}</span>
-            <span className="fc-mini-stat fc-mini-stat--def">🛡{defVal}</span>
+            <span className="fc-mini-stat fc-mini-stat--def">D{defVal}</span>
           </div>
           {goalCount > 0 && (
             <div className="fc-goals">
@@ -169,10 +169,10 @@ export default function FieldCard({
 
         {/* Destroyed / lock / new badges */}
         {card.isDestroyed && <div className="fc-destroyed-overlay" />}
-        {card.isDestroyed && <div className="fc-badge fc-badge--destroyed">💀</div>}
-        {!card.isDestroyed && card.isLocked && <div className="fc-badge fc-badge--lock">🔒{card.lockedRounds}r</div>}
+        {card.isDestroyed && <div className="fc-badge fc-badge--destroyed">✕</div>}
+        {!card.isDestroyed && card.isLocked && <div className="fc-badge fc-badge--lock">●{card.lockedRounds}r</div>}
         {isNew && <div className="fc-badge fc-badge--new">NEW</div>}
-        {canActivateAbility && <div className="fc-ability-dot">⚡</div>}
+        {canActivateAbility && <div className="fc-ability-dot">▶</div>}
       </div>
     </div>
   )
@@ -223,7 +223,7 @@ export function GKCard({ card, side, onTap }) {
       {/* Bottom overlay: name + DEF */}
       <div className="gk-bottom">
         <span className="gk-name">{card.name}</span>
-        <span className="gk-def-val">🛡{defVal}</span>
+        <span className="gk-def-val">D{defVal}</span>
       </div>
     </div>
   )

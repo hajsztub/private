@@ -257,9 +257,9 @@ export default function PlayersScreen() {
                   onClick={handleUpgrade}
                   disabled={!canUpgrade}
                 >
-                  ⬆ Ulepsz
+                  ↑ Ulepsz
                   <span className="psi-upgrade-cost">
-                    {upgradeCost ?? '—'} 🪙
+                    {upgradeCost ?? '—'}
                     {!canUpgrade && profile.coins < (upgradeCost || 0) && ' · brak monet'}
                   </span>
                 </button>

@@ -492,9 +492,6 @@ export default function DeckBuilderScreen() {
               )
             })}
           </div>
-          <div className="db-reserve-hint">
-            ⓘ Pomocnicy liczeni są według wyższej wartości (ATAK lub OBRONA).
-          </div>
         </div>
 
         {/* Filter tabs + sort */}
@@ -589,26 +586,30 @@ export default function DeckBuilderScreen() {
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, selected, onClick, injured }) {
+function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card ? (card.currentAttackStat ?? 0) : 0
   const def = card ? (card.currentDefenseStat ?? 0) : 0
+
+  // For reserve slots use card's own primary stat, not slot type
   const mainStat = card
-    ? ((slot.type === 'attack' || slot.type === 'midfield') ? atk : def)
+    ? (() => {
+        const t = slot.type === 'reserve' ? card.type : slot.type
+        return (t === 'attack' || t === 'midfield') ? atk : def
+      })()
     : null
+
+  const slotColor = TYPE_COLOR[slot.type] || (card && TYPE_COLOR[card.type]) || 'rgba(255,255,255,0.3)'
 
   return (
     <div
       className={`fs-slot ${selected ? 'fs-slot--selected' : ''} ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
-      style={{ '--slot-c': TYPE_COLOR[slot.type] }}
+      style={{ '--slot-c': slotColor }}
       onClick={onClick}
     >
       {card ? (
         <>
-          <div className="fs-slot-topbar">
-            <span className="fs-slot-typebadge">{slot.pos}</span>
-            <span className="fs-slot-mainstat">{mainStat}</span>
-          </div>
+          {/* Avatar fills entire card */}
           <div className="fs-slot-avatar">
             {!imgFailed ? (
               <img
@@ -622,11 +623,22 @@ function FormationSlot({ slot, card, selected, onClick, injured }) {
               <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
             )}
           </div>
+          {/* Topbar overlaid at top */}
+          <div className="fs-slot-topbar">
+            <span className="fs-slot-typebadge">{slot.pos}</span>
+            <span className="fs-slot-mainstat">{mainStat}</span>
+          </div>
+          {/* Footer overlaid at bottom */}
           <div className="fs-slot-footer">
             <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
-            <div className="fs-slot-smallstats">
-              <span className="fss-atk">★{atk}</span>
-              <span className="fss-def">♥{def}</span>
+            <div className="fs-slot-bottomrow">
+              <div className="fs-slot-smallstats">
+                <span className="fss-atk">★{atk}</span>
+                <span className="fss-def">♥{def}</span>
+              </div>
+              {onInfo && (
+                <button className="fs-info-btn" onClick={onInfo}>ⓘ</button>
+              )}
             </div>
           </div>
           {injured && <div className="fs-slot-injury">🩹</div>}

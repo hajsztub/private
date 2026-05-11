@@ -253,14 +253,16 @@
   opacity: 0.65;
 }
 
-/* Top bar: type badge + main stat */
+/* Top bar: overlaid at top of card */
 .fs-slot-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 5px 2px;
-  background: rgba(0,0,0,0.72);
-  flex-shrink: 0;
+  padding: 3px 5px 4px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.78) 0%, transparent 100%);
 }
 
 .fs-slot-typebadge {
@@ -284,21 +286,19 @@
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
-/* Avatar area */
+/* Avatar fills the entire card */
 .fs-slot-avatar {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(160deg, rgba(20,20,40,0.7) 0%, rgba(10,10,20,0.9) 100%);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(20,20,40,0.8) 0%, rgba(10,10,20,0.95) 100%);
 }
 
 .fs-slot-img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 15%;
+  display: block;
 }
 
 .fs-slot-fallback {
@@ -308,15 +308,17 @@
   align-items: center;
   justify-content: center;
   font-family: 'Bangers', cursive;
-  font-size: 22px;
-  color: rgba(255,255,255,0.3);
+  font-size: 26px;
+  color: rgba(255,255,255,0.25);
 }
 
-/* Footer: name + stats */
+/* Footer: overlaid at bottom of card */
 .fs-slot-footer {
-  padding: 3px 4px 4px;
-  background: rgba(0,0,0,0.82);
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2;
+  padding: 6px 4px 3px;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 60%, transparent 100%);
 }
 
 .fs-slot-name {
@@ -328,14 +330,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+.fs-slot-bottomrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
 }
 
 .fs-slot-smallstats {
   display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 2px;
+  gap: 3px;
 }
 
 .fss-atk {
@@ -383,26 +389,19 @@
 }
 
 .fs-info-btn {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  background: none;
   border: none;
-  background: rgba(0,0,0,0.65);
-  color: rgba(255,255,255,0.7);
-  font-size: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  line-height: 1;
   padding: 0;
-  z-index: 5;
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 3;
   -webkit-tap-highlight-color: transparent;
 }
 
-.fs-info-btn:active { background: rgba(0,230,118,0.4); }
+.fs-info-btn:active { color: #00e676; }
 
 /* ── Reserve bench ────────────────────────────────────────────────────────── */
 

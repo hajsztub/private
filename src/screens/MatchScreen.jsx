@@ -116,13 +116,6 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
           </div>
         </div>
 
-        {/* ── Activate button ── */}
-        {showActivate && (
-          <button className="zoom-act-btn zoom-act-btn--activate" onClick={onActivate}>
-            ⚡ Aktywuj umiejętność
-          </button>
-        )}
-
         {/* ── Placement buttons (hand cards) ── */}
         {placements && placements.length > 0 && (
           <div className="zoom-field-actions">
@@ -137,19 +130,21 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
         {/* ── Ability block ── */}
         {card.abilityName && (
           <div className="zoom-ability">
-            <div className="zoom-ability-header">
-              <span className="zoom-ability-header-lbl">
-                {card.abilityType === 'passive' ? 'UMIEJĘTNOŚĆ PASYWNA'
-                  : card.abilityType === 'active_coin' ? 'UMIEJĘTNOŚĆ (rzut żetonem)'
-                  : 'UMIEJĘTNOŚĆ'}
-              </span>
+            <div className="zoom-ability-top-row">
               <div
                 className="zoom-ability-icon"
                 style={{ background: card.abilityType === 'passive' ? 'rgba(68,138,255,0.25)' : `color-mix(in srgb, ${typeColor} 25%, transparent)` }}
               >
                 {card.abilityType === 'passive' ? '🔵' : card.abilityType === 'active_coin' ? '🎯' : '⚡'}
               </div>
-              <div className="zoom-ability-name">{card.abilityName}</div>
+              <div className="zoom-ability-title-group">
+                <span className="zoom-ability-header-lbl">
+                  {card.abilityType === 'passive' ? 'UMIEJĘTNOŚĆ PASYWNA'
+                    : card.abilityType === 'active_coin' ? 'UMIEJĘTNOŚĆ (rzut żetonem)'
+                    : 'UMIEJĘTNOŚĆ'}
+                </span>
+                <div className="zoom-ability-name">{card.abilityName}</div>
+              </div>
             </div>
             <div className="zoom-ability-desc">{card.abilityDescription}</div>
 
@@ -174,6 +169,13 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
                 <span className="zoom-noact-lbl">Brak aktywacji: </span>
                 {card.noActivationDescription}
               </div>
+            )}
+
+            {/* ── Activate button inside ability block ── */}
+            {showActivate && (
+              <button className="zoom-act-btn zoom-act-btn--activate zoom-act-btn--inline" onClick={onActivate}>
+                ⚡ Aktywuj umiejętność
+              </button>
             )}
           </div>
         )}

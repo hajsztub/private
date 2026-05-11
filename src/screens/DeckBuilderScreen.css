@@ -9,6 +9,8 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  padding-bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
+  box-sizing: border-box;
 }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */

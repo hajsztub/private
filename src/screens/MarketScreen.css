@@ -86,7 +86,7 @@
 .packs-list {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 12px 12px max(84px, calc(env(safe-area-inset-bottom) + 74px));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -680,6 +680,7 @@
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
+  padding-bottom: max(84px, calc(env(safe-area-inset-bottom) + 74px));
 }
 
 .sell-tab::-webkit-scrollbar { display: none; }
@@ -834,6 +835,7 @@
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
+  padding-bottom: max(84px, calc(env(safe-area-inset-bottom) + 74px));
 }
 
 .shop-tab::-webkit-scrollbar { display: none; }

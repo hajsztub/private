@@ -12,6 +12,7 @@ import LeagueScreen from './screens/LeagueScreen'
 import PlayersScreen from './screens/PlayersScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import SplashScreen from './screens/SplashScreen'
+import FloatingDock from './components/FloatingDock'
 
 import { hasProfanity, genRandomName } from './utils/nameFilter'
 
@@ -93,17 +94,24 @@ function ProfileNamePopup({ onDone }) {
 function ScreenRouter() {
   const { screen, params } = useRouter()
 
-  switch (screen) {
-    case 'main_menu':   return <MainMenuScreen />
-    case 'match':       return <MatchScreen key={params.matchId} matchParams={params} />
-    case 'post_match':  return <PostMatchScreen result={params} />
-    case 'deck_builder': return <DeckBuilderScreen />
-    case 'market':      return <MarketScreen />
-    case 'league':      return <LeagueScreen />
-    case 'players':     return <PlayersScreen />
-    case 'settings':    return <SettingsScreen />
-    default:            return <MainMenuScreen />
-  }
+  return (
+    <>
+      {(() => {
+        switch (screen) {
+          case 'main_menu':    return <MainMenuScreen />
+          case 'match':        return <MatchScreen key={params.matchId} matchParams={params} />
+          case 'post_match':   return <PostMatchScreen result={params} />
+          case 'deck_builder': return <DeckBuilderScreen />
+          case 'market':       return <MarketScreen />
+          case 'league':       return <LeagueScreen />
+          case 'players':      return <PlayersScreen />
+          case 'settings':     return <SettingsScreen />
+          default:             return <MainMenuScreen />
+        }
+      })()}
+      <FloatingDock />
+    </>
+  )
 }
 
 export default function App() {

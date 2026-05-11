@@ -610,14 +610,18 @@ export default function MarketScreen() {
           {/* Featured row: Free Pack + Premium side by side */}
           <div className="featured-row">
             <div className={`fp-card ${freePackSecsLeft > 0 ? 'fp-card--cooldown' : ''}`} onClick={handleClaimFreePack}>
-              <img className="fp-bag-img" src="/packs/pack-free.png" alt="Darmowa paczka" onError={e => { e.target.style.display='none' }} />
-              <div className="fp-card-body">
-                <div className="fp-card-title">DARMOWA</div>
-                <div className="fp-card-desc">1 zawodnik + 30🪙</div>
-                <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
-                  {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
-                </button>
+              <div className="fp-top">
+                <img className="fp-bag-img" src="/packs/pack-free.png" alt="Darmowa paczka" onError={e => { e.target.style.display='none' }} />
+                <div className="fp-card-body">
+                  <div className="fp-badge">FREE</div>
+                  <div className="fp-card-title">DARMOWA PACZKA</div>
+                  <div className="fp-card-desc">Codzienna paczka zawodników.</div>
+                </div>
               </div>
+              {freePackSecsLeft > 0 && <div className="fp-timer">⏱ {fmtCountdown(freePackSecsLeft)}</div>}
+              <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
+                {freePackSecsLeft > 0 ? 'NIEDOSTĘPNA' : 'ODBIERZ'}
+              </button>
             </div>
 
             {(() => {
@@ -625,64 +629,91 @@ export default function MarketScreen() {
               const canAfford = gems >= prem.cost
               return (
                 <div className="prem-card">
-                  <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" />
-                  <div className="prem-card-info">
-                    <div className="prem-card-badge">💎 PREMIUM</div>
-                    <div className="prem-card-name">PACZKA PREMIUM</div>
-                    <div className="prem-card-desc">5 kart • Gwarantowana Legenda!</div>
-                    <button
-                      className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
-                      onClick={() => handleBuyPack(prem)}
-                    >
-                      💎 {prem.cost}
-                    </button>
+                  <div className="prem-top">
+                    <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" onError={e => { e.target.style.display='none' }} />
+                    <div className="prem-card-info">
+                      <div className="prem-card-badge">💎 PREMIUM</div>
+                      <div className="prem-card-name">PACZKA PREMIUM</div>
+                      <div className="prem-card-desc">5 kart • Gwarantowana Legenda!</div>
+                    </div>
                   </div>
+                  <button
+                    className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
+                    onClick={() => handleBuyPack(prem)}
+                  >
+                    💎 {prem.cost}
+                  </button>
                 </div>
               )
             })()}
           </div>
 
           {/* Section label */}
-          <div className="packs-section-label">PACZKI</div>
+          <div className="packs-section-label">📦 PACZKI</div>
 
           {/* 3-column pack grid */}
           <div className="packs-grid">
-            {PACKS.filter(p => p.currency === 'coins').map(pack => {
-              const canAffordCoins = profile.coins >= pack.cost
-              const canAffordGems = gems >= pack.gemCost
-              const shortName = { random:'LOSOWA', attack:'ATAK', defense:'OBRONA', midfield:'ŚRODEK', gk:'BRAMKARZ', mega:'MEGA' }[pack.id] || pack.label
-              return (
-                <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
-                  {pack.id === 'mega' && <div className="pack-card-best-badge">BEST!</div>}
-                  <div className="pc-name-row">
-                    <span className="pc-name">{shortName}</span>
-                    <span className="pc-cards-count">{pack.id === 'mega' ? '5 KART' : '3 KARTY'}</span>
+            {(() => {
+              const nameMap = { random:'LOSOWA', attack:'ATAK', defense:'OBRONA', midfield:'ŚRODEK', gk:'BRAMKARZ', mega:'MEGA' }
+              const descMap = {
+                random: 'Losowa paczka zawodników.',
+                attack: 'Zawodnicy specjalizujący się w ataku.',
+                defense: 'Zawodnicy wzmacniający obronę.',
+                midfield: 'Kontrola środka pola i rozgrywki.',
+                gk: 'Bramkarze o niezwykłych refleksach.',
+                mega: 'Więcej kart, większe szanse na legendy!',
+              }
+              return PACKS.filter(p => p.currency === 'coins').map(pack => {
+                const canAffordCoins = profile.coins >= pack.cost
+                const canAffordGems = gems >= pack.gemCost
+                const cardCount = pack.id === 'mega' ? '5 kart' : '3 karty'
+                return (
+                  <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
+                    {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA WARTOŚĆ!</div>}
+                    <div className="pc-body">
+                      <div className="pc-img-col">
+                        <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
+                      </div>
+                      <div className="pc-text-col">
+                        <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
+                        <div className="pc-karta-count">{cardCount}</div>
+                        <div className="pc-short-desc">{descMap[pack.id]}</div>
+                      </div>
+                    </div>
+                    <div className="pc-actions">
+                      <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
+                        🪙 {pack.cost}
+                      </button>
+                      <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
+                        💎 {pack.gemCost}
+                      </button>
+                    </div>
                   </div>
-                  <div className="pc-img-area">
-                    <img
-                      className="pc-bag-img"
-                      src={`/packs/pack-${pack.id}.png`}
-                      alt={pack.label}
-                      onError={e => { e.target.style.display = 'none' }}
-                    />
-                  </div>
-                  <div className="pc-actions">
-                    <button
-                      className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`}
-                      onClick={() => handleBuyPack(pack, false)}
-                    >
-                      🪙 {pack.cost}
-                    </button>
-                    <button
-                      className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`}
-                      onClick={() => handleBuyPack(pack, true)}
-                    >
-                      lub 💎 {pack.gemCost}
-                    </button>
-                  </div>
+                )
+              })
+            })()}
+          </div>
+
+          {/* Special offers */}
+          <div className="packs-section-label">⭐ OFERTY SPECJALNE</div>
+          <div className="starter-pack-card starter-pack-card--locked">
+            <div className="sp-offer-badge">JEDNORAZOWA OFERTA!</div>
+            <div className="sp-body">
+              <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
+              <div className="sp-info">
+                <div className="sp-name">PAKIET STARTOWY</div>
+                <div className="sp-desc">Idealny start dla każdego menedżera!</div>
+                <div className="sp-rewards">
+                  <div className="sp-reward"><span>🪙</span><b>10 000</b><span className="sp-reward-label">MONET</span></div>
+                  <div className="sp-reward"><span>💎</span><b>200</b><span className="sp-reward-label">DIAMENTÓW</span></div>
+                  <div className="sp-reward"><span>📦</span><b>5×</b><span className="sp-reward-label">LOSOWYCH PACZEK</span></div>
                 </div>
-              )
-            })}
+              </div>
+              <div className="sp-price-col">
+                <div className="sp-price-btn sp-price-btn--locked">WKRÓTCE</div>
+              </div>
+            </div>
+            <div className="sp-footer">⏱ Wymaga systemu płatności</div>
           </div>
 
           <div className="packs-footer">ⓘ Karty są dodawane do Twojej kolekcji od razu po zakupie.</div>

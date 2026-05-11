@@ -326,11 +326,11 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
-  background: rgba(6,9,18,0.97);
-  border-top: 1px solid rgba(255,255,255,0.07);
+  gap: 10px;
+  height: 40px;
+  padding: 0 14px;
+  background: rgba(4,7,16,0.98);
+  border-top: 2px solid rgba(0,230,118,0.12);
 }
 
 /* ── Field wrap ──────────────────────────────────────────────────────────── */
@@ -341,28 +341,11 @@
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
-  background:
-    repeating-linear-gradient(
-      180deg,
-      rgba(255,255,255,0.022) 0px,
-      rgba(255,255,255,0.022) 38px,
-      transparent 38px,
-      transparent 76px
-    ),
-    linear-gradient(180deg, #1b5e20 0%, #2e7d32 25%, #1b5e20 50%, #2e7d32 75%, #1b5e20 100%);
+  background: url('/pitch.jpg') center center / cover no-repeat, #1b5e20;
   position: relative;
 }
 
-.ms-field-markings {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(circle at 50% 50%, transparent 56px, rgba(255,255,255,0.14) 56px, rgba(255,255,255,0.14) 58px, transparent 58px),
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18) 4px, transparent 4px),
-    linear-gradient(transparent calc(50% - 0.5px), rgba(255,255,255,0.18) calc(50% - 0.5px), rgba(255,255,255,0.18) calc(50% + 0.5px), transparent calc(50% + 0.5px));
-}
+.ms-field-markings { display: none; }
 
 /* ── Goal area ───────────────────────────────────────────────────────────── */
 
@@ -561,36 +544,43 @@
 
 /* ── Zone type borders ───────────────────────────────────────────────────── */
 
-.ms-half--ai > .ms-zone:first-child {
-  border: 2px solid rgba(255,140,0,0.7);
+/* Zone borders via ::before so overflow:hidden doesn't clip card corners */
+.ms-half--ai > .ms-zone:first-child      { margin: 4px 0 4px 4px; position: relative; }
+.ms-half--ai > .ms-zone:last-child       { margin: 4px 4px 4px 0; position: relative; }
+.ms-half--player > .ms-zone[data-zone="defense"] { margin: 4px 0 4px 4px; position: relative; }
+.ms-half--player > .ms-zone[data-zone="offense"] { margin: 4px 4px 4px 0; position: relative; }
+
+.ms-half--ai > .ms-zone:first-child::before,
+.ms-half--ai > .ms-zone:last-child::before,
+.ms-half--player > .ms-zone[data-zone="defense"]::before,
+.ms-half--player > .ms-zone[data-zone="offense"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   border-radius: 10px;
-  margin: 4px 0 4px 4px;
-  background: rgba(180,80,0,0.12);
-  box-shadow: inset 0 0 16px rgba(255,140,0,0.12), 0 0 10px rgba(255,140,0,0.18);
+  pointer-events: none;
+  z-index: 10;
 }
 
-.ms-half--ai > .ms-zone:last-child {
-  border: 2px solid rgba(66,165,245,0.7);
-  border-radius: 10px;
-  margin: 4px 4px 4px 0;
-  background: rgba(21,101,192,0.12);
-  box-shadow: inset 0 0 16px rgba(66,165,245,0.12), 0 0 10px rgba(66,165,245,0.18);
+.ms-half--ai > .ms-zone:first-child::before {
+  border: 2px solid rgba(255,140,0,0.75);
+  background: rgba(180,80,0,0.13);
+  box-shadow: inset 0 0 18px rgba(255,140,0,0.14), 0 0 12px rgba(255,140,0,0.2);
 }
-
-.ms-half--player > .ms-zone[data-zone="defense"] {
-  border: 2px solid rgba(0,200,100,0.7);
-  border-radius: 10px;
-  margin: 4px 0 4px 4px;
-  background: rgba(0,150,70,0.12);
-  box-shadow: inset 0 0 16px rgba(0,200,100,0.12), 0 0 10px rgba(0,200,100,0.18);
+.ms-half--ai > .ms-zone:last-child::before {
+  border: 2px solid rgba(66,165,245,0.75);
+  background: rgba(21,101,192,0.13);
+  box-shadow: inset 0 0 18px rgba(66,165,245,0.14), 0 0 12px rgba(66,165,245,0.2);
 }
-
-.ms-half--player > .ms-zone[data-zone="offense"] {
-  border: 2px solid rgba(255,200,0,0.7);
-  border-radius: 10px;
-  margin: 4px 4px 4px 0;
-  background: rgba(180,130,0,0.12);
-  box-shadow: inset 0 0 16px rgba(255,200,0,0.12), 0 0 10px rgba(255,200,0,0.18);
+.ms-half--player > .ms-zone[data-zone="defense"]::before {
+  border: 2px solid rgba(0,200,100,0.75);
+  background: rgba(0,150,70,0.13);
+  box-shadow: inset 0 0 18px rgba(0,200,100,0.14), 0 0 12px rgba(0,200,100,0.2);
+}
+.ms-half--player > .ms-zone[data-zone="offense"]::before {
+  border: 2px solid rgba(255,200,0,0.75);
+  background: rgba(180,130,0,0.13);
+  box-shadow: inset 0 0 18px rgba(255,200,0,0.14), 0 0 12px rgba(255,200,0,0.2);
 }
 
 .msz-label {
@@ -715,6 +705,10 @@
   justify-content: space-between;
   padding: 0 14px;
   gap: 10px;
+}
+
+.ms-hand-collapsed-bar--empty {
+  justify-content: center;
 }
 
 .ms-hand-collapsed-text {
@@ -852,26 +846,22 @@
 }
 
 .ms-hand-chevron {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: -1px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #1e2638;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.55);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 900;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
 }
 
-.ms-hand-chevron:active { background: rgba(255,255,255,0.18); }
+.ms-hand-chevron:active { background: #2a3348; color: rgba(255,255,255,0.8); }
 
 .ms-deck-stack {
   width: 32px;
@@ -913,7 +903,7 @@
 
 .ms-turn-label {
   font-family: 'Bangers', cursive;
-  font-size: 13px;
+  font-size: 17px;
   letter-spacing: 2px;
   color: rgba(255,255,255,0.28);
   white-space: nowrap;
@@ -924,20 +914,20 @@
 
 .ms-turn-time {
   font-family: 'Bangers', cursive;
-  font-size: 13px;
+  font-size: 17px;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.7);
   flex-shrink: 0;
-  min-width: 38px;
+  min-width: 44px;
 }
 
 .ms-turn-time--urgent { color: #ff5252; }
 
 .ms-timer-track {
   flex: 1;
-  height: 6px;
+  height: 8px;
   background: rgba(255,255,255,0.08);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 

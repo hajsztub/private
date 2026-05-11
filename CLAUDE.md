@@ -47,7 +47,7 @@ src/
 ## Game Mechanics
 
 ### Match Flow
-1. **Goalkeeper Selection** — each side picks 1 of 2 GKs (other = reserve)
+1. **Pre-match squad view** — player sees their lineup (GK already set from Deck Builder)
 2. **Deal Hands** — 4 cards per player (mixed position priority)
 3. **10 Rounds** — each round:
    - Active player places card in Offense slot (optional)
@@ -58,7 +58,7 @@ src/
    - **Mutual goal block**: if both teams score same round → both void
    - Draw replacement cards
    - Special card reveal on rounds 3, 7, 10
-4. **End**: highest total goals wins; tie → coin flip
+4. **End**: highest total goals wins; equal goals = draw
 
 ### Goal Probability
 ```

@@ -116,17 +116,6 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
           </div>
         </div>
 
-        {/* ── Placement buttons (hand cards) ── */}
-        {placements && placements.length > 0 && (
-          <div className="zoom-field-actions">
-            {placements.map((p, i) => (
-              <button key={i} className="zoom-act-btn zoom-act-btn--place" onClick={p.onClick}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* ── Ability block ── */}
         {card.abilityName && (
           <div className="zoom-ability">
@@ -171,7 +160,14 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
               </div>
             )}
 
-            {/* ── Activate button inside ability block ── */}
+            {/* Placement buttons (hand cards) */}
+            {placements && placements.length > 0 && placements.map((p, i) => (
+              <button key={i} className="zoom-act-btn zoom-act-btn--place zoom-act-btn--inline" onClick={p.onClick}>
+                {p.label}
+              </button>
+            ))}
+
+            {/* Activate button */}
             {showActivate && (
               <button className="zoom-act-btn zoom-act-btn--activate zoom-act-btn--inline" onClick={onActivate}>
                 ⚡ Aktywuj umiejętność

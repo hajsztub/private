@@ -299,6 +299,8 @@ export default function MatchScreen({ matchParams = {} }) {
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
+  const [zonePulse, setZonePulse] = useState(false)
+  const [zoneArrow, setZoneArrow] = useState(false)
   // goalsCollapsed removed — GK areas always visible
   const [handCollapsed, setHandCollapsed] = useState(false)
   const [showDeckPopup, setShowDeckPopup] = useState(false)
@@ -419,6 +421,23 @@ export default function MatchScreen({ matchParams = {} }) {
   useEffect(() => {
     if (tutStep === 0 && totalFieldCards > 0) setTutStep(1)
   }, [totalFieldCards])
+
+  // ── Round-1 zone placement hints ─────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== 'playing' || round !== 1 || currentPlayer !== 'A') {
+      setZonePulse(false)
+      setZoneArrow(false)
+      return
+    }
+    if (totalFieldCards > 0) {
+      setZonePulse(false)
+      setZoneArrow(false)
+      return
+    }
+    setZonePulse(true)
+    const arrowTimer = setTimeout(() => setZoneArrow(true), 15000)
+    return () => clearTimeout(arrowTimer)
+  }, [phase, round, currentPlayer, totalFieldCards])
 
   useEffect(() => {
     if (tutStep === 1 && matchState.round > 1) {
@@ -940,6 +959,7 @@ export default function MatchScreen({ matchParams = {} }) {
             dragZoneActive={dragZone === 'defense'}
             fieldSize={true}
             canActivate={canActivate}
+            showPlacementHint={zonePulse}
           />
           <div className="ms-zone-sep" />
           <Zone
@@ -954,6 +974,7 @@ export default function MatchScreen({ matchParams = {} }) {
             dragZoneActive={dragZone === 'offense'}
             fieldSize={true}
             canActivate={canActivate}
+            showPlacementHint={zonePulse}
           />
         </div>
 
@@ -1253,6 +1274,22 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
       )}
 
+      {/* ── Zone placement arrow hint (round 1, 15s idle) ───────────────── */}
+      {zoneArrow && (
+        <div className="ms-zone-arrow-overlay">
+          <div className="ms-zone-arrow ms-zone-arrow--def">
+            <div className="ms-zone-arrow-shaft" />
+            <div className="ms-zone-arrow-head">↑</div>
+            <div className="ms-zone-arrow-lbl">OBRONA</div>
+          </div>
+          <div className="ms-zone-arrow ms-zone-arrow--off">
+            <div className="ms-zone-arrow-shaft" />
+            <div className="ms-zone-arrow-head">↑</div>
+            <div className="ms-zone-arrow-lbl">ATAK</div>
+          </div>
+        </div>
+      )}
+
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {tutStep !== null && (
         <InteractiveTutorial step={tutStep} onSkip={() => { setTutStep(null); markTutorialSeen() }} />
@@ -1323,7 +1360,7 @@ function FirstWinRewardOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate, showPlacementHint }) {
   return (
     <div
       className={[
@@ -1336,6 +1373,9 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
       onClick={isDropTarget && !dragZoneActive ? onDrop : undefined}
     >
       <span className="msz-label">{label}</span>
+      {showPlacementHint && cards.length === 0 && (
+        <div className="msz-placement-hint">＋</div>
+      )}
       <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>
         {cards.map(card => {
           const canActivateAbility = !!(canActivate && card.abilityType !== 'passive' && !card.isDestroyed && !card.isLocked && !card.justPlaced)

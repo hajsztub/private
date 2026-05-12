@@ -24,7 +24,7 @@ const FORMATION = [
   { id: 'res3', type: 'reserve',    pos: 'RES', row: 4 },
 ]
 
-const MAIN_SLOTS = FORMATION.filter(s => s.type !== 'reserve')
+const MAIN_SLOTS    = FORMATION.filter(s => s.type !== 'reserve')
 const RESERVE_SLOTS = FORMATION.filter(s => s.type === 'reserve')
 
 const SLOT_ACCEPTS = {
@@ -48,6 +48,8 @@ const TYPE_COLOR = {
 }
 
 const ROWS = [0, 1, 2, 3]
+
+const TYPE_LABEL = { attack: 'ATK', midfield: 'MID', defense: 'DEF', goalkeeper: 'GK', reserve: 'RES' }
 
 function buildCard(owned, def) {
   const level = owned.upgradeLevel || 0
@@ -148,6 +150,71 @@ function CardInfoModal({ card, onClose }) {
   )
 }
 
+// ── Assign modal (slot → pick player) ─────────────────────────────────────
+
+function AssignModal({ slot, matchingCards, onSelect, onClose }) {
+  return (
+    <div className="am-overlay" onClick={onClose}>
+      <div className="am-panel" onClick={e => e.stopPropagation()}>
+        <div className="am-header">
+          <div className="am-header-left">
+            <span className="am-title">Wybierz zawodnika</span>
+            <span className="am-subtitle" style={{ color: TYPE_COLOR[slot.type] }}>
+              dla pozycji {slot.pos}
+            </span>
+          </div>
+          <button className="am-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="am-list">
+          {matchingCards.length === 0 ? (
+            <div className="am-empty">Brak dostępnych zawodników</div>
+          ) : matchingCards.map(({ owned, card }) => (
+            <CardPickerRow
+              key={owned.instanceId}
+              card={card}
+              assigned={false}
+              onClick={() => onSelect(owned.instanceId)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Slot pick modal (player → pick slot) ──────────────────────────────────
+
+function SlotPickModal({ card, matchingSlots, onSelect, onClose }) {
+  return (
+    <div className="am-overlay" onClick={onClose}>
+      <div className="am-panel am-panel--slots" onClick={e => e.stopPropagation()}>
+        <div className="am-header">
+          <div className="am-header-left">
+            <span className="am-title">Wybierz miejsce</span>
+            <span className="am-subtitle">{card.name}</span>
+          </div>
+          <button className="am-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="am-list am-list--slots">
+          {matchingSlots.map((slot) => {
+            const sameType = FORMATION.filter(s => s.type === slot.type)
+            const idx = sameType.findIndex(s => s.id === slot.id) + 1
+            return (
+              <button key={slot.id} className="am-slot-btn" onClick={() => onSelect(slot.id)}>
+                <span className="am-slot-pos" style={{ color: TYPE_COLOR[slot.type] }}>{slot.pos}</span>
+                <span className="am-slot-num">#{idx}</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function injuryTimeLeft(until) {
   const ms = until - Date.now()
   if (ms <= 0) return null
@@ -160,11 +227,14 @@ export default function DeckBuilderScreen() {
   const { goBack } = useRouter()
   const { profile, setActiveDeck } = useProfile()
   const injuries = profile.injuries || {}
-  const [notification, setNotification] = useState(null)
-  const [selectedSlot, setSelectedSlot] = useState(null)
-  const [manualFilter, setManualFilter] = useState('all')
-  const [infoCard, setInfoCard] = useState(null)
-  const [collectionSort, setCollectionSort] = useState('atk')
+
+  const [notification,    setNotification]    = useState(null)
+  const [activeTab,       setActiveTab]       = useState('formation')
+  const [collectionFilter, setCollectionFilter] = useState('all')
+  const [collectionSort,  setCollectionSort]  = useState('atk')
+  const [infoCard,        setInfoCard]        = useState(null)
+  const [assignModal,     setAssignModal]     = useState(null) // { slot, matchingCards }
+  const [slotModal,       setSlotModal]       = useState(null) // { card, instanceId, matchingSlots }
 
   const allCards = useMemo(() =>
     profile.ownedCards.map(o => {
@@ -182,10 +252,7 @@ export default function DeckBuilderScreen() {
     () => new Set(Object.values(assignments).filter(Boolean)),
     [assignments]
   )
-  const totalFilledCount = useMemo(
-    () => FORMATION.filter(s => assignments[s.id]).length,
-    [assignments]
-  )
+
   const filledCount = assignedIds.size
 
   const totalAtk = useMemo(() =>
@@ -210,46 +277,84 @@ export default function DeckBuilderScreen() {
       }, 0)
   , [assignments, allCards])
 
+  const filteredCards = useMemo(() => {
+    let cards = allCards.filter(({ card }) =>
+      (FILTER_ACCEPTS[collectionFilter] ?? FILTER_ACCEPTS.all).includes(card.type)
+    )
+    if (collectionSort === 'atk') {
+      cards = [...cards].sort((a, b) =>
+        (b.card.currentAttackStat ?? 0) - (a.card.currentAttackStat ?? 0)
+      )
+    } else {
+      cards = [...cards].sort((a, b) =>
+        (b.card.currentDefenseStat ?? 0) - (a.card.currentDefenseStat ?? 0)
+      )
+    }
+    return cards
+  }, [allCards, collectionFilter, collectionSort])
+
   const showNotif = (msg, ok) => {
     setNotification({ msg, ok })
     setTimeout(() => setNotification(null), 2500)
   }
 
-  const activeSlot = selectedSlot ? FORMATION.find(s => s.id === selectedSlot) : null
-  const filterType = activeSlot ? activeSlot.type : manualFilter
-
-  const filteredCards = useMemo(() => {
-    let cards = allCards.filter(({ card }) =>
-      (FILTER_ACCEPTS[filterType] ?? FILTER_ACCEPTS.all).includes(card.type)
-    )
-    if (collectionSort === 'atk') {
-      cards = [...cards].sort((a, b) =>
-        (b.card.currentAttackStat ?? b.card.attackStat ?? 0) -
-        (a.card.currentAttackStat ?? a.card.attackStat ?? 0)
-      )
-    } else if (collectionSort === 'def') {
-      cards = [...cards].sort((a, b) =>
-        (b.card.currentDefenseStat ?? b.card.defenseStat ?? 0) -
-        (a.card.currentDefenseStat ?? a.card.defenseStat ?? 0)
-      )
-    }
-    return cards
-  }, [allCards, filterType, collectionSort])
-
+  // Slot click: unassign if filled, open assign modal if empty
   const handleSlotClick = (slotId) => {
-    if (selectedSlot === slotId) {
-      setSelectedSlot(null)
-      return
-    }
+    const slot = FORMATION.find(s => s.id === slotId)
     if (assignments[slotId]) {
       setAssignments(prev => ({ ...prev, [slotId]: null }))
-      setSelectedSlot(slotId)
-    } else {
-      setSelectedSlot(slotId)
+      return
     }
+    const now = Date.now()
+    const isDefType = slot.type === 'goalkeeper' || slot.type === 'defense'
+    const matching = allCards
+      .filter(({ owned, card }) => {
+        if (assignedIds.has(owned.instanceId)) return false
+        if (!SLOT_ACCEPTS[slot.type].includes(card.type)) return false
+        const injuredUntil = injuries[owned.instanceId]
+        if (injuredUntil && injuredUntil > now) return false
+        return true
+      })
+      .sort((a, b) => isDefType
+        ? (b.card.currentDefenseStat ?? 0) - (a.card.currentDefenseStat ?? 0)
+        : (b.card.currentAttackStat ?? 0) - (a.card.currentAttackStat ?? 0)
+      )
+
+    if (matching.length === 0) {
+      showNotif('Brak dostępnych zawodników!', false)
+      return
+    }
+    setAssignModal({ slot, matchingCards: matching })
   }
 
-  const handleCardPick = (instanceId) => {
+  // Called from AssignModal
+  const handleAssignFromSlot = (instanceId) => {
+    const slot = assignModal.slot
+    setAssignments(prev => {
+      const next = { ...prev }
+      for (const k of Object.keys(next)) {
+        if (next[k] === instanceId) next[k] = null
+      }
+      next[slot.id] = instanceId
+      return next
+    })
+    setAssignModal(null)
+  }
+
+  // Collection tab + click
+  const handlePickFromList = (instanceId) => {
+    // Already assigned → unassign
+    if (assignedIds.has(instanceId)) {
+      setAssignments(prev => {
+        const next = { ...prev }
+        for (const k of Object.keys(next)) {
+          if (next[k] === instanceId) next[k] = null
+        }
+        return next
+      })
+      return
+    }
+
     const entry = allCards.find(({ owned }) => owned.instanceId === instanceId)
     if (!entry) return
     const { card } = entry
@@ -262,50 +367,49 @@ export default function DeckBuilderScreen() {
 
     const alreadyInDeck = Object.values(assignments).some(id => {
       if (!id || id === instanceId) return false
-      const entry2 = allCards.find(({ owned }) => owned.instanceId === id)
-      return entry2?.card?.id === card.id
+      const e2 = allCards.find(({ owned }) => owned.instanceId === id)
+      return e2?.card?.id === card.id
     })
     if (alreadyInDeck) {
       showNotif(`${card.name} już jest w składzie!`, false)
       return
     }
 
-    if (selectedSlot) {
-      const slot = FORMATION.find(s => s.id === selectedSlot)
-      if (!SLOT_ACCEPTS[slot.type].includes(card.type)) {
-        showNotif(`${card.name} nie pasuje do pozycji ${slot.pos}!`, false)
-        return
-      }
+    const freeSlots = FORMATION.filter(s =>
+      SLOT_ACCEPTS[s.type].includes(card.type) && !assignments[s.id]
+    )
+
+    if (freeSlots.length === 0) {
+      showNotif('Brak wolnego miejsca!', false)
+      return
+    }
+    if (freeSlots.length === 1) {
       setAssignments(prev => {
         const next = { ...prev }
         for (const k of Object.keys(next)) {
           if (next[k] === instanceId) next[k] = null
         }
-        next[selectedSlot] = instanceId
+        next[freeSlots[0].id] = instanceId
         return next
       })
-      const sameType = FORMATION.filter(s => s.type === slot.type && s.id !== selectedSlot)
-      const next = sameType.find(s => !assignments[s.id])
-      if (next) {
-        setSelectedSlot(next.id)
-      } else {
-        setSelectedSlot(null)
-        setManualFilter('all')
-      }
-    } else {
-      if (assignedIds.has(instanceId)) {
-        showNotif(`${card.name} już jest w składzie!`, false)
-        return
-      }
-      const compatible = FORMATION.filter(s =>
-        SLOT_ACCEPTS[s.type].includes(card.type) && !assignments[s.id]
-      )
-      if (!compatible.length) {
-        showNotif('Brak wolnego miejsca dla tej pozycji!', false)
-        return
-      }
-      setAssignments(prev => ({ ...prev, [compatible[0].id]: instanceId }))
+      showNotif(`${card.name} → ${TYPE_LABEL[freeSlots[0].type]}`, true)
+      return
     }
+    setSlotModal({ card, instanceId, matchingSlots: freeSlots })
+  }
+
+  // Called from SlotPickModal
+  const handleAssignFromCard = (slotId) => {
+    const { instanceId } = slotModal
+    setAssignments(prev => {
+      const next = { ...prev }
+      for (const k of Object.keys(next)) {
+        if (next[k] === instanceId) next[k] = null
+      }
+      next[slotId] = instanceId
+      return next
+    })
+    setSlotModal(null)
   }
 
   const saveDeck = () => {
@@ -389,9 +493,9 @@ export default function DeckBuilderScreen() {
 
   const FILTERS = [
     { id: 'all',        label: 'WSZYSCY' },
-    { id: 'attack',     label: '✕ ATK' },
+    { id: 'attack',     label: '× ATK' },
     { id: 'midfield',   label: '○ MID' },
-    { id: 'defense',    label: '○ DEF' },
+    { id: 'defense',    label: '◈ DEF' },
     { id: 'goalkeeper', label: '🧤 GK' },
   ]
 
@@ -400,7 +504,11 @@ export default function DeckBuilderScreen() {
 
       {/* Header */}
       <div className="db-header">
-        <button className="back-btn" onClick={goBack}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button className="back-btn" onClick={goBack}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
         <h1 className="db-title">USTAW SKŁAD</h1>
         <div className="db-count-wrap">
           <div className={`db-count ${filledCount === 14 ? 'db-count--full' : ''}`}>{filledCount}/14</div>
@@ -408,42 +516,86 @@ export default function DeckBuilderScreen() {
         </div>
       </div>
 
-      <div className="db-body">
-
-        {/* Stats bar */}
-        <div className="db-stats-bar">
-          <div className="dsb-block dsb-block--atk">
-            <div className="dsb-icon dsb-icon--atk">✕</div>
-            <div className="dsb-inner">
-              <div className="dsb-label">ATAK</div>
-              <div className="dsb-val">{totalAtk}</div>
-            </div>
-            <div className="dsb-segments">
-              {[0,1,2,3,4].map(i => (
-                <div key={i} className={`dsb-seg dsb-seg--atk ${totalAtk / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
-              ))}
-            </div>
+      {/* Stats bar — always visible */}
+      <div className="db-stats-bar">
+        <div className="dsb-block dsb-block--atk">
+          <div className="dsb-icon dsb-icon--atk">✕</div>
+          <div className="dsb-inner">
+            <div className="dsb-label">ATAK</div>
+            <div className="dsb-val">{totalAtk}</div>
           </div>
-          <div className="dsb-block dsb-block--def">
-            <div className="dsb-icon dsb-icon--def">◈</div>
-            <div className="dsb-inner">
-              <div className="dsb-label">OBRONA</div>
-              <div className="dsb-val">{totalDef}</div>
-            </div>
-            <div className="dsb-segments">
-              {[0,1,2,3,4].map(i => (
-                <div key={i} className={`dsb-seg dsb-seg--def ${totalDef / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
-              ))}
-            </div>
+          <div className="dsb-segments">
+            {[0,1,2,3,4].map(i => (
+              <div key={i} className={`dsb-seg dsb-seg--atk ${totalAtk / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
+            ))}
           </div>
         </div>
+        <div className="dsb-block dsb-block--def">
+          <div className="dsb-icon dsb-icon--def">◈</div>
+          <div className="dsb-inner">
+            <div className="dsb-label">OBRONA</div>
+            <div className="dsb-val">{totalDef}</div>
+          </div>
+          <div className="dsb-segments">
+            {[0,1,2,3,4].map(i => (
+              <div key={i} className={`dsb-seg dsb-seg--def ${totalDef / 60 * 5 > i ? 'dsb-seg--on' : ''}`} />
+            ))}
+          </div>
+        </div>
+      </div>
 
-        {/* Formation pitch */}
-        <div className="db-pitch">
-          <div className="db-formation-label">FORMACJA: 4-4-2</div>
-          {formationRows.map((row, ri) => (
-            <div key={ri} className="db-row">
-              {row.map(slot => {
+      {/* Toggle */}
+      <div className="db-toggle">
+        <button
+          className={`db-tab ${activeTab === 'formation' ? 'db-tab--active' : ''}`}
+          onClick={() => setActiveTab('formation')}
+        >
+          FORMACJA
+        </button>
+        <button
+          className={`db-tab ${activeTab === 'collection' ? 'db-tab--active' : ''}`}
+          onClick={() => setActiveTab('collection')}
+        >
+          ZAWODNICY
+        </button>
+      </div>
+
+      {/* Tab content */}
+      {activeTab === 'formation' ? (
+        <div className="db-tab-body db-tab-body--formation">
+          {/* Pitch */}
+          <div className="db-pitch">
+            <div className="db-formation-label">FORMACJA: 4-4-2</div>
+            {formationRows.map((row, ri) => (
+              <div key={ri} className="db-row">
+                {row.map(slot => {
+                  const card = assignments[slot.id]
+                    ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+                    : null
+                  const slotInstanceId = assignments[slot.id]
+                  const isSlotInjured = slotInstanceId
+                    ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
+                    : false
+                  return (
+                    <FormationSlot
+                      key={slot.id}
+                      slot={slot}
+                      card={card}
+                      injured={isSlotInjured}
+                      onClick={() => handleSlotClick(slot.id)}
+                      onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
+                    />
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Reserve */}
+          <div className="db-reserve">
+            <span className="db-reserve-label">REZERWA</span>
+            <div className="db-reserve-slots">
+              {RESERVE_SLOTS.map(slot => {
                 const card = assignments[slot.id]
                   ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
                   : null
@@ -456,7 +608,6 @@ export default function DeckBuilderScreen() {
                     key={slot.id}
                     slot={slot}
                     card={card}
-                    selected={selectedSlot === slot.id}
                     injured={isSlotInjured}
                     onClick={() => handleSlotClick(slot.id)}
                     onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
@@ -464,134 +615,115 @@ export default function DeckBuilderScreen() {
                 )
               })}
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* Reserve bench */}
-        <div className="db-reserve">
-          <span className="db-reserve-label">REZERWA</span>
-          <div className="db-reserve-slots">
-            {RESERVE_SLOTS.map(slot => {
-              const card = assignments[slot.id]
-                ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
-                : null
-              const slotInstanceId = assignments[slot.id]
-              const isSlotInjured = slotInstanceId
-                ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
-                : false
-              return (
-                <FormationSlot
-                  key={slot.id}
-                  slot={slot}
-                  card={card}
-                  selected={selectedSlot === slot.id}
-                  injured={isSlotInjured}
-                  onClick={() => handleSlotClick(slot.id)}
-                  onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
-                />
-              )
-            })}
+          {/* Tap hint */}
+          <div className="db-formation-hint">
+            Kliknij pusty slot aby przypisać zawodnika · Kliknij kartę aby usunąć
           </div>
         </div>
-
-        {/* Filter tabs + sort */}
-        <div className="db-filter-row">
-          <div className="db-filter-tabs">
-            {FILTERS.map(f => (
+      ) : (
+        <div className="db-tab-body db-tab-body--collection">
+          {/* Filter + sort row */}
+          <div className="db-filter-row">
+            <div className="db-filter-tabs">
+              {FILTERS.map(f => (
+                <button
+                  key={f.id}
+                  className={`db-filter-tab ${collectionFilter === f.id ? 'db-filter-tab--active' : ''}`}
+                  onClick={() => setCollectionFilter(f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <div className="db-sort-wrap">
               <button
-                key={f.id}
-                className={`db-filter-tab ${filterType === f.id || (f.id === 'all' && !activeSlot && manualFilter === 'all') ? 'db-filter-tab--active' : ''}`}
-                onClick={() => { setManualFilter(f.id); setSelectedSlot(null) }}
+                className="db-sort-sel"
+                onClick={() => setCollectionSort(s => s === 'atk' ? 'def' : 'atk')}
               >
-                {f.label}
+                {collectionSort === 'def' ? 'DEF ↓' : 'ATK ↓'}
               </button>
-            ))}
+            </div>
           </div>
-          <div className="db-sort-wrap">
-            <span className="db-sort-label">SORTUJ:</span>
-            <button
-              className="db-sort-sel"
-              onClick={() => setCollectionSort(s => s === 'atk' ? 'def' : 'atk')}
-            >
-              {collectionSort === 'def' ? 'DEF ↓' : 'ATK ↓'}
-            </button>
+
+          {/* Scrollable picker */}
+          <div className="db-picker-scroll">
+            <div className="db-picker">
+              {filteredCards.map(({ owned, card }) => {
+                const isAssigned = assignedIds.has(owned.instanceId)
+                const slotLabel = isAssigned
+                  ? FORMATION.find(s => assignments[s.id] === owned.instanceId)?.pos
+                  : null
+                const injuredUntil = injuries[owned.instanceId]
+                const isInjured = !!(injuredUntil && injuredUntil > Date.now())
+                return (
+                  <CardPickerRow
+                    key={owned.instanceId}
+                    card={card}
+                    assigned={isAssigned}
+                    slotLabel={slotLabel}
+                    hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
+                    injured={isInjured}
+                    injuryLeft={isInjured ? injuryTimeLeft(injuredUntil) : null}
+                    onClick={() => handlePickFromList(owned.instanceId)}
+                  />
+                )
+              })}
+              {filteredCards.length === 0 && (
+                <div className="db-empty">Brak kart dla tej pozycji</div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Picker hint when slot selected */}
-        {activeSlot && (
-          <div className="db-slot-hint">
-            <span>Wybierz kartę dla pozycji</span>
-            <span className="db-hint-pos" style={{ color: TYPE_COLOR[activeSlot.type] }}>
-              {activeSlot.pos}
-            </span>
-            <button className="db-hint-cancel" onClick={() => { setSelectedSlot(null); setManualFilter('all') }}>✕</button>
-          </div>
-        )}
-
-        {/* 2-column card picker */}
-        <div className="db-picker">
-          {filteredCards.map(({ owned, card }) => {
-            const isAssigned = assignedIds.has(owned.instanceId)
-            const slotLabel = isAssigned
-              ? FORMATION.find(s => assignments[s.id] === owned.instanceId)?.pos
-              : null
-            const injuredUntil = injuries[owned.instanceId]
-            const isInjured = injuredUntil && injuredUntil > Date.now()
-            return (
-              <CardPickerRow
-                key={owned.instanceId}
-                card={card}
-                assigned={isAssigned}
-                slotLabel={slotLabel}
-                hasDuplicate={profile.ownedCards.filter(o => o.cardId === card.id).length > 1}
-                injured={isInjured}
-                injuryLeft={isInjured ? injuryTimeLeft(injuredUntil) : null}
-                onClick={() => handleCardPick(owned.instanceId)}
-              />
-            )
-          })}
-          {filteredCards.length === 0 && (
-            <div className="db-empty">Brak kart dla tej pozycji</div>
-          )}
-        </div>
-
-      </div>{/* end db-body */}
+      )}
 
       {/* Footer */}
       <div className="db-footer">
         <div className="db-footer-row">
-          <button className="db-auto-btn" onClick={autoFill}>
-            ▶ AUTO UZUPEŁNIJ
-          </button>
-          <button className="db-clear-btn" onClick={clearDeck}>
-            ✕ WYCZYŚĆ SKŁAD
-          </button>
+          <button className="db-auto-btn" onClick={autoFill}>▶ AUTO UZUPEŁNIJ</button>
+          <button className="db-clear-btn" onClick={clearDeck}>✕ WYCZYŚĆ SKŁAD</button>
         </div>
         <button className="db-save-btn" onClick={saveDeck}>
           💾 ZAPISZ SKŁAD ({filledCount}/14)
         </button>
       </div>
 
+      {/* Modals */}
+      {assignModal && (
+        <AssignModal
+          slot={assignModal.slot}
+          matchingCards={assignModal.matchingCards}
+          onSelect={handleAssignFromSlot}
+          onClose={() => setAssignModal(null)}
+        />
+      )}
+      {slotModal && (
+        <SlotPickModal
+          card={slotModal.card}
+          matchingSlots={slotModal.matchingSlots}
+          onSelect={handleAssignFromCard}
+          onClose={() => setSlotModal(null)}
+        />
+      )}
+      {infoCard && <CardInfoModal card={infoCard} onClose={() => setInfoCard(null)} />}
+
       {notification && (
         <div className={`db-notif ${notification.ok ? 'db-notif--ok' : 'db-notif--err'}`}>
           {notification.msg}
         </div>
       )}
-
-      {infoCard && <CardInfoModal card={infoCard} onClose={() => setInfoCard(null)} />}
     </div>
   )
 }
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
+function FormationSlot({ slot, card, onClick, injured, onInfo }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card ? (card.currentAttackStat ?? 0) : 0
   const def = card ? (card.currentDefenseStat ?? 0) : 0
 
-  // For reserve slots use card's own primary stat, not slot type
   const mainStat = card
     ? (() => {
         const t = slot.type === 'reserve' ? card.type : slot.type
@@ -603,13 +735,12 @@ function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
 
   return (
     <div
-      className={`fs-slot ${selected ? 'fs-slot--selected' : ''} ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
+      className={`fs-slot ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
       style={{ '--slot-c': slotColor }}
       onClick={onClick}
     >
       {card ? (
         <>
-          {/* Avatar fills entire card */}
           <div className="fs-slot-avatar">
             {!imgFailed ? (
               <img
@@ -623,12 +754,10 @@ function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
               <div className="fs-slot-fallback">{(card.name || '?')[0]}</div>
             )}
           </div>
-          {/* Topbar overlaid at top */}
           <div className="fs-slot-topbar">
             <span className="fs-slot-typebadge">{slot.pos}</span>
             <span className="fs-slot-mainstat">{mainStat}</span>
           </div>
-          {/* Footer overlaid at bottom */}
           <div className="fs-slot-footer">
             <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
             <div className="fs-slot-bottomrow">

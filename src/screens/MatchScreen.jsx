@@ -1287,8 +1287,8 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Hand pointer arrow (round 1, 15s idle) ──────────────────────── */}
       {zonePulse && zoneArrow && (
         <div className="ms-hand-arrow">
-          <div className="ms-hand-arrow-line" />
           <div className="ms-hand-arrow-tip" />
+          <div className="ms-hand-arrow-line" />
         </div>
       )}
 
@@ -1375,7 +1375,7 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
       onClick={isDropTarget && !dragZoneActive ? onDrop : undefined}
     >
       <span className="msz-label">{label}</span>
-      {showPlacementHint && cards.length === 0 && (
+      {showPlacementHint && cards.length === 0 && !isDropTarget && (
         <div className="msz-placement-hint">
           <span className="msz-ph-plus">＋</span>
         </div>

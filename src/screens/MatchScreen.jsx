@@ -1062,11 +1062,18 @@ export default function MatchScreen({ matchParams = {} }) {
               <div className="ms-hand-scroll">
                 {playerA.hand.map((card, idx) => {
                   const isSelected = selectedCard?.instanceId === card.instanceId
+                  const isLastCard = idx === playerA.hand.length - 1
                   return (
                     <div
                       key={card.instanceId}
                       className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
                     >
+                      {zonePulse && zoneArrow && isLastCard && (
+                        <div className="ms-hand-card-arrow">
+                          <div className="ms-hand-card-arrow-line" />
+                          <div className="ms-hand-card-arrow-tip" />
+                        </div>
+                      )}
                       <FieldCard
                         card={card}
                         selected={isSelected}
@@ -1283,14 +1290,6 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
       )}
 
-
-      {/* ── Hand pointer arrow (round 1, 15s idle) ──────────────────────── */}
-      {zonePulse && zoneArrow && (
-        <div className="ms-hand-arrow">
-          <div className="ms-hand-arrow-tip" />
-          <div className="ms-hand-arrow-line" />
-        </div>
-      )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {tutStep !== null && (

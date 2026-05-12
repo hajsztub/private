@@ -172,7 +172,7 @@ export default function FieldCard({
         {card.isDestroyed && <div className="fc-badge fc-badge--destroyed">✕</div>}
         {!card.isDestroyed && card.isLocked && <div className="fc-badge fc-badge--lock">●{card.lockedRounds}r</div>}
         {isNew && <div className="fc-badge fc-badge--new">NEW</div>}
-        {canActivateAbility && <div className="fc-ability-dot">▶</div>}
+        {canActivateAbility && <div className="fc-ability-dot">{'▶︎'}</div>}
       </div>
     </div>
   )

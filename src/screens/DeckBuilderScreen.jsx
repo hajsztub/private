@@ -633,8 +633,8 @@ function FormationSlot({ slot, card, selected, onClick, injured, onInfo }) {
             <div className="fs-slot-name">{card.name.split(' ')[0]}</div>
             <div className="fs-slot-bottomrow">
               <div className="fs-slot-smallstats">
-                <span className="fss-atk">★{atk}</span>
-                <span className="fss-def">♥{def}</span>
+                <span className="fss-atk">×{atk}</span>
+                <span className="fss-def">D{def}</span>
               </div>
               {onInfo && (
                 <button className="fs-info-btn" onClick={onInfo}>ⓘ</button>
@@ -688,8 +688,8 @@ function CardPickerRow({ card, assigned, slotLabel, hasDuplicate, injured, injur
         </div>
         <div className="cp-name">{card.name}</div>
         <div className="cp-stats">
-          <span className="cp-atk">★ {atk}</span>
-          <span className="cp-def">♥ {def}</span>
+          <span className="cp-atk">×{atk}</span>
+          <span className="cp-def">D{def}</span>
           {injured && <span className="cp-injury-badge">🩹 {injuryLeft}</span>}
         </div>
       </div>

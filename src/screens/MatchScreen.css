@@ -1728,6 +1728,15 @@
   white-space: nowrap;
 }
 
+/* ── Body: pitch + reserve side ── */
+.ms-pm-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* ── Pitch ── */
 .ms-pm-pitch {
   flex: 1;
@@ -1988,31 +1997,26 @@
   color: transparent;
 }
 
-/* Reserves (inside pitch, below GK) */
-.ms-pm-reserves {
+/* Reserve side panel */
+.ms-pm-res-side {
+  width: 68px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding-top: 4px;
-  flex-shrink: 0;
-}
-
-.ms-pm-res-divider {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  width: 100%;
+  padding: 10px 5px 8px;
+  background: rgba(0,0,0,0.25);
+  border-left: 1px solid rgba(255,255,255,0.07);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
+.ms-pm-res-side::-webkit-scrollbar { display: none; }
 
-.ms-pm-res-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,0.1);
-}
+.ms-pm-res-side .pm-card { max-width: 54px; }
 
-.ms-pm-res-label {
-  font-size: 9px;
+.ms-pm-res-side-label {
+  font-size: 8px;
   font-weight: 900;
   letter-spacing: 2px;
   color: rgba(255,255,255,0.28);
@@ -2130,7 +2134,8 @@
   .pm-card-stat { font-size: 20px; top: 2px; right: 4px; }
   .pm-card-name { font-size: 9px; margin-top: 3px; }
 
-  .ms-pm-reserves { gap: 6px; padding-top: 6px; }
+  .ms-pm-res-side       { width: 82px; padding: 12px 6px 10px; gap: 10px; }
+  .ms-pm-res-side .pm-card { max-width: 66px; }
 
   .ms-pm-bottom   { padding: 8px 16px 12px; gap: 8px; }
   .ms-pm-lineup   { padding: 11px; font-size: 14px; }

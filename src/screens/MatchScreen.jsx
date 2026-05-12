@@ -734,51 +734,47 @@ export default function MatchScreen({ matchParams = {} }) {
           </div>
         </div>
 
-        {/* ── Pitch ── */}
-        <div className="ms-pm-pitch">
-          {/* Markings */}
-          <div className="pm-pitch-lines" aria-hidden="true">
-            <div className="pm-pitch-box pm-pitch-box--top" />
-            <div className="pm-pitch-box pm-pitch-box--inner-top" />
-            <div className="pm-pitch-line--mid" />
-            <div className="pm-pitch-circle" />
-            <div className="pm-pitch-box pm-pitch-box--inner-bottom" />
-            <div className="pm-pitch-box pm-pitch-box--bottom" />
-          </div>
+        {/* ── Pitch + reserve side panel ── */}
+        <div className="ms-pm-body">
+          <div className="ms-pm-pitch">
+            {/* Markings */}
+            <div className="pm-pitch-lines" aria-hidden="true">
+              <div className="pm-pitch-box pm-pitch-box--top" />
+              <div className="pm-pitch-box pm-pitch-box--inner-top" />
+              <div className="pm-pitch-line--mid" />
+              <div className="pm-pitch-circle" />
+              <div className="pm-pitch-box pm-pitch-box--inner-bottom" />
+              <div className="pm-pitch-box pm-pitch-box--bottom" />
+            </div>
 
-          {/* Formation badge */}
-          <div className="pm-formation-badge">
-            <span className="pm-formation-str">{formationStr}</span>
-            <div className="pm-fdots">
-              {[atkCount, midCount, defCount, 1].map((cnt, ri) => (
-                <div key={ri} className="pm-fdot-row">
-                  {Array.from({ length: maxCols }).map((_, ci) => (
-                    <div key={ci} className={`pm-fdot${ci < cnt ? ' pm-fdot--on' : ''}`} />
-                  ))}
-                </div>
-              ))}
+            {/* Formation badge */}
+            <div className="pm-formation-badge">
+              <span className="pm-formation-str">{formationStr}</span>
+              <div className="pm-fdots">
+                {[atkCount, midCount, defCount, 1].map((cnt, ri) => (
+                  <div key={ri} className="pm-fdot-row">
+                    {Array.from({ length: maxCols }).map((_, ci) => (
+                      <div key={ci} className={`pm-fdot${ci < cnt ? ' pm-fdot--on' : ''}`} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Formation */}
+            <div className="pm-formation">
+              <FormRow slots={['atk1','atk2']} />
+              <FormRow slots={['mid1','mid2','mid3','mid4']} />
+              <FormRow slots={['def1','def2','def3','def4']} />
+              <FormRow slots={['gk1']} isGk />
             </div>
           </div>
 
-          {/* Formation */}
-          <div className="pm-formation">
-            <FormRow slots={['atk1','atk2']} />
-            <FormRow slots={['mid1','mid2','mid3','mid4']} />
-            <FormRow slots={['def1','def2','def3','def4']} />
-            <FormRow slots={['gk1']} isGk />
-          </div>
-
-          {/* Reserves inside pitch */}
+          {/* Reserve side panel */}
           {resCards.length > 0 && (
-            <div className="ms-pm-reserves">
-              <div className="ms-pm-res-divider">
-                <div className="ms-pm-res-line" />
-                <span className="ms-pm-res-label">REZERWA</span>
-                <div className="ms-pm-res-line" />
-              </div>
-              <div className="pm-row pm-row--res">
-                {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
-              </div>
+            <div className="ms-pm-res-side">
+              <span className="ms-pm-res-side-label">RES</span>
+              {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
             </div>
           )}
         </div>

@@ -434,6 +434,10 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
 
   const secsLeft = useCooldown(shop.refreshedAt, SHOP_REFRESH_MS)
 
+  useEffect(() => {
+    if (secsLeft === 0 && shop.cardIds?.length) refreshCardShop()
+  }, [secsLeft])
+
   const fmtTime = (s) => {
     const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60
     return h > 0 ? `${h}h ${m}m` : `${m}:${String(sec).padStart(2, '0')}`

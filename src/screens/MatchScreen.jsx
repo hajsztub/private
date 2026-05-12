@@ -435,9 +435,16 @@ export default function MatchScreen({ matchParams = {} }) {
       return
     }
     setZonePulse(true)
-    const arrowTimer = setTimeout(() => setZoneArrow(true), 5000)
+    const arrowTimer = setTimeout(() => setZoneArrow(true), 15000)
     return () => clearTimeout(arrowTimer)
   }, [matchState.phase, matchState.round, matchState.currentPlayer, totalFieldCards])
+
+  // Auto-hide arrow after 5s
+  useEffect(() => {
+    if (!zoneArrow) return
+    const t = setTimeout(() => setZoneArrow(false), 5000)
+    return () => clearTimeout(t)
+  }, [zoneArrow])
 
   useEffect(() => {
     if (tutStep === 1 && matchState.round > 1) {
@@ -960,6 +967,7 @@ export default function MatchScreen({ matchParams = {} }) {
             fieldSize={true}
             canActivate={canActivate}
             showPlacementHint={zonePulse}
+            showArrowHint={zonePulse && zoneArrow}
           />
           <div className="ms-zone-sep" />
           <Zone
@@ -975,6 +983,7 @@ export default function MatchScreen({ matchParams = {} }) {
             fieldSize={true}
             canActivate={canActivate}
             showPlacementHint={zonePulse}
+            showArrowHint={zonePulse && zoneArrow}
           />
         </div>
 
@@ -1274,34 +1283,6 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
       )}
 
-      {/* ── Zone placement arrow hint (round 1, 15s idle) ───────────────── */}
-      {zoneArrow && (
-        <svg className="ms-zone-arrow-svg" viewBox="0 0 320 130" preserveAspectRatio="none">
-          <defs>
-            <marker id="arr-l" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="rgba(105,240,174,0.75)" />
-            </marker>
-            <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="rgba(255,220,80,0.75)" />
-            </marker>
-            <linearGradient id="gl" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="rgba(105,240,174,0)" />
-              <stop offset="100%" stopColor="rgba(105,240,174,0.7)" />
-            </linearGradient>
-            <linearGradient id="gr" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="rgba(255,220,80,0)" />
-              <stop offset="100%" stopColor="rgba(255,220,80,0.65)" />
-            </linearGradient>
-          </defs>
-          <line x1="160" y1="112" x2="72" y2="26"
-            stroke="url(#gl)" strokeWidth="2.5" markerEnd="url(#arr-l)" strokeLinecap="round" />
-          <line x1="160" y1="112" x2="248" y2="26"
-            stroke="url(#gr)" strokeWidth="2.5" markerEnd="url(#arr-r)" strokeLinecap="round" />
-          <text x="52" y="18" textAnchor="middle" fill="rgba(105,240,174,0.7)" fontSize="10" fontWeight="700" letterSpacing="0.8">OBRONA</text>
-          <text x="268" y="18" textAnchor="middle" fill="rgba(255,220,80,0.7)" fontSize="10" fontWeight="700" letterSpacing="0.8">ATAK</text>
-          <text x="160" y="126" textAnchor="middle" fill="rgba(255,255,255,0.32)" fontSize="9.5" fontWeight="500">wystaw kartę z ręki</text>
-        </svg>
-      )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {tutStep !== null && (
@@ -1373,7 +1354,7 @@ function FirstWinRewardOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate, showPlacementHint }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate, showPlacementHint, showArrowHint }) {
   return (
     <div
       className={[
@@ -1389,6 +1370,12 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
       {showPlacementHint && cards.length === 0 && (
         <div className="msz-placement-hint">
           <span className="msz-ph-plus">＋</span>
+        </div>
+      )}
+      {showArrowHint && cards.length === 0 && (
+        <div className={`msz-zone-arrow msz-zone-arrow--${zone}`}>
+          <div className="msz-zone-arrow-tip" />
+          <div className="msz-zone-arrow-line" />
         </div>
       )}
       <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>

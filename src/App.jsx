@@ -107,6 +107,7 @@ function ScreenRouter() {
       {screen === 'settings'     && <SettingsScreen     key="settings" />}
       {!['main_menu','match','post_match','deck_builder','market','league','players','settings'].includes(screen) && <MainMenuScreen key="main_menu" />}
       <FloatingDock />
+      <PWAInstallBanner hidden={screen === 'match'} />
     </>
   )
 }
@@ -147,7 +148,6 @@ export default function App() {
           <ScreenRouter />
         </AppRouter>
         {showNamePopup && <ProfileNamePopup onDone={handleNameDone} />}
-        {!showNamePopup && <PWAInstallBanner />}
       </SettingsContext.Provider>
     </ProfileContext.Provider>
   )

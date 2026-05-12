@@ -2059,6 +2059,12 @@
 }
 .ms-pm-res-tab:active { background: rgba(6, 30, 10, 0.9); }
 
+@keyframes resPulse {
+  0%, 100% { border-left-color: rgba(0,230,118,0.25); box-shadow: none; }
+  50%       { border-left-color: rgba(0,230,118,0.75); box-shadow: -4px 0 14px rgba(0,230,118,0.3); }
+}
+.ms-pm-res-tab { animation: resPulse 1.8s ease-in-out infinite; }
+
 /* Bottom controls (below pitch) */
 .ms-pm-bottom {
   padding: 6px 14px 8px;

@@ -295,7 +295,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [showLog, setShowLog] = useState(false)
   const [prematchLoading, setPrematchLoading] = useState(false)
   const [incompleteMsg, setIncompleteMsg] = useState(null)
-  const [showReserves, setShowReserves] = useState(true)
+  const [showReserves, setShowReserves] = useState(false)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
@@ -658,7 +658,7 @@ export default function MatchScreen({ matchParams = {} }) {
           <div className="pm-card-name pm-card-name--empty">&nbsp;</div>
         </div>
       )
-      const stat = (isGk || card.type === 'goalkeeper')
+      const stat = (isGk || card.type === 'goalkeeper' || card.type === 'defense')
         ? (card.currentDefenseStat ?? card.defenseStat ?? 0)
         : (card.currentAttackStat ?? card.attackStat ?? 0)
       const tc = TYPE_C[card.type] || '#888'

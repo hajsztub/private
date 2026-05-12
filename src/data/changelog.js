@@ -1,5 +1,32 @@
 export const CHANGELOG = [
   {
+    version: '6.2',
+    date: '2026-05-12',
+    changes: [
+      'Banner instalacji PWA: pojawia się na mobile dla użytkowników przeglądarki z instrukcją dodania do ekranu głównego',
+      'Instrukcje instalacji dopasowane do przeglądarki: Safari (przycisk Udostępnij), Chrome iOS (menu ⋯), Android Chrome (natywny dialog)',
+      'Banner ukryty podczas meczu — nie zakłóca rozgrywki',
+      'Licznik dnia gry w topbarze obok nazwy gracza — podstawa dla systemu daily rewards',
+      'Popup "Nagrody dzienne" z siatką 7 dni (podgląd nagród) — aktywacja wkrótce',
+      'Limit nazwy gracza zmniejszony z 16 do 10 znaków (popup startowy i Ustawienia)',
+      'Desktop — naprawiono scrollowanie w Składzie: footer z przyciskami zawsze widoczny bez przewijania',
+    ],
+  },
+  {
+    version: '6.1',
+    date: '2026-05-12',
+    changes: [
+      'Skład: redesign UX — zakładki FORMACJA / ZAWODNICY zamiast jednoczesnego widoku',
+      'Skład: kliknięcie slotu otwiera modal z listą pasujących zawodników do przypisania',
+      'Skład: kliknięcie + przy zawodniku automatycznie przypisuje go do wolnego slotu (lub popup wyboru gdy kilka wolnych)',
+      'Skład: rezerwa jako pionowy panel po prawej stronie boiska — zawsze widoczna bez scrollowania',
+      'Skład: blokada duplikatów — ten sam zawodnik nie może być przypisany do dwóch slotów',
+      'Przyciski powrotu: ujednolicony wygląd SVG we wszystkich ekranach',
+      'Panel monet i diamentów: ujednolicony styl (Inter 800, ciemne tło) na wszystkich ekranach',
+      'Statystyki kart: ujednolicony format ×ATK / ◈DEF we wszystkich widokach',
+    ],
+  },
+  {
     version: '6.0',
     date: '2026-05-11',
     changes: [

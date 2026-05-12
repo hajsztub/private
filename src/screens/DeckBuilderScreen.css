@@ -121,7 +121,7 @@
   text-align: center;
   font-size: 10px;
   color: rgba(255,255,255,0.2);
-  padding: 8px 16px 12px;
+  padding: 4px 16px 6px;
   letter-spacing: 0.3px;
 }
 
@@ -210,7 +210,8 @@
 /* ── Pitch wrap (formation + reserve side-by-side) ───────────────────────── */
 
 .db-pitch-wrap {
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: row;
   background:
@@ -260,7 +261,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  justify-content: space-evenly;
+  gap: 0;
   padding: 8px 6px 10px;
   position: relative;
 }
@@ -1103,3 +1105,19 @@
   text-align: left;
 }
 
+
+/* ── Desktop: larger cards ────────────────────────────────────────────────── */
+@media (min-width: 600px) {
+  .fs-slot        { width: 80px; height: 106px; border-radius: 12px; }
+  .fs-slot-mainstat { font-size: 22px; }
+  .fs-slot-name   { font-size: 8.5px; }
+  .fss-atk,
+  .fss-def        { font-size: 8px; }
+  .fs-slot-typebadge { font-size: 8px; padding: 2px 5px; }
+
+  .fs-slot--small { width: 64px !important; height: 86px !important; }
+  .fs-slot--small .fs-slot-mainstat { font-size: 17px; }
+
+  .db-row         { gap: 6px; }
+  .db-reserve-side { width: 84px; }
+}

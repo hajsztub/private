@@ -1114,23 +1114,23 @@ export default function MatchScreen({ matchParams = {} }) {
             className={`ms-forfeit-btn${!isPlayerTurn ? ' ms-forfeit-btn--dim' : ''}`}
             onClick={() => isPlayerTurn && setShowForfeit(true)}
           >✕</button>
-          {matchState.redraws < 2 ? (
+          {matchState.redraws < 1 ? (
             <button
-              className={`ms-redraw-btn${!isPlayerTurn ? ' ms-redraw-btn--dim' : ''}`}
-              onClick={() => isPlayerTurn && setShowRedrawConfirm(true)}
+              className={`ms-redraw-btn${!isPlayerTurn || round < 3 ? ' ms-redraw-btn--dim' : ''}`}
+              onClick={() => isPlayerTurn && round >= 3 && setShowRedrawConfirm(true)}
             >
-              <span className="ms-redraw-icon">☰</span>
+              <span className="ms-redraw-icon">⇄</span>
               <span className="ms-redraw-text">
-                <span className="ms-redraw-title">NOWA RĘKA</span>
-                <span className="ms-redraw-sub">{playerA.hand.length} nowe karty</span>
+                <span className="ms-redraw-title">ZMIEŃ RĘKĘ</span>
+                <span className="ms-redraw-sub">{round < 3 ? `od rundy 3` : '4 karty / -5 DEF'}</span>
               </span>
             </button>
           ) : (
             <button className="ms-redraw-btn ms-redraw-btn--used" disabled>
-              <span className="ms-redraw-icon">☰</span>
+              <span className="ms-redraw-icon">⇄</span>
               <span className="ms-redraw-text">
-                <span className="ms-redraw-title">NOWA RĘKA</span>
-                <span className="ms-redraw-sub">wyczerpane</span>
+                <span className="ms-redraw-title">ZMIEŃ RĘKĘ</span>
+                <span className="ms-redraw-sub">wykorzystano</span>
               </span>
             </button>
           )}
@@ -1148,11 +1148,11 @@ export default function MatchScreen({ matchParams = {} }) {
       {showRedrawConfirm && (
         <div className="ms-forfeit-confirm">
           <div className="ms-forfeit-panel">
-            <div className="ms-forfeit-title">↺ Przetasować rękę?</div>
-            <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Zostało przetasowań: {2 - matchState.redraws}/2</div>
+            <div className="ms-forfeit-title">⇄ Zmienić rękę?</div>
+            <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Możliwe tylko raz w meczu.</div>
             <div className="ms-forfeit-btns">
               <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'REDRAW_HAND' }); setShowRedrawConfirm(false) }}>
-                Tak, przetasuj
+                Tak, zmień
               </button>
               <button className="ms-forfeit-no" onClick={() => setShowRedrawConfirm(false)}>
                 Anuluj

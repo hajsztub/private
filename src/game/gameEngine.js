@@ -1116,7 +1116,8 @@ export function gameReducer(state, action) {
       return addLog(s, 'Mecz poddany. Przegrana 0:3.', 'warning')
     }
     case 'REDRAW_HAND': {
-      if (state.redraws >= 2) return addLog(state, '❌ Wykorzystałeś już limit 2 przetasowań.', 'error')
+      if (state.redraws >= 1) return addLog(state, '❌ Wymiana ręki już wykorzystana.', 'error')
+      if (state.round < 3) return addLog(state, '❌ Wymiana ręki dostępna od 3. rundy.', 'error')
       const pl = state.players.A
       const combined = shuffleDeck([...pl.deck, ...pl.hand])
       const newHand = combined.slice(0, 4)
@@ -1143,7 +1144,7 @@ export function gameReducer(state, action) {
           A: { ...pl, hand: newHand, deck: newDeck, activeGoalkeeper: updatedGK, defenseSector: updatedDef },
         },
       }
-      return addLog(newState, `🔄 Przetasowanie ${state.redraws + 1}/2 — dobrano 4 karty, -5 DEF do końca meczu.`, 'warning')
+      return addLog(newState, `🔄 Wymiana ręki — dobrano 4 karty, -5 DEF do końca meczu.`, 'warning')
     }
     default:
       return state

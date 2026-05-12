@@ -1,0 +1,86 @@
+[
+  {
+    "cardId": "starter_gk1",
+    "instanceId": "starter_gk1",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_gk2",
+    "instanceId": "starter_gk2",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_def1",
+    "instanceId": "starter_def1",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_def2",
+    "instanceId": "starter_def2",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_def3",
+    "instanceId": "starter_def3",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_mid1",
+    "instanceId": "starter_mid1",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_mid2",
+    "instanceId": "starter_mid2",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_mid3",
+    "instanceId": "starter_mid3",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_atk1",
+    "instanceId": "starter_atk1",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_atk2",
+    "instanceId": "starter_atk2",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_atk3",
+    "instanceId": "starter_atk3",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_def4",
+    "instanceId": "starter_def4",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_mid4",
+    "instanceId": "starter_mid4",
+    "upgradeLevel": 0,
+    "isStarter": true
+  },
+  {
+    "cardId": "starter_atk4",
+    "instanceId": "starter_atk4",
+    "upgradeLevel": 0,
+    "isStarter": true
+  }
+]

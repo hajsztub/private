@@ -13,6 +13,7 @@ import PlayersScreen from './screens/PlayersScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import SplashScreen from './screens/SplashScreen'
 import FloatingDock from './components/FloatingDock'
+import PWAInstallBanner from './components/PWAInstallBanner'
 
 import { hasProfanity, genRandomName } from './utils/nameFilter'
 
@@ -146,6 +147,7 @@ export default function App() {
           <ScreenRouter />
         </AppRouter>
         {showNamePopup && <ProfileNamePopup onDone={handleNameDone} />}
+        {!showNamePopup && <PWAInstallBanner />}
       </SettingsContext.Provider>
     </ProfileContext.Provider>
   )

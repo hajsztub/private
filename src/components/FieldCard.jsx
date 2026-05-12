@@ -147,7 +147,7 @@ export default function FieldCard({
           <div className="fc-name">{card.name}</div>
           <div className="fc-stats-row">
             <span className="fc-mini-stat fc-mini-stat--atk">×{atkVal}</span>
-            <span className="fc-mini-stat fc-mini-stat--def">D{defVal}</span>
+            <span className="fc-mini-stat fc-mini-stat--def">◈{defVal}</span>
           </div>
           {goalCount > 0 && (
             <div className="fc-goals">
@@ -223,7 +223,7 @@ export function GKCard({ card, side, onTap }) {
       {/* Bottom overlay: name + DEF */}
       <div className="gk-bottom">
         <span className="gk-name">{card.name}</span>
-        <span className="gk-def-val">D{defVal}</span>
+        <span className="gk-def-val">◈{defVal}</span>
       </div>
     </div>
   )

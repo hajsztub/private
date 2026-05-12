@@ -1276,18 +1276,26 @@ export default function MatchScreen({ matchParams = {} }) {
 
       {/* ── Zone placement arrow hint (round 1, 15s idle) ───────────────── */}
       {zoneArrow && (
-        <div className="ms-zone-arrow-overlay">
-          <div className="ms-zone-arrow ms-zone-arrow--def">
-            <div className="ms-zone-arrow-shaft" />
-            <div className="ms-zone-arrow-head">↑</div>
-            <div className="ms-zone-arrow-lbl">OBRONA</div>
-          </div>
-          <div className="ms-zone-arrow ms-zone-arrow--off">
-            <div className="ms-zone-arrow-shaft" />
-            <div className="ms-zone-arrow-head">↑</div>
-            <div className="ms-zone-arrow-lbl">ATAK</div>
-          </div>
-        </div>
+        <svg className="ms-zone-arrow-svg" viewBox="0 0 320 130" preserveAspectRatio="none">
+          <defs>
+            <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="rgba(105,240,174,0.9)" />
+            </marker>
+          </defs>
+          {/* Left arrow → defense zone */}
+          <line x1="160" y1="118" x2="58" y2="18"
+            stroke="rgba(105,240,174,0.85)" strokeWidth="3" strokeDasharray="9,5"
+            markerEnd="url(#arr)" strokeLinecap="round" />
+          {/* Right arrow → offense zone */}
+          <line x1="160" y1="118" x2="262" y2="18"
+            stroke="rgba(105,240,174,0.85)" strokeWidth="3" strokeDasharray="9,5"
+            markerEnd="url(#arr)" strokeLinecap="round" />
+          {/* Labels near arrow heads */}
+          <text x="42" y="14" textAnchor="middle" fill="rgba(105,240,174,0.8)" fontSize="11" fontWeight="800" letterSpacing="1">OBRONA</text>
+          <text x="278" y="14" textAnchor="middle" fill="rgba(255,220,50,0.85)" fontSize="11" fontWeight="800" letterSpacing="1">ATAK</text>
+          {/* Origin label */}
+          <text x="160" y="130" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="10" fontWeight="600">wyciągnij kartę z ręki</text>
+        </svg>
       )}
 
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
@@ -1374,7 +1382,9 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
     >
       <span className="msz-label">{label}</span>
       {showPlacementHint && cards.length === 0 && (
-        <div className="msz-placement-hint">＋</div>
+        <div className="msz-placement-hint">
+          <span className="msz-ph-plus">＋</span>
+        </div>
       )}
       <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>
         {cards.map(card => {

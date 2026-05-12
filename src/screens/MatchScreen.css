@@ -617,10 +617,14 @@
   margin-top: 6px;
 }
 
-/* ── Zone placement hint (round 1 pulse) ─────────────────────────────────── */
+/* ── Zone placement hint (round 1 pulse) — card-shaped slot ─────────────── */
 @keyframes hintPulse {
-  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.88); }
-  50%       { opacity: 0.85; transform: translate(-50%, -50%) scale(1.08); }
+  0%, 100% { opacity: 0.35; box-shadow: 0 0 0 0 rgba(0,230,118,0); }
+  50%       { opacity: 0.85; box-shadow: 0 0 18px 4px rgba(0,230,118,0.25); }
+}
+@keyframes hintPlusScale {
+  0%, 100% { transform: scale(0.9); opacity: 0.5; }
+  50%       { transform: scale(1.1); opacity: 0.9; }
 }
 
 .msz-placement-hint {
@@ -628,70 +632,57 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 42px;
-  font-weight: 300;
-  color: rgba(105,240,174,0.65);
+  width: 68px;
+  height: 94px;
+  border: 2px dashed rgba(105,240,174,0.5);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
   z-index: 2;
-  animation: hintPulse 1.4s ease-in-out infinite;
-  text-shadow: 0 0 20px rgba(0,230,118,0.5);
+  animation: hintPulse 1.5s ease-in-out infinite;
+  background: rgba(0,230,118,0.04);
+}
+
+.msz-ph-plus {
+  font-size: 30px;
+  font-weight: 300;
+  color: rgba(105,240,174,0.75);
   line-height: 1;
+  display: block;
+  animation: hintPlusScale 1.5s ease-in-out infinite;
 }
 
 /* ── Zone arrow hint (15s idle, round 1) ─────────────────────────────────── */
-@keyframes arrowFloat {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50%       { transform: translateY(-10px); opacity: 1; }
+@keyframes arrowDash {
+  from { stroke-dashoffset: 56; }
+  to   { stroke-dashoffset: 0; }
 }
 @keyframes arrowFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
 
-.ms-zone-arrow-overlay {
+.ms-zone-arrow-svg {
   position: absolute;
   bottom: 178px;
   left: 0;
   right: 0;
-  display: flex;
-  justify-content: space-evenly;
+  width: 100%;
+  height: 130px;
   pointer-events: none;
   z-index: 20;
-  animation: arrowFadeIn 0.5s ease-out;
+  animation: arrowFadeIn 0.5s ease-out, arrowPulse 1.6s ease-in-out 0.5s infinite;
+  filter: drop-shadow(0 0 8px rgba(0,230,118,0.4));
 }
 
-.ms-zone-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  animation: arrowFloat 1.4s ease-in-out infinite;
-}
-
-.ms-zone-arrow--off { animation-delay: 0.2s; }
-
-.ms-zone-arrow-shaft {
-  width: 3px;
-  height: 28px;
-  background: linear-gradient(to top, rgba(105,240,174,0), rgba(105,240,174,0.8));
-  border-radius: 2px;
-}
-
-.ms-zone-arrow-head {
-  font-size: 22px;
-  color: rgba(105,240,174,0.9);
-  line-height: 1;
-  text-shadow: 0 0 12px rgba(0,230,118,0.7);
-  order: -1;
-}
-
-.ms-zone-arrow-lbl {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: rgba(105,240,174,0.7);
-  text-transform: uppercase;
-  margin-top: 2px;
+.ms-zone-arrow-svg line {
+  animation: arrowDash 1s linear infinite;
 }
 
 .msz-drop-slot {

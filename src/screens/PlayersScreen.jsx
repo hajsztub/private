@@ -97,7 +97,7 @@ export default function PlayersScreen() {
     <div className="ps-screen">
       {/* Header */}
       <div className="ps-header">
-        <button className="ps-back" onClick={() => router.goBack()}>←</button>
+        <button className="back-btn" onClick={() => router.goBack()}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <div className="ps-title-group">
           <h1 className="ps-title">Zawodnicy</h1>
           <span className="ps-subtitle">{allCards.length} kart w kolekcji</span>

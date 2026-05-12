@@ -22,17 +22,6 @@
   flex-shrink: 0;
 }
 
-.league-back {
-  background: rgba(255,255,255,0.08);
-  border: none;
-  color: white;
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  flex-shrink: 0;
-}
 
 .league-title-block {
   flex: 1;

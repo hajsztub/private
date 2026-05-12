@@ -400,7 +400,7 @@ export default function DeckBuilderScreen() {
 
       {/* Header */}
       <div className="db-header">
-        <button className="back-btn" onClick={goBack}>←</button>
+        <button className="back-btn" onClick={goBack}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <h1 className="db-title">USTAW SKŁAD</h1>
         <div className="db-count-wrap">
           <div className={`db-count ${filledCount === 14 ? 'db-count--full' : ''}`}>{filledCount}/14</div>

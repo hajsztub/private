@@ -774,8 +774,7 @@ export default function MatchScreen({ matchParams = {} }) {
           {/* Reserve side panel / collapsed tab */}
           {resCards.length > 0 && (
             showReserves ? (
-              <div className="ms-pm-res-side">
-                <button className="ms-pm-res-close" onClick={() => setShowReserves(false)}>✕</button>
+              <div className="ms-pm-res-side" onClick={() => setShowReserves(false)}>
                 <span className="ms-pm-res-side-label">RES</span>
                 {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
               </div>

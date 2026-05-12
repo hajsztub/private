@@ -81,7 +81,7 @@ body {
   .league-screen   { height: 900px !important; max-height: 900px !important; }
   .players-screen  { height: 900px !important; max-height: 900px !important; }
   .main-menu       { min-height: 900px; }
-  .deck-builder    { min-height: 900px; }
+  .deckbuilder     { height: 900px !important; max-height: 900px !important; }
   .market-screen   { min-height: 900px; }
   .settings-screen { min-height: 900px; }
 }

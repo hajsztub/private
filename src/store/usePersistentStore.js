@@ -165,17 +165,25 @@ function defaultProfile() {
     cardShop: { cardIds: [], refreshedAt: 0 },
     lastTierChange: null, // { from, to, timestamp }
     notifications: [], // [{ id, type, message, timestamp, read }]
+    firstPlayedAt: null, // set on first profile setup
   }
 }
 
 const NEW_STARTER_IDS = ['starter_def4', 'starter_mid4', 'starter_atk4']
 
 function migrateProfile(profile) {
-  const ownedIds = new Set(profile.ownedCards.map(c => c.instanceId))
+  let p = profile
+  const ownedIds = new Set(p.ownedCards.map(c => c.instanceId))
   const missing = NEW_STARTER_IDS.filter(id => !ownedIds.has(id))
-  if (missing.length === 0) return profile
-  const newCards = missing.map(id => ({ cardId: id, instanceId: id, upgradeLevel: 0, isStarter: true }))
-  return { ...profile, ownedCards: [...profile.ownedCards, ...newCards] }
+  if (missing.length > 0) {
+    const newCards = missing.map(id => ({ cardId: id, instanceId: id, upgradeLevel: 0, isStarter: true }))
+    p = { ...p, ownedCards: [...p.ownedCards, ...newCards] }
+  }
+  // backfill firstPlayedAt for existing players who already set up a profile
+  if (!p.firstPlayedAt && p.hasSetupProfile) {
+    p = { ...p, firstPlayedAt: Date.now() }
+  }
+  return p
 }
 
 function loadState() {
@@ -399,7 +407,7 @@ export function usePersistentStore() {
   }, [update])
 
   const markProfileSetup = useCallback((name) => {
-    update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true }))
+    update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true, firstPlayedAt: prev.firstPlayedAt || Date.now() }))
   }, [update])
 
   const recordAdWatched = useCallback(() => {

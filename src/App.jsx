@@ -61,7 +61,7 @@ function ProfileNamePopup({ onDone }) {
           onChange={e => { setName(e.target.value); setError('') }}
           onKeyDown={e => e.key === 'Enter' && handleConfirm()}
           placeholder="Twoja nazwa gracza"
-          maxLength={16}
+          maxLength={10}
           autoFocus
           style={{
             width: '100%', padding: '12px 16px', borderRadius: '12px',

@@ -56,7 +56,7 @@ export default function SettingsScreen() {
                 value={nameInput}
                 onChange={e => { setNameInput(e.target.value); setNameError('') }}
                 onKeyDown={e => e.key === 'Enter' && saveName()}
-                maxLength={16}
+                maxLength={10}
                 placeholder="Twoja nazwa"
               />
               <button

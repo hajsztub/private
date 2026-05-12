@@ -341,6 +341,45 @@ function ChangelogModal({ onClose }) {
   )
 }
 
+const DAILY_REWARDS = [
+  { day: 1, icon: '🪙', label: '100 monet' },
+  { day: 2, icon: '📦', label: 'Paczka kart' },
+  { day: 3, icon: '🪙', label: '250 monet' },
+  { day: 4, icon: '💎', label: '1 klejnot' },
+  { day: 5, icon: '🪙', label: '500 monet' },
+  { day: 6, icon: '📦', label: 'Mega Paczka' },
+  { day: 7, icon: '💎', label: '3 klejnoty' },
+]
+
+function DailyRewardPopup({ currentDay, onClose }) {
+  return (
+    <div className="dr-overlay" onClick={onClose}>
+      <div className="dr-panel" onClick={e => e.stopPropagation()}>
+        <div className="dr-handle" />
+        <div className="dr-header">
+          <span className="dr-title">🗓️ Nagrody dzienne</span>
+          <button className="dr-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="dr-subtitle">Loguj się codziennie, żeby odbierać nagrody!</div>
+        <div className="dr-grid">
+          {DAILY_REWARDS.map(r => {
+            const isPast   = r.day < currentDay
+            const isCurrent = r.day === currentDay
+            return (
+              <div key={r.day} className={`dr-cell${isCurrent ? ' dr-cell--current' : ''}${isPast ? ' dr-cell--past' : ''}`}>
+                <span className="dr-day-label">Dzień {r.day}</span>
+                <span className="dr-reward-icon">{isPast ? '✓' : r.icon}</span>
+                <span className="dr-reward-label">{r.label}</span>
+              </div>
+            )
+          })}
+        </div>
+        <div className="dr-soon-badge">WKRÓTCE</div>
+      </div>
+    </div>
+  )
+}
+
 function Logo() {
   const [failed, setFailed] = useState(false)
   if (!failed) {
@@ -378,14 +417,19 @@ export default function MainMenuScreen() {
   const { navigate } = useRouter()
   const { profile, claimMission, claimWeeklyMission, addNotifications, markNotificationsRead, dismissNotification, clearNotifications } = useProfile()
 
-  const [showTutorial, setShowTutorial]   = useState(false)
-  const [showChangelog, setShowChangelog] = useState(false)
-  const [showHistory, setShowHistory]     = useState(false)
-  const [showNotifs, setShowNotifs]       = useState(false)
-  const [showMissions, setShowMissions]   = useState(false)
-  const [showStadion, setShowStadion]     = useState(false)
+  const [showTutorial, setShowTutorial]       = useState(false)
+  const [showChangelog, setShowChangelog]     = useState(false)
+  const [showHistory, setShowHistory]         = useState(false)
+  const [showNotifs, setShowNotifs]           = useState(false)
+  const [showMissions, setShowMissions]       = useState(false)
+  const [showStadion, setShowStadion]         = useState(false)
   const [showSeasonPopup, setShowSeasonPopup] = useState(false)
-  const [trainingOpen, setTrainingOpen]   = useState(false)
+  const [showDailyReward, setShowDailyReward] = useState(false)
+  const [trainingOpen, setTrainingOpen]       = useState(false)
+
+  const playDay = profile.firstPlayedAt
+    ? Math.min(7, Math.floor((Date.now() - profile.firstPlayedAt) / 86400000) + 1)
+    : 1
   const [resetIn, setResetIn]             = useState('')
   const [missionTab, setMissionTab]       = useState('daily')
 
@@ -475,7 +519,12 @@ export default function MainMenuScreen() {
         <div className="mm-topbar">
           <div className="mm-tp-profile">
             <ProfileAvatar name={profile.name} />
-            <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+            <div className="mm-tp-name-group">
+              <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+              <button className="mm-tp-day-badge" onClick={() => setShowDailyReward(true)}>
+                Dzień {playDay}
+              </button>
+            </div>
           </div>
 
           <div className="mm-tp-currencies">
@@ -763,6 +812,7 @@ export default function MainMenuScreen() {
         </div>
       )}
 
+      {showDailyReward && <DailyRewardPopup currentDay={playDay} onClose={() => setShowDailyReward(false)} />}
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
       {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}
       {showNotifs && (

@@ -617,16 +617,7 @@
   margin-top: 6px;
 }
 
-/* ── Zone placement hint (round 1 pulse) — card-shaped slot ─────────────── */
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.35; box-shadow: 0 0 0 0 rgba(0,230,118,0); }
-  50%       { opacity: 0.85; box-shadow: 0 0 18px 4px rgba(0,230,118,0.25); }
-}
-@keyframes hintPlusScale {
-  0%, 100% { transform: scale(0.9); opacity: 0.5; }
-  50%       { transform: scale(1.1); opacity: 0.9; }
-}
-
+/* ── Zone placement hint (round 1) — static card-shaped slot ────────────── */
 .msz-placement-hint {
   position: absolute;
   top: 50%;
@@ -634,38 +625,32 @@
   transform: translate(-50%, -50%);
   width: 68px;
   height: 94px;
-  border: 2px dashed rgba(105,240,174,0.5);
+  border: 1px dashed rgba(105,240,174,0.38);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   z-index: 2;
-  animation: hintPulse 1.5s ease-in-out infinite;
-  background: rgba(0,230,118,0.04);
+  background: rgba(0,230,118,0.03);
 }
 
 .msz-ph-plus {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 300;
-  color: rgba(105,240,174,0.75);
+  color: rgba(105,240,174,0.45);
   line-height: 1;
   display: block;
-  animation: hintPlusScale 1.5s ease-in-out infinite;
 }
 
-/* ── Zone arrow hint (15s idle, round 1) ─────────────────────────────────── */
-@keyframes arrowDash {
-  from { stroke-dashoffset: 56; }
-  to   { stroke-dashoffset: 0; }
-}
+/* ── Zone arrow hint (5s idle, round 1) ──────────────────────────────────── */
 @keyframes arrowFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes arrowPulse {
-  0%, 100% { opacity: 0.7; }
-  50%       { opacity: 1; }
+@keyframes arrowFloat {
+  0%, 100% { transform: translateY(0);   opacity: 0.82; }
+  50%       { transform: translateY(-5px); opacity: 1; }
 }
 
 .ms-zone-arrow-svg {
@@ -677,12 +662,8 @@
   height: 130px;
   pointer-events: none;
   z-index: 20;
-  animation: arrowFadeIn 0.5s ease-out, arrowPulse 1.6s ease-in-out 0.5s infinite;
-  filter: drop-shadow(0 0 8px rgba(0,230,118,0.4));
-}
-
-.ms-zone-arrow-svg line {
-  animation: arrowDash 1s linear infinite;
+  animation: arrowFadeIn 0.6s ease-out both, arrowFloat 2.4s ease-in-out 0.6s infinite;
+  filter: drop-shadow(0 0 10px rgba(0,230,118,0.3));
 }
 
 .msz-drop-slot {

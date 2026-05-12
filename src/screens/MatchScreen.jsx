@@ -435,7 +435,7 @@ export default function MatchScreen({ matchParams = {} }) {
       return
     }
     setZonePulse(true)
-    const arrowTimer = setTimeout(() => setZoneArrow(true), 15000)
+    const arrowTimer = setTimeout(() => setZoneArrow(true), 5000)
     return () => clearTimeout(arrowTimer)
   }, [matchState.phase, matchState.round, matchState.currentPlayer, totalFieldCards])
 
@@ -1278,23 +1278,28 @@ export default function MatchScreen({ matchParams = {} }) {
       {zoneArrow && (
         <svg className="ms-zone-arrow-svg" viewBox="0 0 320 130" preserveAspectRatio="none">
           <defs>
-            <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0, 10 3.5, 0 7" fill="rgba(105,240,174,0.9)" />
+            <marker id="arr-l" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="rgba(105,240,174,0.75)" />
             </marker>
+            <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="rgba(255,220,80,0.75)" />
+            </marker>
+            <linearGradient id="gl" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stopColor="rgba(105,240,174,0)" />
+              <stop offset="100%" stopColor="rgba(105,240,174,0.7)" />
+            </linearGradient>
+            <linearGradient id="gr" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stopColor="rgba(255,220,80,0)" />
+              <stop offset="100%" stopColor="rgba(255,220,80,0.65)" />
+            </linearGradient>
           </defs>
-          {/* Left arrow → defense zone */}
-          <line x1="160" y1="118" x2="58" y2="18"
-            stroke="rgba(105,240,174,0.85)" strokeWidth="3" strokeDasharray="9,5"
-            markerEnd="url(#arr)" strokeLinecap="round" />
-          {/* Right arrow → offense zone */}
-          <line x1="160" y1="118" x2="262" y2="18"
-            stroke="rgba(105,240,174,0.85)" strokeWidth="3" strokeDasharray="9,5"
-            markerEnd="url(#arr)" strokeLinecap="round" />
-          {/* Labels near arrow heads */}
-          <text x="42" y="14" textAnchor="middle" fill="rgba(105,240,174,0.8)" fontSize="11" fontWeight="800" letterSpacing="1">OBRONA</text>
-          <text x="278" y="14" textAnchor="middle" fill="rgba(255,220,50,0.85)" fontSize="11" fontWeight="800" letterSpacing="1">ATAK</text>
-          {/* Origin label */}
-          <text x="160" y="130" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="10" fontWeight="600">wyciągnij kartę z ręki</text>
+          <line x1="160" y1="112" x2="72" y2="26"
+            stroke="url(#gl)" strokeWidth="2.5" markerEnd="url(#arr-l)" strokeLinecap="round" />
+          <line x1="160" y1="112" x2="248" y2="26"
+            stroke="url(#gr)" strokeWidth="2.5" markerEnd="url(#arr-r)" strokeLinecap="round" />
+          <text x="52" y="18" textAnchor="middle" fill="rgba(105,240,174,0.7)" fontSize="10" fontWeight="700" letterSpacing="0.8">OBRONA</text>
+          <text x="268" y="18" textAnchor="middle" fill="rgba(255,220,80,0.7)" fontSize="10" fontWeight="700" letterSpacing="0.8">ATAK</text>
+          <text x="160" y="126" textAnchor="middle" fill="rgba(255,255,255,0.32)" fontSize="9.5" fontWeight="500">wystaw kartę z ręki</text>
         </svg>
       )}
 

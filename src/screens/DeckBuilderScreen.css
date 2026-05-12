@@ -225,8 +225,11 @@
     linear-gradient(175deg, #0e3a0e 0%, #1a5a1a 45%, #1e6820 55%, #133813 100%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
+.db-pitch-wrap::-webkit-scrollbar { display: none; }
 
 /* Center line across the pitch (excluding reserve panel) */
 .db-pitch-wrap::after {
@@ -258,12 +261,13 @@
 
 .db-pitch {
   flex: 1;
+  min-height: max-content;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  gap: 0;
-  padding: 8px 6px 10px;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 6px 12px;
   position: relative;
 }
 
@@ -279,7 +283,10 @@
   gap: 5px;
   padding: 10px 6px;
   border-left: 1px solid rgba(255,255,255,0.1);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
+.db-reserve-side::-webkit-scrollbar { display: none; }
 
 .db-reserve-side-label {
   font-size: 7px;

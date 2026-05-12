@@ -306,10 +306,16 @@ export default function DeckBuilderScreen() {
       return
     }
     const now = Date.now()
+    const assignedCardIds = new Set(
+      Object.values(assignments).filter(Boolean)
+        .map(id => allCards.find(({ owned }) => owned.instanceId === id)?.card?.id)
+        .filter(Boolean)
+    )
     const isDefType = slot.type === 'goalkeeper' || slot.type === 'defense'
     const matching = allCards
       .filter(({ owned, card }) => {
         if (assignedIds.has(owned.instanceId)) return false
+        if (assignedCardIds.has(card.id)) return false
         if (!SLOT_ACCEPTS[slot.type].includes(card.type)) return false
         const injuredUntil = injuries[owned.instanceId]
         if (injuredUntil && injuredUntil > now) return false
@@ -330,6 +336,18 @@ export default function DeckBuilderScreen() {
   // Called from AssignModal
   const handleAssignFromSlot = (instanceId) => {
     const slot = assignModal.slot
+    const entry = allCards.find(({ owned }) => owned.instanceId === instanceId)
+    if (entry) {
+      const duplicate = Object.values(assignments).some(id => {
+        if (!id) return false
+        const e2 = allCards.find(({ owned }) => owned.instanceId === id)
+        return e2?.card?.id === entry.card.id
+      })
+      if (duplicate) {
+        showNotif(`${entry.card.name} już jest w składzie!`, false)
+        return
+      }
+    }
     setAssignments(prev => {
       const next = { ...prev }
       for (const k of Object.keys(next)) {
@@ -563,38 +581,38 @@ export default function DeckBuilderScreen() {
       {/* Tab content */}
       {activeTab === 'formation' ? (
         <div className="db-tab-body db-tab-body--formation">
-          {/* Pitch */}
-          <div className="db-pitch">
-            <div className="db-formation-label">FORMACJA: 4-4-2</div>
-            {formationRows.map((row, ri) => (
-              <div key={ri} className="db-row">
-                {row.map(slot => {
-                  const card = assignments[slot.id]
-                    ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
-                    : null
-                  const slotInstanceId = assignments[slot.id]
-                  const isSlotInjured = slotInstanceId
-                    ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
-                    : false
-                  return (
-                    <FormationSlot
-                      key={slot.id}
-                      slot={slot}
-                      card={card}
-                      injured={isSlotInjured}
-                      onClick={() => handleSlotClick(slot.id)}
-                      onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
-                    />
-                  )
-                })}
-              </div>
-            ))}
-          </div>
+          <div className="db-pitch-wrap">
+            {/* Main formation pitch */}
+            <div className="db-pitch">
+              <div className="db-formation-label">FORMACJA: 4-4-2</div>
+              {formationRows.map((row, ri) => (
+                <div key={ri} className="db-row">
+                  {row.map(slot => {
+                    const card = assignments[slot.id]
+                      ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
+                      : null
+                    const slotInstanceId = assignments[slot.id]
+                    const isSlotInjured = slotInstanceId
+                      ? !!(injuries[slotInstanceId] && injuries[slotInstanceId] > Date.now())
+                      : false
+                    return (
+                      <FormationSlot
+                        key={slot.id}
+                        slot={slot}
+                        card={card}
+                        injured={isSlotInjured}
+                        onClick={() => handleSlotClick(slot.id)}
+                        onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
+                      />
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
 
-          {/* Reserve */}
-          <div className="db-reserve">
-            <span className="db-reserve-label">REZERWA</span>
-            <div className="db-reserve-slots">
+            {/* Reserve — right side panel */}
+            <div className="db-reserve-side">
+              <span className="db-reserve-side-label">RES</span>
               {RESERVE_SLOTS.map(slot => {
                 const card = assignments[slot.id]
                   ? allCards.find(({ owned }) => owned.instanceId === assignments[slot.id])?.card
@@ -608,6 +626,7 @@ export default function DeckBuilderScreen() {
                     key={slot.id}
                     slot={slot}
                     card={card}
+                    small
                     injured={isSlotInjured}
                     onClick={() => handleSlotClick(slot.id)}
                     onInfo={card ? (e) => { e.stopPropagation(); setInfoCard(card) } : null}
@@ -719,7 +738,7 @@ export default function DeckBuilderScreen() {
 
 // ── Formation slot ─────────────────────────────────────────────────────────
 
-function FormationSlot({ slot, card, onClick, injured, onInfo }) {
+function FormationSlot({ slot, card, onClick, injured, onInfo, small }) {
   const [imgFailed, setImgFailed] = React.useState(false)
   const atk = card ? (card.currentAttackStat ?? 0) : 0
   const def = card ? (card.currentDefenseStat ?? 0) : 0
@@ -735,7 +754,7 @@ function FormationSlot({ slot, card, onClick, injured, onInfo }) {
 
   return (
     <div
-      className={`fs-slot ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''}`}
+      className={`fs-slot ${card ? 'fs-slot--filled' : 'fs-slot--empty'} ${injured ? 'fs-slot--injured' : ''} ${small ? 'fs-slot--small' : ''}`}
       style={{ '--slot-c': slotColor }}
       onClick={onClick}
     >

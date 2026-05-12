@@ -207,15 +207,12 @@
 .dsb-seg--atk.dsb-seg--on { background: #ff5252; }
 .dsb-seg--def.dsb-seg--on { background: #448aff; }
 
-/* ── Pitch (formation) ────────────────────────────────────────────────────── */
+/* ── Pitch wrap (formation + reserve side-by-side) ───────────────────────── */
 
-.db-pitch {
+.db-pitch-wrap {
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 10px 10px;
+  flex-direction: row;
   background:
     repeating-linear-gradient(
       180deg,
@@ -230,30 +227,76 @@
   overflow: hidden;
 }
 
-/* Center line */
-.db-pitch::after {
+/* Center line across the pitch (excluding reserve panel) */
+.db-pitch-wrap::after {
   content: '';
   position: absolute;
-  left: 8%; right: 8%;
+  left: 8%;
+  right: 80px; /* leave reserve panel clear */
   top: 50%;
   height: 1px;
-  background: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.18);
   pointer-events: none;
 }
 
 /* Center circle */
-.db-pitch::before {
+.db-pitch-wrap::before {
   content: '';
   position: absolute;
-  left: 50%;
+  left: calc(50% - 40px); /* shift left of reserve */
   top: 50%;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.15);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
+/* ── Pitch (formation) ────────────────────────────────────────────────────── */
+
+.db-pitch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 6px 10px;
+  position: relative;
+}
+
+/* ── Reserve side panel ───────────────────────────────────────────────────── */
+
+.db-reserve-side {
+  width: 76px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 6px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+}
+
+.db-reserve-side-label {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 2px;
+}
+
+/* Small variant for reserve slots */
+.fs-slot--small {
+  width: 58px !important;
+  height: 78px !important;
+}
+
+.fs-slot--small .fs-slot-mainstat { font-size: 15px; }
+.fs-slot--small .fs-slot-name     { font-size: 7px; }
+.fs-slot--small .fss-atk,
+.fs-slot--small .fss-def          { font-size: 7px; }
 
 .db-formation-label {
   font-size: 9px;
@@ -459,44 +502,6 @@
 
 .fs-info-btn:active { color: #00e676; }
 
-/* ── Reserve bench ────────────────────────────────────────────────────────── */
-
-.db-reserve {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.3);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.db-reserve-label {
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,0.25);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  flex-shrink: 0;
-}
-
-.db-reserve-slots {
-  flex: 1;
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.db-reserve-hint {
-  font-size: 9px;
-  color: rgba(255,255,255,0.3);
-  line-height: 1.4;
-  padding-left: 4px;
-}
-
-.db-reserve-hint span { color: #ff5252; }
 
 /* ── Filter tabs + sort row ───────────────────────────────────────────────── */
 

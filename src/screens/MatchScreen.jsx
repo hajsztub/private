@@ -295,6 +295,7 @@ export default function MatchScreen({ matchParams = {} }) {
   const [showLog, setShowLog] = useState(false)
   const [prematchLoading, setPrematchLoading] = useState(false)
   const [incompleteMsg, setIncompleteMsg] = useState(null)
+  const [showReserves, setShowReserves] = useState(true)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
@@ -770,12 +771,19 @@ export default function MatchScreen({ matchParams = {} }) {
             </div>
           </div>
 
-          {/* Reserve side panel */}
+          {/* Reserve side panel / collapsed tab */}
           {resCards.length > 0 && (
-            <div className="ms-pm-res-side">
-              <span className="ms-pm-res-side-label">RES</span>
-              {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
-            </div>
+            showReserves ? (
+              <div className="ms-pm-res-side">
+                <button className="ms-pm-res-close" onClick={() => setShowReserves(false)}>✕</button>
+                <span className="ms-pm-res-side-label">RES</span>
+                {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
+              </div>
+            ) : (
+              <button className="ms-pm-res-tab" onClick={() => setShowReserves(true)}>
+                <span>R</span><span>E</span><span>S</span>
+              </button>
+            )
           )}
         </div>
 

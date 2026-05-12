@@ -13,9 +13,9 @@ export function computeGoalChance(attackTotal, defenseTotal) {
   return 0.05 + 0.25 * sigmoid(diff / 15)
 }
 
-export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore) {
-  const playerChance = computeGoalChance(playerAttack, aiDefense)
-  const aiChance = computeGoalChance(aiAttack, playerDefense)
+export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore, playerHasOffense, aiHasOffense) {
+  const playerChance = playerHasOffense ? computeGoalChance(playerAttack, aiDefense) : 0
+  const aiChance = aiHasOffense ? computeGoalChance(aiAttack, playerDefense) : 0
 
   let playerGoal = currentScore.player < MAX_GOALS_PER_TEAM && Math.random() < playerChance
   let aiGoal     = currentScore.ai    < MAX_GOALS_PER_TEAM && Math.random() < aiChance
@@ -43,7 +43,9 @@ export function computeMatchStats(state) {
     ai.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0) +
     (ai.activeGoalkeeper?.currentDefenseStat ?? 0)
 
-  return { playerAttack, playerDefense, aiAttack, aiDefense }
+  const playerHasOffense = p.offenseSector.length > 0
+  const aiHasOffense = ai.offenseSector.length > 0
+  return { playerAttack, playerDefense, aiAttack, aiDefense, playerHasOffense, aiHasOffense }
 }
 
 export function computeRewardCoins(result, matchType, scoreDiff) {

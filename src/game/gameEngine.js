@@ -582,7 +582,8 @@ export function endTurn(state) {
   if (state.currentPlayer === 'A') {
     const stats = computeMatchStats(newState)
     const { playerGoal, aiGoal, playerChance, aiChance } = resolveRoundGoals(
-      stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense, newState.displayScore
+      stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense,
+      newState.displayScore, stats.playerHasOffense, stats.aiHasOffense
     )
 
     const newScore = {

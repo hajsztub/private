@@ -1284,6 +1284,14 @@ export default function MatchScreen({ matchParams = {} }) {
       )}
 
 
+      {/* ── Hand pointer arrow (round 1, 15s idle) ──────────────────────── */}
+      {zonePulse && zoneArrow && (
+        <div className="ms-hand-arrow">
+          <div className="ms-hand-arrow-line" />
+          <div className="ms-hand-arrow-tip" />
+        </div>
+      )}
+
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {tutStep !== null && (
         <InteractiveTutorial step={tutStep} onSkip={() => { setTutStep(null); markTutorialSeen() }} />

@@ -424,7 +424,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
   // ── Round-1 zone placement hints ─────────────────────────────────────────
   useEffect(() => {
-    if (phase !== 'playing' || round !== 1 || currentPlayer !== 'A') {
+    if (matchState.phase !== 'playing' || matchState.round !== 1 || matchState.currentPlayer !== 'A') {
       setZonePulse(false)
       setZoneArrow(false)
       return
@@ -437,7 +437,7 @@ export default function MatchScreen({ matchParams = {} }) {
     setZonePulse(true)
     const arrowTimer = setTimeout(() => setZoneArrow(true), 15000)
     return () => clearTimeout(arrowTimer)
-  }, [phase, round, currentPlayer, totalFieldCards])
+  }, [matchState.phase, matchState.round, matchState.currentPlayer, totalFieldCards])
 
   useEffect(() => {
     if (tutStep === 1 && matchState.round > 1) {

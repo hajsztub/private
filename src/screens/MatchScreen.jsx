@@ -425,6 +425,11 @@ export default function MatchScreen({ matchParams = {} }) {
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
+  // When visual effects are off, GoalAnimation never renders so onDone never fires — clear immediately
+  useEffect(() => {
+    if (goalAnim && settings.visualEffects === false) setGoalAnim(null)
+  }, [goalAnim, settings.visualEffects])
+
   const totalFieldCards = matchState.players.A.offenseSector.length + matchState.players.A.defenseSector.length
   const hasOffense = matchState.players.A.offenseSector.length > 0
   const hasDefense = matchState.players.A.defenseSector.length > 0
@@ -1274,7 +1279,7 @@ export default function MatchScreen({ matchParams = {} }) {
           onDismiss={() => dispatch({ type: 'DISMISS_COIN' })}
         />
       )}
-      {!goalAnim && phase === 'special_card' && specialCard && (
+      {phase === 'special_card' && specialCard && !goalAnim && (
         <SpecialCardModal card={specialCard} onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })} />
       )}
       {goalAnim && settings.visualEffects !== false && (

@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '6.6',
+    date: '2026-05-13',
+    changes: [
+      'Naprawiono deadlock w rundzie 6: karta specjalna nie pojawiała się gdy wyłączone były efekty wizualne (goalAnim nigdy nie był kasowany) — dotyczyło wszystkich typów meczów',
+      'Tutorial match: karta specjalna pomijana w rundzie 6 (zapobiega blokadom niezależnie od ustawień)',
+    ],
+  },
+  {
     version: '6.5',
     date: '2026-05-13',
     changes: [

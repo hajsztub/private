@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: '6.4',
+    date: '2026-05-13',
+    changes: [
+      'Onboarding: welcome popup dla nowych graczy z wyjaśnieniem 3 zasad i przyciskiem "Zacznij trening!"',
+      'Onboarding: LIGA, ZAWODNICY i Trening PRO zablokowane dla nowych graczy — odblokowują się po ukończeniu tutorialu',
+      'Tutorial match: pierwszy mecz amatorski jest oskryptowany — gracz strzela gola (runda 2), rywal odpowiada (runda 3), gracz wygrywa 3:1 po 5 rundach',
+      'Tutorial match: runda 1 wymaga wystawienia napastnika i obrońcy przed zakończeniem tury',
+      'Tutorial match: 10-krokowy pasek z podpowiedziami tłumaczy ATK/DEF, umiejętności i rozliczenie goli w czasie rzeczywistym',
+    ],
+  },
+  {
     version: '6.3',
     date: '2026-05-13',
     changes: [

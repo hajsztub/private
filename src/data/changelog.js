@@ -1,5 +1,12 @@
 export const CHANGELOG = [
   {
+    version: '7.1',
+    date: '2026-05-13',
+    changes: [
+      'Tutorial runda 1: jeśli timer dobiegnie do 0 bez wystawionych kart, gra automatycznie wystawia napastnika i obrońcę z ręki gracza, a następnie kończy turę — gracz nie może już pominąć obowiązkowego wystawienia',
+    ],
+  },
+  {
     version: '7.0',
     date: '2026-05-13',
     changes: [

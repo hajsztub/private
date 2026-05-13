@@ -501,7 +501,8 @@ export default function MainMenuScreen() {
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training') })
+    const isTutorial = type === 'training_amateur' && !profile.hasSeenTutorial
+    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: isTutorial })
   }
 
   const tier = getTier(profile.rating)

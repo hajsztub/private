@@ -5,7 +5,16 @@ export const MAX_ROUNDS = 10
 export const MAX_SECTOR_SIZE = 3
 export const HAND_SIZE = 4
 
-export function createMatchState(matchType = 'local', playerDeckCards = null, aiDeckCards = null) {
+// Scripted goal outcomes for tutorial match rounds 1-5
+const TUTORIAL_OUTCOMES = {
+  1: { playerGoal: false, aiGoal: false },
+  2: { playerGoal: true,  aiGoal: false },
+  3: { playerGoal: false, aiGoal: true  },
+  4: { playerGoal: true,  aiGoal: false },
+  5: { playerGoal: true,  aiGoal: false },
+}
+
+export function createMatchState(matchType = 'local', playerDeckCards = null, aiDeckCards = null, isTutorialMatch = false) {
   const playerDeckRaw = playerDeckCards || createDefaultDeck('A')
   const aiDeckRaw = aiDeckCards || createDefaultDeck('B')
 
@@ -17,6 +26,7 @@ export function createMatchState(matchType = 'local', playerDeckCards = null, ai
     round: 0,
     currentPlayer: 'A',
     matchType,
+    isTutorialMatch,
     maxRounds: MAX_ROUNDS,
     endGameOnRound: null,
     skipTurn: null,
@@ -581,10 +591,13 @@ export function endTurn(state) {
   let goalResult = null
   if (state.currentPlayer === 'A') {
     const stats = computeMatchStats(newState)
-    const { playerGoal, aiGoal, playerChance, aiChance } = resolveRoundGoals(
-      stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense,
-      newState.displayScore, stats.playerHasOffense, stats.aiHasOffense
-    )
+    const scripted = state.isTutorialMatch ? TUTORIAL_OUTCOMES[state.round] : null
+    const { playerGoal, aiGoal, playerChance, aiChance } = scripted
+      ? { ...scripted, playerChance: scripted.playerGoal ? 1 : 0, aiChance: scripted.aiGoal ? 1 : 0 }
+      : resolveRoundGoals(
+          stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense,
+          newState.displayScore, stats.playerHasOffense, stats.aiHasOffense
+        )
 
     const newScore = {
       player: newState.displayScore.player + (playerGoal ? 1 : 0),

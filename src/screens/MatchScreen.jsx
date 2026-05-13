@@ -274,6 +274,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
   const matchType = matchParams.matchType || 'local'
   const opponentName = matchParams.opponentName || 'BOT'
+  const isTutorialMatch = !!matchParams.isTutorialMatch
 
   const [matchState, dispatch] = useReducer(gameReducer, null, () => {
     const playerDeck = buildPlayerDeck(profile)
@@ -283,10 +284,10 @@ export default function MatchScreen({ matchParams = {} }) {
       matchType === 'training_amateur' ? (amateurMatchesPlayed < 2 ? createStarterAIDeck() : createWeakerAIDeck(playerDeck)) :
       matchType === 'training_pro'     ? createEliteAIDeck() :
                                          createDefaultDeck('B')
-    return createMatchState(matchType, playerDeck, aiDeck)
+    return createMatchState(matchType, playerDeck, aiDeck, isTutorialMatch)
   })
 
-  const [tutStep, setTutStep] = useState(profile.hasSeenTutorial ? null : 0)
+  const [tutStep, setTutStep] = useState(isTutorialMatch ? 0 : null)
   const [firstWinReward, setFirstWinReward] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
@@ -313,7 +314,15 @@ export default function MatchScreen({ matchParams = {} }) {
     SFX.endTurn()
     dispatch({ type: 'END_TURN' })
     setSelectedCard(null)
-  }, [matchState])
+    // Tutorial: after player ends turn in round 1 → move to "waiting for result" step
+    if (isTutorialMatch && matchState.round === 1 && tutStep === 2) setTutStep(3)
+    // Tutorial: after round 3 (AI scored) → prompt ability use in round 4
+    if (isTutorialMatch && matchState.round === 3 && tutStep === 4) setTutStep(5)
+    // Tutorial: after round 4 (player scored with ability) → round 5 hint
+    if (isTutorialMatch && matchState.round === 4 && tutStep === 6) setTutStep(7)
+    // Tutorial: after round 5
+    if (isTutorialMatch && matchState.round === 5 && tutStep === 8) setTutStep(9)
+  }, [matchState, isTutorialMatch, tutStep])
 
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
@@ -416,11 +425,18 @@ export default function MatchScreen({ matchParams = {} }) {
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
-  // Interactive tutorial: step 0→1 when first card placed, step 1→2 after first end turn
   const totalFieldCards = matchState.players.A.offenseSector.length + matchState.players.A.defenseSector.length
+  const hasOffense = matchState.players.A.offenseSector.length > 0
+  const hasDefense = matchState.players.A.defenseSector.length > 0
+
+  // Tutorial step progression
   useEffect(() => {
+    if (!isTutorialMatch) return
+    // step 0 → 1: placed first card
     if (tutStep === 0 && totalFieldCards > 0) setTutStep(1)
-  }, [totalFieldCards])
+    // step 1 → 2: placed both offense and defense
+    if (tutStep === 1 && hasOffense && hasDefense) setTutStep(2)
+  }, [totalFieldCards, hasOffense, hasDefense])
 
   // ── Round-1 zone placement hints ─────────────────────────────────────────
   useEffect(() => {
@@ -446,10 +462,20 @@ export default function MatchScreen({ matchParams = {} }) {
     return () => clearTimeout(t)
   }, [zoneArrow])
 
+  // Tutorial: advance steps based on round events
   useEffect(() => {
-    if (tutStep === 1 && matchState.round > 1) {
-      setTutStep(2)
-      setTimeout(() => { setTutStep(null); markTutorialSeen() }, 2800)
+    if (!isTutorialMatch) return
+    const r = matchState.round
+    const score = matchState.displayScore
+    // step 3 → 4: after round 2 ends (player scored)
+    if (tutStep === 3 && r >= 3) setTutStep(4)
+    // step 5 → 6: after round 3 ends (AI scored)
+    if (tutStep === 5 && r >= 4) setTutStep(6)
+    // step 7 → 8: after round 4 ends (player scored again)
+    if (tutStep === 7 && r >= 5) setTutStep(8)
+    // step 9 → done: after round 5 ends (player leads 3:1)
+    if (tutStep === 9 && r >= 6) {
+      setTimeout(() => { setTutStep(null); markTutorialSeen() }, 3500)
     }
   }, [matchState.round])
 
@@ -1171,13 +1197,23 @@ export default function MatchScreen({ matchParams = {} }) {
               </span>
             </button>
           )}
-          <button
-            className={`ms-end-btn${!isPlayerTurn ? ' ms-end-btn--wait' : ''}`}
-            onClick={handleEndTurn}
-            disabled={!isPlayerTurn || !!coinFlipState?.pending}
-          >
-            {!isPlayerTurn ? (aiThinking ? '· · ·' : 'Czeka') : 'ZAKOŃCZ TURĘ'}
-          </button>
+          {(() => {
+            const tutBlocked = isTutorialMatch && round === 1 && isPlayerTurn && !(hasOffense && hasDefense)
+            return (
+              <button
+                className={`ms-end-btn${!isPlayerTurn ? ' ms-end-btn--wait' : ''}${tutBlocked ? ' ms-end-btn--blocked' : ''}`}
+                onClick={tutBlocked ? undefined : handleEndTurn}
+                disabled={!isPlayerTurn || !!coinFlipState?.pending || tutBlocked}
+                title={tutBlocked ? 'Wystaw napastnika i obrońcę!' : undefined}
+              >
+                {!isPlayerTurn
+                  ? (aiThinking ? '· · ·' : 'Czeka')
+                  : tutBlocked
+                    ? (!hasOffense ? 'Wystaw napastnika!' : 'Wystaw obrońcę!')
+                    : 'ZAKOŃCZ TURĘ'}
+              </button>
+            )
+          })()}
         </div>
       </div>
 
@@ -1306,23 +1342,31 @@ export default function MatchScreen({ matchParams = {} }) {
 // ── Interactive tutorial bar ───────────────────────────────────────────────
 
 const TUT_STEPS = [
-  {
-    title: 'Twoje karty są tutaj!',
-    text: 'Dotknij kartę dwa razy szybko → zawodnik trafi na boisko.',
-  },
-  {
-    title: 'Wystawiłeś zawodnika!',
-    text: 'Teraz kliknij "Zakończ turę" → gole liczą się po każdej pełnej rundzie.',
-  },
-  {
-    title: '✓ Wiesz jak grać!',
-    text: 'Aktywuj umiejętności kart, zbieraj gole, wygrywaj mecze. Powodzenia!',
-  },
+  // 0
+  { title: 'Witaj w meczu treningowym!', text: 'To Twoje karty. Dotknij dwa razy szybko → zawodnik trafi na boisko.', arrow: 'hand' },
+  // 1
+  { title: 'Dobra robota!', text: 'Teraz wystaw też obrońcę — każda runda potrzebuje ataku i obrony.', arrow: 'defense' },
+  // 2
+  { title: 'Gotowy do gry!', text: 'Kliknij "Zakończ turę" → zobaczymy wynik tej rundy!', arrow: 'endturn' },
+  // 3 — waiting for round 2 resolution
+  { title: 'Trwa rozliczenie...', text: 'ATK Twoich napastników kontra DEF przeciwnika. Wyższy ATK = większa szansa na gola!', arrow: null },
+  // 4 — after round 2, player scored
+  { title: 'GOL! Strzeliłeś bramkę!', text: 'Twój atak przebił obronę rywala. Kontynuuj — w rundzie 3 rywal też może zdobyć gola.', arrow: null },
+  // 5 — before round 3 ends
+  { title: 'Uwaga — rywal atakuje!', text: 'Zakończ turę i obserwuj — teraz rywal zdobędzie bramkę. Dobra obrona blokuje ataki!', arrow: 'endturn' },
+  // 6 — after round 3, AI scored
+  { title: 'Rywal strzelił!', text: 'Widzisz? Obie strony mogą zdobywać gole. Teraz aktywuj umiejętność karty — ikona ⚡ na karcie na boisku.', arrow: 'ability' },
+  // 7 — before round 4 ends
+  { title: 'Umiejętność aktywowana!', text: 'Bonusy działają przez tę rundę. Zakończ turę!', arrow: 'endturn' },
+  // 8 — after round 4, player scored
+  { title: 'GOL z umiejętnością!', text: 'Aktywacja kart daje przewagę. Jeszcze jedna runda — jesteś blisko wygranej!', arrow: null },
+  // 9 — after round 5, player leads 3:1
+  { title: 'Prowadzisz 3:1 — świetnie!', text: 'Znasz już podstawy. Reszta meczu idzie normalnie. Do dzieła!', arrow: null, done: true },
 ]
 
 function InteractiveTutorial({ step, onSkip }) {
   const s = TUT_STEPS[Math.min(step, TUT_STEPS.length - 1)]
-  const isDone = step >= 2
+  const isDone = !!s.done
   return (
     <div className={`tut-bar${isDone ? ' tut-bar--done' : ''}`}>
       <div className="tut-bar-content">

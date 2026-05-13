@@ -275,6 +275,7 @@ export function usePersistentStore() {
         dailyMissions,
         weeklyMissions,
         lastTierChange,
+        ...(result.isTutorialMatch ? { hasSeenTutorial: true } : {}),
         matchHistory: [
           { ...result, date: Date.now() },
           ...prev.matchHistory.slice(0, 19),

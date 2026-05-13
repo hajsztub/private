@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { getTier, getBotName } from '../data/botNames'
@@ -380,6 +380,139 @@ function DailyRewardPopup({ currentDay, onClose }) {
   )
 }
 
+// ── Card Anatomy Popup ────────────────────────────────────────────────────
+
+function HugoCardSVG() {
+  return (
+    <svg viewBox="0 0 80 90" style={{ width: '100%', height: '100%' }}>
+      <ellipse cx="40" cy="72" rx="22" ry="16" fill="#4a7c4e" />
+      <rect x="35" y="56" width="10" height="12" rx="3" fill="#c68642" />
+      <ellipse cx="40" cy="48" rx="20" ry="22" fill="#c68642" />
+      <circle cx="24" cy="36" r="9" fill="#2c1a0e" />
+      <circle cx="31" cy="29" r="9" fill="#2c1a0e" />
+      <circle cx="40" cy="27" r="9" fill="#2c1a0e" />
+      <circle cx="49" cy="29" r="9" fill="#2c1a0e" />
+      <circle cx="56" cy="36" r="9" fill="#2c1a0e" />
+      <ellipse cx="33" cy="49" rx="5" ry="5.5" fill="white" />
+      <ellipse cx="47" cy="49" rx="5.5" ry="5.5" fill="white" />
+      <circle cx="34" cy="50" r="2.5" fill="#2c1a0e" />
+      <circle cx="48" cy="50" r="2.5" fill="#2c1a0e" />
+      <path d="M31 59 Q40 67 49 59" stroke="#a0522d" strokeWidth="2" fill="white" />
+      <circle cx="40" cy="80" r="7" fill="white" stroke="#333" strokeWidth="1" />
+      <path d="M35 77 L40 72 L45 77 L43 83 L37 83 Z" fill="#333" />
+    </svg>
+  )
+}
+
+const ANATOMY_LABELS = [
+  {
+    id: 'position',
+    num: '1',
+    title: 'Pozycja',
+    desc: 'A = Atakujący. Są też: M (pomocnik), D (obrońca), B (bramkarz).',
+    // anchor on card: top-left badge
+    dotStyle: { top: '6%', left: '8%' },
+    labelSide: 'right',
+    labelStyle: { top: '2%', right: '-8px' },
+  },
+  {
+    id: 'atk',
+    num: '2',
+    title: 'Atak (ATK)',
+    desc: 'Im wyższy ATK, tym większa szansa na zdobycie gola w tej rundzie.',
+    dotStyle: { bottom: '6%', left: '10%' },
+    labelSide: 'right',
+    labelStyle: { bottom: '4%', right: '-8px' },
+  },
+  {
+    id: 'def',
+    num: '3',
+    title: 'Obrona (DEF)',
+    desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF.',
+    dotStyle: { bottom: '6%', right: '10%' },
+    labelSide: 'left',
+    labelStyle: { bottom: '4%', left: '-8px' },
+  },
+  {
+    id: 'ability',
+    num: '4',
+    title: 'Umiejętność',
+    desc: 'Aktywuj raz na rundę po wystawieniu karty — daje bonus lub karę.',
+    dotStyle: { bottom: '28%', left: '50%', transform: 'translateX(-50%)' },
+    labelSide: 'right',
+    labelStyle: { bottom: '24%', right: '-8px' },
+  },
+]
+
+function CardAnatomyPopup({ onStart }) {
+  const [step, setStep] = useState(0)
+  const current = ANATOMY_LABELS[step]
+  const isLast = step === ANATOMY_LABELS.length - 1
+
+  return (
+    <div className="ca-overlay">
+      <div className="ca-panel">
+        <div className="ca-title">Jak czytać kartę?</div>
+        <div className="ca-sub">Kliknij każdy element żeby się nauczyć.</div>
+
+        <div className="ca-card-wrap">
+          {/* Card itself */}
+          <div className="ca-card">
+            {/* Position badge */}
+            <div className="ca-card-type">A</div>
+            {/* Illustration */}
+            <div className="ca-card-illus"><HugoCardSVG /></div>
+            {/* Name */}
+            <div className="ca-card-name">HUGO</div>
+            {/* Ability */}
+            <div className="ca-card-ability">
+              <div className="ca-card-ability-name">RZUT KARNY</div>
+              <div className="ca-card-ability-desc"><span className="ca-label-active">AKTYWACJA</span> Rzuć żetonem. Piłka wyrzuca obrońcę. Rękawica: −2 ataku.</div>
+            </div>
+            {/* Stats bar */}
+            <div className="ca-card-stats">
+              <div className="ca-card-atk">6</div>
+              <div className="ca-card-stat-name">HUGO</div>
+              <div className="ca-card-def">0</div>
+            </div>
+
+            {/* Animated dot on current element */}
+            {ANATOMY_LABELS.map((lbl, i) => (
+              <div
+                key={lbl.id}
+                className={`ca-dot${i === step ? ' ca-dot--active' : ''}`}
+                style={lbl.dotStyle}
+                onClick={() => setStep(i)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Explanation */}
+        <div className="ca-explanation">
+          <div className="ca-explanation-num">{current.num}</div>
+          <div className="ca-explanation-body">
+            <div className="ca-explanation-title">{current.title}</div>
+            <div className="ca-explanation-desc">{current.desc}</div>
+          </div>
+        </div>
+
+        {/* Step dots */}
+        <div className="ca-steps">
+          {ANATOMY_LABELS.map((_, i) => (
+            <div key={i} className={`ca-step-dot${i === step ? ' ca-step-dot--active' : ''}`} onClick={() => setStep(i)} />
+          ))}
+        </div>
+
+        <button className="ca-next-btn" onClick={() => isLast ? onStart() : setStep(s => s + 1)}>
+          {isLast ? 'Rozumiem, gramy! ⚽' : 'Następny →'}
+        </button>
+        <button className="ca-skip-btn" onClick={onStart}>Pomiń</button>
+      </div>
+    </div>
+  )
+}
+
 function Logo() {
   const [failed, setFailed] = useState(false)
   if (!failed) {
@@ -428,6 +561,7 @@ export default function MainMenuScreen() {
   const [trainingOpen, setTrainingOpen]       = useState(false)
   const isNewPlayer = !profile.hasSeenTutorial
   const [showWelcomePopup, setShowWelcomePopup] = useState(isNewPlayer)
+  const [showCardAnatomy, setShowCardAnatomy] = useState(false)
 
   const playDay = profile.firstPlayedAt
     ? Math.min(7, Math.floor((Date.now() - profile.firstPlayedAt) / 86400000) + 1)
@@ -504,8 +638,14 @@ export default function MainMenuScreen() {
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
     const isTutorial = type === 'training_amateur' && !profile.hasSeenTutorial
-    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: isTutorial })
+    if (isTutorial) { setShowCardAnatomy(true); return }
+    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false })
   }
+
+  const startTutorialMatch = useCallback(() => {
+    setShowCardAnatomy(false)
+    navigate('match', { matchType: 'training_amateur', matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: true })
+  }, [navigate])
 
   const tier = getTier(profile.rating)
   const gems = profile.gems ?? 0
@@ -731,9 +871,10 @@ export default function MainMenuScreen() {
           <span className="mm-grid-label">ZAWODNICY</span>
           {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
-        <button className="mm-grid-btn" onClick={() => navigate('market')}>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && navigate('market')}>
           <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.2 14.8l.03-.12.9-1.68h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20.03 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5 16.18 5 17h15v-2H7.42c-.14 0-.22-.08-.22-.2z"/></svg></span>
           <span className="mm-grid-label">MARKET</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
         <button className="mm-grid-btn mm-grid-btn--soon" onClick={() => setShowStadion(true)}>
           <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></span>
@@ -758,6 +899,15 @@ export default function MainMenuScreen() {
         </div>
         <span className="mm-version-powered">Powered by AppHill.Agency</span>
       </div>
+
+      {/* ── Card anatomy popup ── */}
+      {showCardAnatomy && (
+        <CardAnatomyPopup
+          profile={profile}
+          onStart={startTutorialMatch}
+          onSkip={startTutorialMatch}
+        />
+      )}
 
       {/* ── Welcome popup (new players only) ── */}
       {showWelcomePopup && (

@@ -255,13 +255,17 @@ export function usePersistentStore() {
       const dm = (prev.dailyMissions?.date === today)
         ? prev.dailyMissions
         : { date: today, missions: generateDailyMissions(today) }
-      const dailyMissions = { ...dm, missions: applyMissionProgress(dm.missions, result) }
+      const dailyMissions = result.isTutorialMatch
+        ? dm
+        : { ...dm, missions: applyMissionProgress(dm.missions, result) }
 
       const week = getWeekStr()
       const wm = (prev.weeklyMissions?.week === week)
         ? prev.weeklyMissions
         : { week, missions: generateWeeklyMissions(week) }
-      const weeklyMissions = { ...wm, missions: applyMissionProgress(wm.missions, result) }
+      const weeklyMissions = result.isTutorialMatch
+        ? wm
+        : { ...wm, missions: applyMissionProgress(wm.missions, result) }
 
       return {
         ...prev,

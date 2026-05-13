@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: '6.5',
+    date: '2026-05-13',
+    changes: [
+      'Onboarding: popup "Anatomia karty" przed pierwszym meczem — karta HUGO z 4 elementami do odkrycia (pozycja, ATK, DEF, umiejętność)',
+      'Onboarding: Market zablokowany dla nowych graczy do czasu ukończenia tutorialu',
+      'Tutorial match nie liczy się do misji dziennych ani tygodniowych',
+    ],
+  },
+  {
     version: '6.4',
     date: '2026-05-13',
     changes: [

@@ -1645,3 +1645,264 @@
   padding: 4px;
   text-decoration: underline;
 }
+
+/* ── Card Anatomy Popup ─────────────────────────────────────────────────── */
+
+.ca-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 130;
+  padding: 20px;
+}
+
+.ca-panel {
+  background: linear-gradient(160deg, #0f1a2e 0%, #080b16 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  padding: 22px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.ca-title {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.ca-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: -6px;
+}
+
+.ca-card-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* The rendered Hugo card */
+.ca-card {
+  width: 140px;
+  height: 200px;
+  background: linear-gradient(160deg, #ffebee, #ffcdd2);
+  border-radius: 14px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.ca-card-type {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #c62828;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.ca-card-illus {
+  width: 100%;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.ca-card-name {
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #1a1a1a;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.ca-card-ability {
+  flex: 1;
+  padding: 4px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ca-card-ability-name {
+  font-size: 8px;
+  font-weight: 900;
+  color: #c62828;
+  letter-spacing: 0.5px;
+}
+
+.ca-card-ability-desc {
+  font-size: 7px;
+  color: rgba(0,0,0,0.65);
+  line-height: 1.3;
+}
+
+.ca-label-active {
+  background: #c62828;
+  color: #fff;
+  font-size: 6px;
+  font-weight: 900;
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+.ca-card-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  background: rgba(0,0,0,0.08);
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+.ca-card-atk {
+  font-family: 'Bangers', cursive;
+  font-size: 16px;
+  color: #c62828;
+}
+
+.ca-card-def {
+  font-family: 'Bangers', cursive;
+  font-size: 16px;
+  color: #1565c0;
+}
+
+.ca-card-stat-name {
+  font-size: 7px;
+  font-weight: 800;
+  color: rgba(0,0,0,0.45);
+}
+
+/* Dots on the card marking each element */
+.ca-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: 2px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 5;
+}
+
+.ca-dot--active {
+  background: #00e676;
+  border-color: #00e676;
+  box-shadow: 0 0 0 4px rgba(0,230,118,0.3);
+  animation: ca-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ca-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(0,230,118,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(0,230,118,0.15); }
+}
+
+/* Explanation box */
+.ca-explanation {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0,230,118,0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  width: 100%;
+  min-height: 60px;
+}
+
+.ca-explanation-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #00e676;
+  color: #000;
+  font-weight: 900;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ca-explanation-body { flex: 1; }
+
+.ca-explanation-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.ca-explanation-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+}
+
+/* Step indicator dots */
+.ca-steps {
+  display: flex;
+  gap: 6px;
+}
+
+.ca-step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ca-step-dot--active {
+  background: #00e676;
+}
+
+.ca-next-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #00e676, #00b248);
+  color: #000;
+  font-family: 'Bangers', cursive;
+  font-size: 17px;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,230,118,0.3);
+  transition: transform 0.15s;
+}
+
+.ca-next-btn:active { transform: scale(0.97); }
+
+.ca-skip-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.28);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 2px;
+  margin-top: -6px;
+}

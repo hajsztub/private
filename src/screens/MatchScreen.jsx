@@ -368,7 +368,7 @@ export default function MatchScreen({ matchParams = {} }) {
     const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
-    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null })
+    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null, isTutorialMatch })
     // Injury roll: 8% chance per field card
     const fieldCards = [
       ...matchState.players.A.offenseSector,

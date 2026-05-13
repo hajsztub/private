@@ -1,5 +1,21 @@
 export const CHANGELOG = [
   {
+    version: '7.0',
+    date: '2026-05-13',
+    changes: [
+      'Anatomia karty: popup używa teraz prawdziwej karty HUGO z awatarem PNG (tak jak w składzie i meczu)',
+      'Tutorial: naprawiono bug rundy 10 — mecz nie kończył się z powodu przedwczesnego return w obsłudze kontuzji',
+      'Tutorial: misje zablokowane do czasu ukończenia pierwszego meczu',
+      'Zawodnicy: ikona 🩹 na kartach kontuzjowanych w siatce, czerwony baner z czasem powrotu w szczegółach',
+      'Start meczu: blokada jeśli którykolwiek z 14 zawodników w składzie jest kontuzjowany — wymagany zdrowy skład 11+3',
+      'Liga: popup ostrzegający o kontuzjowanych zawodnikach z opcją zmiany składu',
+      'Floating dock: Skład i Market zablokowane dla nowych graczy',
+      'Naprawiono deadlock AI w niestandardowych rundach (coalAnim + effects disabled)',
+      'Kafelki Liga/Trening mają teraz równą wysokość',
+      'Nagrody za trening wyświetlają emoji monety 🪙',
+    ],
+  },
+  {
     version: '6.6',
     date: '2026-05-13',
     changes: [

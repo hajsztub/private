@@ -5,7 +5,7 @@ import { getTier, getBotName } from '../data/botNames'
 import { CHANGELOG } from '../data/changelog'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
-import PlayerCard from '../components/PlayerCard'
+import FieldCard from '../components/FieldCard'
 import './MainMenuScreen.css'
 
 const ALL_DEFS_MM = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
@@ -388,36 +388,35 @@ const HUGO_CARD = (() => {
   return def ? { ...def, instanceId: 'anatomy_hugo', currentAttackStat: def.attackStat, currentDefenseStat: def.defenseStat, upgradeLevel: 0 } : null
 })()
 
-// Dot positions calibrated for PlayerCard 'normal' size (~120×172px rendered)
-// top/left as % of the card wrapper
+// Dots calibrated for FieldCard fc--field size (100×140px) scaled 1.6× → 160×224px
 const ANATOMY_LABELS = [
   {
     id: 'position',
     num: '1',
-    title: 'Pozycja',
-    desc: 'A = Atakujący. Są też: M (pomocnik), D (obrońca), B (bramkarz).',
-    dotStyle: { top: '4%', left: '5%' },
+    title: 'Pozycja (ATK/MID/DEF/GK)',
+    desc: 'Typ zawodnika — ATK to napastnik. MID gra i w ataku i w obronie.',
+    dotStyle: { top: '5%', left: '4%' },
+  },
+  {
+    id: 'rating',
+    num: '2',
+    title: 'Ocena',
+    desc: 'Główna statystyka karty. Im wyższa, tym silniejszy zawodnik.',
+    dotStyle: { top: '5%', right: '4%' },
   },
   {
     id: 'atk',
-    num: '2',
+    num: '3',
     title: 'Atak (ATK)',
     desc: 'Im wyższy ATK, tym większa szansa na zdobycie gola w tej rundzie.',
-    dotStyle: { bottom: '3%', left: '8%' },
+    dotStyle: { bottom: '8%', left: '8%' },
   },
   {
     id: 'def',
-    num: '3',
-    title: 'Obrona (DEF)',
-    desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF do zespołu.',
-    dotStyle: { bottom: '3%', right: '8%' },
-  },
-  {
-    id: 'ability',
     num: '4',
-    title: 'Umiejętność',
-    desc: 'Aktywuj raz na rundę po wystawieniu karty — daje bonus lub karę dla rywala.',
-    dotStyle: { bottom: '27%', left: '50%', transform: 'translateX(-50%)' },
+    title: 'Obrona (DEF)',
+    desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF do całego zespołu.',
+    dotStyle: { bottom: '8%', right: '8%' },
   },
 ]
 
@@ -435,9 +434,8 @@ function CardAnatomyPopup({ onStart }) {
         <div className="ca-sub">Dotknij każdy element żeby poznać jego znaczenie.</div>
 
         <div className="ca-card-wrap">
-          {/* Real PlayerCard with dots overlaid */}
           <div className="ca-card-container">
-            <PlayerCard card={HUGO_CARD} size="normal" />
+            <FieldCard card={HUGO_CARD} fieldSize />
             {ANATOMY_LABELS.map((lbl, i) => (
               <div
                 key={lbl.id}

@@ -1690,14 +1690,19 @@
   justify-content: center;
 }
 
-/* Wrapper that sits over the real PlayerCard to hold annotation dots */
+/* Wrapper that sits over FieldCard (fc--field: 100×140px) scaled up for readability */
 .ca-card-container {
   position: relative;
   display: inline-block;
-  /* match PlayerCard normal size */
-  width: 120px;
+  width: 160px;
+  height: 224px;
   flex-shrink: 0;
   filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+}
+
+.ca-card-container .fc--field {
+  width: 160px;
+  height: 224px;
 }
 
 /* Dots on the card marking each element */

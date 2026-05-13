@@ -369,34 +369,35 @@ export default function MatchScreen({ matchParams = {} }) {
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
     addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null, isTutorialMatch })
-    // Injury roll: 8% chance per field card (skipped in tutorial match)
-    if (isTutorialMatch) return
-    const fieldCards = [
-      ...matchState.players.A.offenseSector,
-      ...matchState.players.A.defenseSector,
-    ].filter(c => !c.isDestroyed && c.instanceId)
-    const injuredEntries = fieldCards
-      .filter(() => Math.random() < 0.08)
-      .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
-    if (injuredEntries.length) {
-      addInjuries(injuredEntries)
-      const now = Date.now()
-      addNotifications(injuredEntries.map(e => {
-        const fc = fieldCards.find(c => c.instanceId === e.instanceId)
-        const ms = e.until - now
-        const h = Math.floor(ms / 3600000)
-        const m = Math.floor((ms % 3600000) / 60000)
-        const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
-        return {
-          id: `injury_${e.instanceId}_${e.until}`,
-          type: 'injury',
-          message: `🩹 ${fc?.name || 'Zawodnik'} jest kontuzjowany — niedostępny przez ${timeStr}`,
-          timestamp: now,
-          read: false,
-        }
-      }))
+    // Injury roll: skipped in tutorial match
+    if (!isTutorialMatch) {
+      const fieldCards = [
+        ...matchState.players.A.offenseSector,
+        ...matchState.players.A.defenseSector,
+      ].filter(c => !c.isDestroyed && c.instanceId)
+      const injuredEntries = fieldCards
+        .filter(() => Math.random() < 0.08)
+        .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
+      if (injuredEntries.length) {
+        addInjuries(injuredEntries)
+        const now = Date.now()
+        addNotifications(injuredEntries.map(e => {
+          const fc = fieldCards.find(c => c.instanceId === e.instanceId)
+          const ms = e.until - now
+          const h = Math.floor(ms / 3600000)
+          const m = Math.floor((ms % 3600000) / 60000)
+          const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
+          return {
+            id: `injury_${e.instanceId}_${e.until}`,
+            type: 'injury',
+            message: `🩹 ${fc?.name || 'Zawodnik'} jest kontuzjowany — niedostępny przez ${timeStr}`,
+            timestamp: now,
+            read: false,
+          }
+        }))
+      }
     }
-    const isFirstWin = result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
+    const isFirstWin = !isTutorialMatch && result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
     if (isFirstWin) {
       claimFirstWinReward()
       setFirstWinReward(true)

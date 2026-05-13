@@ -41,7 +41,7 @@ body {
 }
 
 /* ── Desktop: simulate phone viewport 650×900 ─────────────────────────────── */
-@media (min-width: 700px) and (min-height: 700px) {
+@media (min-width: 700px) and (min-height: 500px) {
   html {
     background:
       radial-gradient(ellipse at 20% 30%, rgba(21,101,192,0.18) 0%, transparent 55%),
@@ -50,7 +50,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 
@@ -66,8 +66,11 @@ body {
       inset 0 1px 0 rgba(255,255,255,0.06);
     flex-shrink: 0;
     position: relative;
-    /* Contain position:fixed children within this box */
-    transform: translateZ(0);
+    transform-origin: center center;
+    transform: scale(var(--phone-scale, 1)) translateZ(0);
+    /* Negative margin compensates for space taken by un-scaled layout box */
+    margin-top: calc((900px * (var(--phone-scale, 1) - 1)) / 2);
+    margin-bottom: calc((900px * (var(--phone-scale, 1) - 1)) / 2);
   }
 
   #root {

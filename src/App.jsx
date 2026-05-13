@@ -117,6 +117,17 @@ export default function App() {
   const settingsStore = useSettingsStore()
   const [splash, setSplash] = useState(true)
 
+  // Scale phone frame to fit viewport on desktop
+  useEffect(() => {
+    const update = () => {
+      const scale = Math.min(1, window.innerHeight / 900, window.innerWidth / 650)
+      document.documentElement.style.setProperty('--phone-scale', scale)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
   // Init music after splash (needs user interaction context)
   const musicInitRef = useRef(false)
   useEffect(() => {

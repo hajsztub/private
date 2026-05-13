@@ -426,6 +426,8 @@ export default function MainMenuScreen() {
   const [showSeasonPopup, setShowSeasonPopup] = useState(false)
   const [showDailyReward, setShowDailyReward] = useState(false)
   const [trainingOpen, setTrainingOpen]       = useState(false)
+  const isNewPlayer = !profile.hasSeenTutorial
+  const [showWelcomePopup, setShowWelcomePopup] = useState(isNewPlayer)
 
   const playDay = profile.firstPlayedAt
     ? Math.min(7, Math.floor((Date.now() - profile.firstPlayedAt) / 86400000) + 1)
@@ -443,7 +445,7 @@ export default function MainMenuScreen() {
     if (allMissionsDone) setMissionsExpanded(false)
   }, [allMissionsDone])
 
-  const isNewPlayer   = (profile.matchHistory || []).length === 0
+  const noHistory = (profile.matchHistory || []).length === 0
   const notifications = profile.notifications || []
   const unreadCount   = notifications.filter(n => !n.read).length
   const didCheckRef   = useRef(false)
@@ -570,11 +572,15 @@ export default function MainMenuScreen() {
       <div className="mm-play-row">
 
         {/* League */}
-        <button className="mm-play-card mm-play-card--league" onClick={() => navigate('league')}>
+        <button
+          className={`mm-play-card mm-play-card--league${isNewPlayer ? ' mm-play-card--locked' : ''}`}
+          onClick={() => !isNewPlayer && navigate('league')}
+        >
           <div className="mm-play-card-bg mm-play-card-bg--league" />
           <div className="mm-play-card-body">
             <span className="mm-play-card-title">LIGA</span>
             <span className="mm-play-card-desc">Zagraj mecz rankingowy PvP!</span>
+            {isNewPlayer && <span className="mm-locked-badge">🔒 Ukończ trening</span>}
           </div>
         </button>
 
@@ -594,22 +600,24 @@ export default function MainMenuScreen() {
             <div className="mm-training-inline" onClick={e => e.stopPropagation()}>
               <div className="mm-training-inline-hdr">
                 <span className="mm-training-inline-title">TRENING</span>
-                <button className="mm-training-inline-close" onClick={e => { e.stopPropagation(); setTrainingOpen(false) }}>✕</button>
+                {!isNewPlayer && <button className="mm-training-inline-close" onClick={e => { e.stopPropagation(); setTrainingOpen(false) }}>✕</button>}
               </div>
               <button className="mm-tmode-inline mm-tmode-inline--amateur" onClick={() => startTraining('training_amateur')}>
                 <div className="mm-tmode-inline-body">
                   <span className="mm-tmode-inline-name">● AMATOR</span>
-                  <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
+                  <span className="mm-tmode-inline-desc">{isNewPlayer ? 'Twój pierwszy mecz!' : 'Łatwa wygrana'}</span>
                 </div>
                 <span className="mm-tmode-inline-reward">+40¢</span>
               </button>
-              <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
-                <div className="mm-tmode-inline-body">
-                  <span className="mm-tmode-inline-name">● PRO</span>
-                  <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
-                </div>
-                <span className="mm-tmode-inline-reward">+150¢</span>
-              </button>
+              {!isNewPlayer && (
+                <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
+                  <div className="mm-tmode-inline-body">
+                    <span className="mm-tmode-inline-name">● PRO</span>
+                    <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
+                  </div>
+                  <span className="mm-tmode-inline-reward">+150¢</span>
+                </button>
+              )}
             </div>
           )}
         </button>
@@ -718,9 +726,10 @@ export default function MainMenuScreen() {
           <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
           <span className="mm-grid-label">SKŁAD</span>
         </button>
-        <button className="mm-grid-btn" onClick={() => navigate('players')}>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && navigate('players')}>
           <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></span>
           <span className="mm-grid-label">ZAWODNICY</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('market')}>
           <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.2 14.8l.03-.12.9-1.68h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20.03 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5 16.18 5 17h15v-2H7.42c-.14 0-.22-.08-.22-.2z"/></svg></span>
@@ -749,6 +758,40 @@ export default function MainMenuScreen() {
         </div>
         <span className="mm-version-powered">Powered by AppHill.Agency</span>
       </div>
+
+      {/* ── Welcome popup (new players only) ── */}
+      {showWelcomePopup && (
+        <div className="mm-welcome-overlay">
+          <div className="mm-welcome-panel">
+            <div className="mm-welcome-logo"><Logo /></div>
+            <div className="mm-welcome-title">Witaj, {profile.name}!</div>
+            <div className="mm-welcome-sub">Zanim zaczniesz — jeden szybki mecz treningowy, żebyś wiedział jak grać.</div>
+            <div className="mm-welcome-steps">
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">⚽</span>
+                <span className="mm-welcome-step-text">Wystaw napastników i obrońców</span>
+              </div>
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">⚡</span>
+                <span className="mm-welcome-step-text">Aktywuj umiejętności kart</span>
+              </div>
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">🏆</span>
+                <span className="mm-welcome-step-text">Strzel więcej goli niż rywal</span>
+              </div>
+            </div>
+            <button className="mm-welcome-cta" onClick={() => {
+              setShowWelcomePopup(false)
+              setTrainingOpen(true)
+            }}>
+              Zacznij trening!
+            </button>
+            <button className="mm-welcome-skip" onClick={() => setShowWelcomePopup(false)}>
+              Pomiń — sam to odkryję
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Modals ── */}
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}

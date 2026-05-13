@@ -1511,3 +1511,137 @@
   padding: 8px;
   background: rgba(255,255,255,0.03);
 }
+
+/* ── Locked state (new players) ─────────────────────────────────────────── */
+
+.mm-play-card--locked {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  cursor: default;
+  pointer-events: none;
+}
+
+.mm-locked-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.mm-grid-btn--locked {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
+  position: relative;
+}
+
+.mm-grid-lock {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+/* ── Welcome popup ──────────────────────────────────────────────────────── */
+
+.mm-welcome-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+  padding: 24px;
+}
+
+.mm-welcome-panel {
+  background: linear-gradient(160deg, #0f1a2e 0%, #080b16 100%);
+  border: 1px solid rgba(0,230,118,0.25);
+  border-radius: 22px;
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 0 40px rgba(0,230,118,0.12), 0 20px 60px rgba(0,0,0,0.7);
+}
+
+.mm-welcome-logo { transform: scale(0.75); margin: -8px 0; }
+
+.mm-welcome-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.mm-welcome-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.mm-welcome-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.mm-welcome-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mm-welcome-step-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.mm-welcome-step-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+
+.mm-welcome-cta {
+  width: 100%;
+  background: linear-gradient(135deg, #00e676, #00b248);
+  color: #000;
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,230,118,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mm-welcome-cta:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 10px rgba(0,230,118,0.25);
+}
+
+.mm-welcome-skip {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px;
+  text-decoration: underline;
+}

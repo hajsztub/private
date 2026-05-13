@@ -608,7 +608,7 @@ export default function MainMenuScreen() {
     const isTutorial = type === 'training_amateur' && !profile.hasSeenTutorial
     if (isTutorial) { setShowCardAnatomy(true); return }
     const injCount = getInjuredDeckCount()
-    if (injCount > 0) { setInjuryWarning({ count: injCount, onConfirm: () => { setInjuryWarning(null); navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false }) } }); return }
+    if (injCount > 0) { setInjuryWarning(injCount); return }
     navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false })
   }
 
@@ -885,15 +885,15 @@ export default function MainMenuScreen() {
       {injuryWarning && (
         <div className="mm-welcome-overlay">
           <div className="mm-welcome-panel">
-            <div className="mm-welcome-title">⚠ Kontuzjowani zawodnicy</div>
+            <div className="mm-welcome-title">🩹 Skład niekompletny</div>
             <div className="mm-welcome-sub">
-              {injuryWarning.count === 1
-                ? '1 zawodnik w składzie jest kontuzjowany i zagra osłabiony.'
-                : `${injuryWarning.count} zawodników w składzie jest kontuzjowanych i zagra osłabionych.`}
-              {' '}Możesz zmienić skład przed meczem.
+              {injuryWarning === 1
+                ? '1 zawodnik w składzie jest kontuzjowany.'
+                : `${injuryWarning} zawodników w składzie jest kontuzjowanych.`}
+              {' '}Uzupełnij skład zdrowymi zawodnikami, żeby zagrać.
             </div>
-            <button className="mm-welcome-cta" style={{ background: '#f44336' }} onClick={injuryWarning.onConfirm}>Graj mimo to</button>
-            <button className="mm-welcome-skip" onClick={() => { setInjuryWarning(null); navigate('deck_builder') }}>Zmień skład</button>
+            <button className="mm-welcome-cta" onClick={() => { setInjuryWarning(null); navigate('deck_builder') }}>Zmień skład</button>
+            <button className="mm-welcome-skip" onClick={() => setInjuryWarning(null)}>Anuluj</button>
           </div>
         </div>
       )}

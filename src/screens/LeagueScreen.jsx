@@ -203,19 +203,19 @@ export default function LeagueScreen() {
         <div className="league-popup-overlay" onClick={() => setShowInjuryWarning(false)}>
           <div className="league-popup" onClick={e => e.stopPropagation()}>
             <div className="league-popup-icon">🩹</div>
-            <h2 className="league-popup-title">Kontuzjowani zawodnicy</h2>
+            <h2 className="league-popup-title">Skład niekompletny</h2>
             <p className="league-popup-body">
               {injuredDeckCount === 1
                 ? '1 zawodnik w składzie jest kontuzjowany.'
                 : `${injuredDeckCount} zawodników w składzie jest kontuzjowanych.`}
-              {' '}Zagra osłabiony, co może wpłynąć na wynik meczu.
+              {' '}Uzupełnij skład zdrowymi zawodnikami, żeby zagrać.
             </p>
             <div className="league-popup-actions">
-              <button className="league-popup-btn league-popup-btn--cancel" onClick={() => { setShowInjuryWarning(false); navigate('deck_builder') }}>
-                Zmień skład
+              <button className="league-popup-btn league-popup-btn--cancel" onClick={() => setShowInjuryWarning(false)}>
+                Anuluj
               </button>
-              <button className="league-popup-btn league-popup-btn--confirm" style={{ background: '#f44336' }} onClick={() => { setShowInjuryWarning(false); if (!hasPlayedLeague) { setShowFirstLeaguePopup(true) } else { doStartMatch() } }}>
-                Graj mimo to
+              <button className="league-popup-btn league-popup-btn--confirm" onClick={() => { setShowInjuryWarning(false); navigate('deck_builder') }}>
+                Zmień skład
               </button>
             </div>
           </div>

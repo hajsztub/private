@@ -814,6 +814,23 @@
 }
 
 /* Auto-collapsed missions bar */
+.mm-missions-locked {
+  width: calc(100% - 28px);
+  max-width: 412px;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.35);
+  font-size: 13px;
+}
+
+.mm-missions-locked-icon { font-size: 16px; }
+
 .mm-missions-done-bar {
   width: calc(100% - 28px);
   max-width: 412px;

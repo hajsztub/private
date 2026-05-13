@@ -737,7 +737,12 @@ export default function MainMenuScreen() {
       <div className="mm-separator" />
 
       {/* ── Missions ── */}
-      {allMissionsDone && !missionsExpanded ? (
+      {isNewPlayer ? (
+        <div className="mm-missions-locked">
+          <span className="mm-missions-locked-icon">🔒</span>
+          <span className="mm-missions-locked-text">Misje odblokują się po ukończeniu treningu</span>
+        </div>
+      ) : allMissionsDone && !missionsExpanded ? (
         <button className="mm-missions-done-bar" onClick={() => setMissionsExpanded(true)}>
           <span>✓ Misje dzienne ukończone</span>
           <span className="mm-missions-done-bar-arrow">›</span>

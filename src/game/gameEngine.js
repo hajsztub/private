@@ -5,7 +5,16 @@ export const MAX_ROUNDS = 10
 export const MAX_SECTOR_SIZE = 3
 export const HAND_SIZE = 4
 
-export function createMatchState(matchType = 'local', playerDeckCards = null, aiDeckCards = null) {
+// Scripted goal outcomes for tutorial match rounds 1-5
+const TUTORIAL_OUTCOMES = {
+  1: { playerGoal: false, aiGoal: false },
+  2: { playerGoal: true,  aiGoal: false },
+  3: { playerGoal: false, aiGoal: true  },
+  4: { playerGoal: true,  aiGoal: false },
+  5: { playerGoal: true,  aiGoal: false },
+}
+
+export function createMatchState(matchType = 'local', playerDeckCards = null, aiDeckCards = null, isTutorialMatch = false) {
   const playerDeckRaw = playerDeckCards || createDefaultDeck('A')
   const aiDeckRaw = aiDeckCards || createDefaultDeck('B')
 
@@ -17,6 +26,7 @@ export function createMatchState(matchType = 'local', playerDeckCards = null, ai
     round: 0,
     currentPlayer: 'A',
     matchType,
+    isTutorialMatch,
     maxRounds: MAX_ROUNDS,
     endGameOnRound: null,
     skipTurn: null,
@@ -92,6 +102,8 @@ export function selectGoalkeeper(state, playerId, gkInstanceId) {
   return updated
 }
 
+const STARTING_HAND_SIZE = 3
+
 function dealStartingHand(deck) {
   const types = ['defense', 'midfield', 'attack']
   const hand = []
@@ -101,6 +113,10 @@ function dealStartingHand(deck) {
     if (idx !== -1) {
       hand.push(...remaining.splice(idx, 1))
     }
+  }
+  // Fill to STARTING_HAND_SIZE if some types were missing
+  while (hand.length < STARTING_HAND_SIZE && remaining.length > 0) {
+    hand.push(...remaining.splice(0, 1))
   }
   return { hand, deck: remaining }
 }
@@ -575,9 +591,13 @@ export function endTurn(state) {
   let goalResult = null
   if (state.currentPlayer === 'A') {
     const stats = computeMatchStats(newState)
-    const { playerGoal, aiGoal, playerChance, aiChance } = resolveRoundGoals(
-      stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense, newState.displayScore
-    )
+    const scripted = state.isTutorialMatch ? TUTORIAL_OUTCOMES[state.round] : null
+    const { playerGoal, aiGoal, playerChance, aiChance } = scripted
+      ? { ...scripted, playerChance: scripted.playerGoal ? 1 : 0, aiChance: scripted.aiGoal ? 1 : 0 }
+      : resolveRoundGoals(
+          stats.playerAttack, stats.aiDefense, stats.aiAttack, stats.playerDefense,
+          newState.displayScore, stats.playerHasOffense, stats.aiHasOffense
+        )
 
     const newScore = {
       player: newState.displayScore.player + (playerGoal ? 1 : 0),
@@ -628,12 +648,15 @@ export function endTurn(state) {
   const nextPlayer = state.currentPlayer === 'A' ? 'B' : 'A'
   const nextRound = state.currentPlayer === 'B' ? state.round + 1 : state.round
 
-  // Special card after round 5
-  if (nextRound === 6 && !newState.specialCardRevealed) {
+  // Special card after round 5 (skip in tutorial match to avoid UI deadlock)
+  if (nextRound === 6 && !newState.specialCardRevealed && !newState.isTutorialMatch) {
     const drawn = shuffleDeck([...SPECIAL_CARDS])[0]
     newState = { ...newState, specialCard: drawn, specialCardRevealed: true, phase: 'special_card' }
     newState = applySpecialCardEffect(newState, drawn)
     newState = addLog(newState, `🃏 Karta specjalna: ${drawn.name}! ${drawn.description}`, 'special')
+  }
+  if (nextRound === 6 && !newState.specialCardRevealed && newState.isTutorialMatch) {
+    newState = { ...newState, specialCardRevealed: true }
   }
 
   const effectiveMax = newState.maxRounds ?? MAX_ROUNDS
@@ -1110,7 +1133,8 @@ export function gameReducer(state, action) {
       return addLog(s, 'Mecz poddany. Przegrana 0:3.', 'warning')
     }
     case 'REDRAW_HAND': {
-      if (state.redraws >= 2) return addLog(state, '❌ Wykorzystałeś już limit 2 przetasowań.', 'error')
+      if (state.redraws >= 1) return addLog(state, '❌ Wymiana ręki już wykorzystana.', 'error')
+      if (state.round < 3) return addLog(state, '❌ Wymiana ręki dostępna od 3. rundy.', 'error')
       const pl = state.players.A
       const combined = shuffleDeck([...pl.deck, ...pl.hand])
       const newHand = combined.slice(0, 4)
@@ -1137,7 +1161,7 @@ export function gameReducer(state, action) {
           A: { ...pl, hand: newHand, deck: newDeck, activeGoalkeeper: updatedGK, defenseSector: updatedDef },
         },
       }
-      return addLog(newState, `🔄 Przetasowanie ${state.redraws + 1}/2 — dobrano 4 karty, -5 DEF do końca meczu.`, 'warning')
+      return addLog(newState, `🔄 Wymiana ręki — dobrano 4 karty, -5 DEF do końca meczu.`, 'warning')
     }
     default:
       return state

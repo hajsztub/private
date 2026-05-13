@@ -9,7 +9,7 @@ export default function EndGame({ state, onRestart }) {
   return (
     <div className="endgame">
       <div className="endgame-content">
-        <div className="endgame-trophy">{isDraw ? '🤝' : '🏆'}</div>
+        <div className="endgame-trophy">{isDraw ? '—' : '★'}</div>
         <h1 className="endgame-title">
           {isDraw ? 'REMIS!' : `GRACZ ${winner} WYGRYWA!`}
         </h1>
@@ -46,7 +46,7 @@ export default function EndGame({ state, onRestart }) {
         </div>
 
         <button className="endgame-restart-btn" onClick={onRestart}>
-          🔄 Nowa Gra
+          ↺ Nowa Gra
         </button>
       </div>
     </div>

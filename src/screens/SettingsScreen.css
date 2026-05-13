@@ -7,7 +7,7 @@
     url('/bg.jpg') center top / cover no-repeat;
   background-color: #07090e;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -29,7 +29,7 @@
 }
 
 .settings-list {
-  padding: 0 14px 32px;
+  padding: 0 14px max(72px, calc(env(safe-area-inset-bottom) + 62px));
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -57,7 +57,7 @@
   width: 100%;
   text-align: left;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .settings-row--name {
@@ -96,6 +96,9 @@
 
 /* ── Name field ───────────────────────────────────────────────────────────── */
 
+.sn-field-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+.sn-error { font-size: 11px; color: #ff5252; padding-left: 2px; }
+
 .sn-field {
   display: flex;
   gap: 8px;
@@ -108,7 +111,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 700;
   padding: 8px 12px;
@@ -123,7 +126,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 900;
   padding: 8px 16px;
@@ -195,7 +198,7 @@
   border: 1px solid var(--c-border);
   border-radius: 8px;
   color: var(--c-text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 700;
   padding: 6px 10px;

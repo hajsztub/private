@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useSettings, useProfile } from '../App'
+import { hasProfanity } from '../utils/nameFilter'
 import './SettingsScreen.css'
 
 export default function SettingsScreen() {
@@ -9,12 +10,15 @@ export default function SettingsScreen() {
   const { profile, update, resetProfile } = useProfile()
   const [nameInput, setNameInput] = useState(profile.name || 'Gracz')
   const [nameSaved, setNameSaved] = useState(false)
+  const [nameError, setNameError] = useState('')
 
   const saveName = () => {
     const trimmed = nameInput.trim()
     if (!trimmed) return
+    if (hasProfanity(trimmed)) { setNameError('Nazwa zawiera niedozwolone słowa.'); return }
     update({ name: trimmed })
     setNameSaved(true)
+    setNameError('')
     setTimeout(() => setNameSaved(false), 1800)
   }
 
@@ -28,7 +32,7 @@ export default function SettingsScreen() {
   return (
     <div className="settings-screen">
       <div className="settings-header">
-        <button className="back-btn" onClick={goBack}>←</button>
+        <button className="back-btn" onClick={goBack}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <h1 className="settings-title">Ustawienia</h1>
       </div>
 
@@ -45,21 +49,24 @@ export default function SettingsScreen() {
               <div className="settings-row-desc">Widoczna w meczach i rankingu</div>
             </div>
           </div>
-          <div className="sn-field">
-            <input
-              className="sn-input"
-              value={nameInput}
-              onChange={e => setNameInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && saveName()}
-              maxLength={16}
-              placeholder="Twoja nazwa"
-            />
-            <button
-              className={`sn-save ${nameSaved ? 'sn-save--done' : ''}`}
-              onClick={saveName}
-            >
-              {nameSaved ? '✓' : 'OK'}
-            </button>
+          <div className="sn-field-wrap">
+            <div className="sn-field">
+              <input
+                className="sn-input"
+                value={nameInput}
+                onChange={e => { setNameInput(e.target.value); setNameError('') }}
+                onKeyDown={e => e.key === 'Enter' && saveName()}
+                maxLength={10}
+                placeholder="Twoja nazwa"
+              />
+              <button
+                className={`sn-save ${nameSaved ? 'sn-save--done' : ''}`}
+                onClick={saveName}
+              >
+                {nameSaved ? '✓' : 'OK'}
+              </button>
+            </div>
+            {nameError && <div className="sn-error">{nameError}</div>}
           </div>
         </div>
 
@@ -142,7 +149,7 @@ export default function SettingsScreen() {
 
         <button className="settings-row settings-row--danger" onClick={handleReset}>
           <div className="settings-row-info">
-            <span className="settings-row-icon">🗑️</span>
+            <span className="settings-row-icon">✕</span>
             <div className="settings-row-labels">
               <div className="settings-row-label">Resetuj postęp</div>
               <div className="settings-row-desc">Usuwa wszystkie dane gry</div>

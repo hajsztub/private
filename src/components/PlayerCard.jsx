@@ -128,13 +128,13 @@ export default function PlayerCard({
           className="pc-activate"
           onClick={e => { e.stopPropagation(); onActivate?.(card.instanceId) }}
         >
-          ⚡ Aktywuj
+          {'▶︎'} Aktywuj
         </button>
       )}
 
       {/* Locked overlay */}
       {card.isLocked && (
-        <div className="pc-locked-overlay">🔒 {card.lockedRounds}</div>
+        <div className="pc-locked-overlay">● {card.lockedRounds}</div>
       )}
     </div>
   )

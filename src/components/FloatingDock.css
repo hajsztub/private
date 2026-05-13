@@ -1,0 +1,101 @@
+/* ── Floating Dock ────────────────────────────────────────────────────────── */
+
+.fdock {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+}
+
+.fdock-inner {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(10, 13, 22, 0.93);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 99px;
+  padding: 5px 6px;
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  box-shadow:
+    0 6px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* ── Each nav button ──────────────────────────────────────────────────────── */
+
+.fdock-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 20px;
+  border: none;
+  background: none;
+  border-radius: 40px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s;
+  flex-shrink: 0;
+}
+
+.fdock-btn:active {
+  transform: scale(0.84);
+}
+
+.fdock-btn svg {
+  color: rgba(255, 255, 255, 0.28);
+  transition: color 0.18s;
+}
+
+.fdock-lbl {
+  font-family: 'Inter', sans-serif;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.18s;
+}
+
+/* active state */
+.fdock-btn--active {
+  background: rgba(0, 230, 118, 0.08);
+}
+
+.fdock-btn--active svg {
+  color: #00e676;
+  filter: drop-shadow(0 0 4px rgba(0, 230, 118, 0.5));
+}
+
+.fdock-btn--active .fdock-lbl {
+  color: #00e676;
+}
+
+/* dot below active icon */
+.fdock-pip {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #00e676;
+  box-shadow: 0 0 6px rgba(0, 230, 118, 0.9);
+}
+
+.fdock-btn--locked {
+  opacity: 0.35;
+  cursor: default;
+  position: relative;
+}
+
+.fdock-lock {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 8px;
+  opacity: 0.8;
+}

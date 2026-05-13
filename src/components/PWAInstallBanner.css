@@ -1,0 +1,210 @@
+/* ── PWA Install Banner ───────────────────────────────────────────────────── */
+
+.pwa-banner {
+  position: fixed;
+  bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 420px;
+  background: #161d2e;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  padding: 10px 10px 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,230,118,0.08);
+  animation: pwa-slide-up 0.32s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes pwa-slide-up {
+  from { transform: translateX(-50%) translateY(120%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);   opacity: 1; }
+}
+
+.pwa-banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.pwa-banner-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-banner-name {
+  font-family: 'Bangers', cursive;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: white;
+  line-height: 1;
+}
+
+.pwa-banner-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  line-height: 1;
+}
+
+.pwa-banner-install {
+  flex-shrink: 0;
+  background: var(--c-primary, #00e676);
+  color: #07090e;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+.pwa-banner-install:active { opacity: 0.8; }
+
+.pwa-banner-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── iOS instruction panel ────────────────────────────────────────────────── */
+
+.pwa-ios-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 9100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.pwa-ios-panel {
+  width: 100%;
+  max-width: 440px;
+  background: #0e1a14;
+  border-radius: 22px 22px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding: 0 20px max(36px, calc(env(safe-area-inset-bottom) + 24px));
+  animation: pwa-sheet-up 0.26s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes pwa-sheet-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.pwa-ios-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.16);
+  border-radius: 2px;
+  margin: 10px auto 18px;
+}
+
+.pwa-ios-title {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  letter-spacing: 1.5px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.pwa-ios-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.pwa-ios-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.pwa-ios-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pwa-ios-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-primary, #00e676);
+  color: #07090e;
+  font-size: 14px;
+  font-weight: 900;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pwa-ios-step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-ios-step-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 2px;
+}
+
+.pwa-ios-step-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.pwa-ios-icon-inline {
+  display: inline-flex;
+  align-items: center;
+  color: #64b5f6;
+  vertical-align: middle;
+}
+
+.pwa-ios-ok {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: var(--c-primary, #00e676);
+  color: #07090e;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+.pwa-ios-ok:active { opacity: 0.85; }

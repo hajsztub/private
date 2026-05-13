@@ -1,0 +1,438 @@
+[
+  {
+    "id": "starter_gk1",
+    "name": "BOREK",
+    "type": "goalkeeper",
+    "typeLabel": "G",
+    "attackStat": 0,
+    "defenseStat": 6,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      80,
+      160,
+      320
+    ],
+    "upgradeStatBonus": 2,
+    "color": "#eceff1",
+    "abilityName": "DOBRA POZYCJA",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Na początku każdej rundy zyskuje +1 obrony (max +3).",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "self_round_buff",
+      "stat": "currentDefenseStat",
+      "amount": 1,
+      "maxBonus": 3
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_gk2",
+    "name": "PAWEL",
+    "type": "goalkeeper",
+    "typeLabel": "G",
+    "attackStat": 0,
+    "defenseStat": 5,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      60,
+      120,
+      240
+    ],
+    "upgradeStatBonus": 2,
+    "color": "#eceff1",
+    "abilityName": "REFLEKS",
+    "abilityType": "active_coin",
+    "abilityDescription": "Rzuć żetonem. Piłka: +5 obrony na tę rundę. Rękawica: brak efektu.",
+    "noActivationDescription": "Brak aktywacji: Standardowa obrona.",
+    "activationEffect": {
+      "ball": {
+        "type": "self_stat_change",
+        "stat": "currentDefenseStat",
+        "amount": 5,
+        "message": "Refleks! +5 obrony na tę rundę!"
+      },
+      "glove": {
+        "type": "none",
+        "message": "Brak efektu."
+      }
+    },
+    "noActivationEffect": {
+      "type": "none",
+      "message": ""
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_def1",
+    "name": "KOWAL",
+    "type": "defense",
+    "typeLabel": "D",
+    "attackStat": 2,
+    "defenseStat": 4,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e3f2fd",
+    "abilityName": "KRYCIE",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Jeśli sektor defensywny ma 3 graczy, zyskuje +1 obrony.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "full_sector_buff",
+      "stat": "currentDefenseStat",
+      "amount": 1
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_def2",
+    "name": "ZAJĄC",
+    "type": "defense",
+    "typeLabel": "D",
+    "attackStat": 1,
+    "defenseStat": 5,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e3f2fd",
+    "abilityName": "ŚCIANA",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Brak specjalnego efektu. Solidna obrona.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "none"
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_def3",
+    "name": "WRONA",
+    "type": "defense",
+    "typeLabel": "D",
+    "attackStat": 2,
+    "defenseStat": 4,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e3f2fd",
+    "abilityName": "FAUL TAKTYCZNY",
+    "abilityType": "active_coin",
+    "abilityDescription": "Rzuć żetonem. Piłka: usuń jednego atakującego przeciwnika. Rękawica: Wrona dostaje żółtą kartkę (blokada 1 runda).",
+    "noActivationDescription": "Brak aktywacji: +1 obrony.",
+    "activationEffect": {
+      "ball": {
+        "type": "remove_opponent_card",
+        "targetSector": "offense",
+        "message": "Faul! Atakujący przeciwnika usunięty!"
+      },
+      "glove": {
+        "type": "self_lock",
+        "rounds": 1,
+        "message": "Żółta kartka! Wrona zablokowana na 1 rundę."
+      }
+    },
+    "noActivationEffect": {
+      "type": "self_stat_change",
+      "stat": "currentDefenseStat",
+      "amount": 1,
+      "message": "Wrona skupia się na obronie +1."
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_mid1",
+    "name": "BĄK",
+    "type": "midfield",
+    "typeLabel": "M",
+    "attackStat": 3,
+    "defenseStat": 3,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#f3e5f5",
+    "abilityName": "WSZECHSTRONNOŚĆ",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Może grać w każdym sektorze bez kar.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "none"
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_mid2",
+    "name": "SZCZUR",
+    "type": "midfield",
+    "typeLabel": "M",
+    "attackStat": 2,
+    "defenseStat": 3,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#f3e5f5",
+    "abilityName": "INTERCEPT",
+    "abilityType": "active",
+    "abilityDescription": "Zmniejsza atak jednego ofensywnego gracza przeciwnika o 1.",
+    "noActivationDescription": "Brak aktywacji: brak efektu.",
+    "activationEffect": {
+      "direct": {
+        "type": "reduce_opponent_attack",
+        "amount": 1,
+        "message": "Intercept! Atak przeciwnika -1!"
+      }
+    },
+    "noActivationEffect": {
+      "type": "none",
+      "message": ""
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_mid3",
+    "name": "PTAK",
+    "type": "midfield",
+    "typeLabel": "M",
+    "attackStat": 3,
+    "defenseStat": 2,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#f3e5f5",
+    "abilityName": "DRYBLING",
+    "abilityType": "active_coin",
+    "abilityDescription": "Rzuć żetonem. Piłka: +2 ataku na tę rundę. Rękawica: brak efektu.",
+    "noActivationDescription": "Brak aktywacji: brak efektu.",
+    "activationEffect": {
+      "ball": {
+        "type": "self_stat_change",
+        "stat": "currentAttackStat",
+        "amount": 2,
+        "message": "Drybling! +2 ataku!"
+      },
+      "glove": {
+        "type": "none",
+        "message": "Nieudany drybling."
+      }
+    },
+    "noActivationEffect": {
+      "type": "none",
+      "message": ""
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_atk1",
+    "name": "RYBA",
+    "type": "attack",
+    "typeLabel": "A",
+    "attackStat": 4,
+    "defenseStat": 1,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e8f5e9",
+    "abilityName": "STRZAŁ",
+    "abilityType": "active_coin",
+    "abilityDescription": "Rzuć żetonem. Piłka: +3 ataku na tę rundę. Rękawica: brak efektu.",
+    "noActivationDescription": "Brak aktywacji: brak efektu.",
+    "activationEffect": {
+      "ball": {
+        "type": "self_stat_change",
+        "stat": "currentAttackStat",
+        "amount": 3,
+        "message": "Strzał! +3 ataku!"
+      },
+      "glove": {
+        "type": "none",
+        "message": "Niecelny strzał."
+      }
+    },
+    "noActivationEffect": {
+      "type": "none",
+      "message": ""
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_atk2",
+    "name": "KRET",
+    "type": "attack",
+    "typeLabel": "A",
+    "attackStat": 3,
+    "defenseStat": 1,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e8f5e9",
+    "abilityName": "FINEZJA",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Jeśli sektor ofensywny ma 3 graczy, wszyscy zyskują +1 ataku.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "full_offense_buff",
+      "stat": "currentAttackStat",
+      "amount": 1
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_atk3",
+    "name": "LIS",
+    "type": "attack",
+    "typeLabel": "A",
+    "attackStat": 3,
+    "defenseStat": 0,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e8f5e9",
+    "abilityName": "PRZEBIEGŁOŚĆ",
+    "abilityType": "passive",
+    "abilityDescription": "Co rundę Lis zyskuje +1 ATK (kumuluje się tak długo jak jest na boisku).",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "per_round_self_stat",
+      "stat": "currentAttackStat",
+      "amount": 1,
+      "message": "Przebiegłość! Lis +1 ATK."
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_def4",
+    "name": "MRÓZ",
+    "type": "defense",
+    "typeLabel": "D",
+    "attackStat": 1,
+    "defenseStat": 4,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e3f2fd",
+    "abilityName": "STOPER",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Brak specjalnego efektu. Solidna obrona.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "none"
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_mid4",
+    "name": "ORZEŁ",
+    "type": "midfield",
+    "typeLabel": "M",
+    "attackStat": 3,
+    "defenseStat": 2,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#f3e5f5",
+    "abilityName": "ASYST",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Brak specjalnego efektu. Solidny pomocnik.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "none"
+    },
+    "count": 1
+  },
+  {
+    "id": "starter_atk4",
+    "name": "ŻBIK",
+    "type": "attack",
+    "typeLabel": "A",
+    "attackStat": 3,
+    "defenseStat": 1,
+    "rarity": "starter",
+    "marketPrice": 0,
+    "sellPrice": 0,
+    "upgradeCost": [
+      40,
+      80,
+      160
+    ],
+    "upgradeStatBonus": 1,
+    "color": "#e8f5e9",
+    "abilityName": "SPRINT",
+    "abilityType": "passive",
+    "abilityDescription": "Pasywna: Brak specjalnego efektu. Szybki napastnik.",
+    "noActivationDescription": "",
+    "passiveEffect": {
+      "type": "none"
+    },
+    "count": 1
+  }
+]

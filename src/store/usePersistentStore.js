@@ -21,23 +21,54 @@ function getShopCardIds(seed) {
 // ── Daily missions ─────────────────────────────────────────────────────────
 
 const MISSION_POOL = [
-  { type: 'play_matches', target: 1, label: 'Zagraj 1 mecz',              icon: '🎮', reward: 50  },
-  { type: 'play_matches', target: 3, label: 'Zagraj 3 mecze',             icon: '🎮', reward: 120 },
-  { type: 'win_matches',  target: 1, label: 'Wygraj 1 mecz',              icon: '🏆', reward: 80  },
-  { type: 'win_matches',  target: 2, label: 'Wygraj 2 mecze',             icon: '🏆', reward: 150 },
-  { type: 'win_matches',  target: 3, label: 'Wygraj 3 mecze',             icon: '🏆', reward: 220 },
-  { type: 'win_league',   target: 1, label: 'Wygraj mecz ligowy',         icon: '⭐', reward: 120 },
-  { type: 'win_league',   target: 2, label: 'Wygraj 2 mecze ligowe',      icon: '⭐', reward: 220 },
-  { type: 'score_goals',  target: 3, label: 'Strzel 3 gole',              icon: '⚽', reward: 80  },
-  { type: 'score_goals',  target: 5, label: 'Strzel 5 goli',              icon: '⚽', reward: 130 },
-  { type: 'score_goals',  target: 8, label: 'Strzel 8 goli',              icon: '⚽', reward: 200 },
-  { type: 'win_pro',      target: 1, label: 'Wygraj trening PRO',         icon: '🔴', reward: 200 },
-  { type: 'clean_sheet',  target: 1, label: 'Wygraj nie tracąc gola',     icon: '🧤', reward: 160 },
+  { type: 'play_matches', target: 1, label: 'Zagraj 1 mecz',              icon: '🎮', reward: 80,  rewardType: 'coins' },
+  { type: 'play_matches', target: 3, label: 'Zagraj 3 mecze',             icon: '🎮', reward: 180, rewardType: 'coins' },
+  { type: 'win_matches',  target: 1, label: 'Wygraj 1 mecz',              icon: '🏆', reward: 120, rewardType: 'coins' },
+  { type: 'win_matches',  target: 2, label: 'Wygraj 2 mecze',             icon: '🏆', reward: 220, rewardType: 'coins' },
+  { type: 'win_matches',  target: 3, label: 'Wygraj 3 mecze',             icon: '🏆', reward: 320, rewardType: 'coins' },
+  { type: 'win_league',   target: 1, label: 'Wygraj mecz ligowy',         icon: '⭐', reward: 180, rewardType: 'coins' },
+  { type: 'win_league',   target: 2, label: 'Wygraj 2 mecze ligowe',      icon: '⭐', reward: 320, rewardType: 'coins' },
+  { type: 'score_goals',  target: 3, label: 'Strzel 3 gole',              icon: '⚽', reward: 120, rewardType: 'coins' },
+  { type: 'score_goals',  target: 5, label: 'Strzel 5 goli',              icon: '⚽', reward: 200, rewardType: 'coins' },
+  { type: 'score_goals',  target: 8, label: 'Strzel 8 goli',              icon: '⚽', reward: 300, rewardType: 'coins' },
+  { type: 'win_pro',      target: 1, label: 'Wygraj trening PRO',         icon: '🔴', reward: 280, rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 1, label: 'Wygraj nie tracąc gola',     icon: '🧤', reward: 240, rewardType: 'coins' },
+]
+
+// ── Weekly missions ────────────────────────────────────────────────────────
+
+const WEEKLY_COIN_POOL = [
+  { type: 'play_matches', target: 15, label: 'Zagraj 15 meczów',           icon: '🎮', reward: 600,  rewardType: 'coins' },
+  { type: 'play_matches', target: 25, label: 'Zagraj 25 meczów',           icon: '🎮', reward: 1100, rewardType: 'coins' },
+  { type: 'win_matches',  target: 7,  label: 'Wygraj 7 meczów',            icon: '🏆', reward: 500,  rewardType: 'coins' },
+  { type: 'win_matches',  target: 12, label: 'Wygraj 12 meczów',           icon: '🏆', reward: 900,  rewardType: 'coins' },
+  { type: 'win_league',   target: 5,  label: 'Wygraj 5 meczów ligowych',   icon: '⭐', reward: 600,  rewardType: 'coins' },
+  { type: 'win_league',   target: 8,  label: 'Wygraj 8 meczów ligowych',   icon: '⭐', reward: 1000, rewardType: 'coins' },
+  { type: 'score_goals',  target: 30, label: 'Strzel 30 goli',             icon: '⚽', reward: 450,  rewardType: 'coins' },
+  { type: 'score_goals',  target: 50, label: 'Strzel 50 goli',             icon: '⚽', reward: 750,  rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 4,  label: 'Wygraj 4× nie tracąc gola', icon: '🧤', reward: 600,  rewardType: 'coins' },
+  { type: 'clean_sheet',  target: 7,  label: 'Wygraj 7× nie tracąc gola', icon: '🧤', reward: 950,  rewardType: 'coins' },
+  { type: 'win_pro',      target: 5,  label: 'Wygraj 5 treningów PRO',     icon: '🔴', reward: 700,  rewardType: 'coins' },
+]
+
+const WEEKLY_GEM_POOL = [
+  { type: 'win_league',  target: 10, label: 'Wygraj 10 meczów ligowych', icon: '⭐', reward: 3, rewardType: 'gems' },
+  { type: 'win_pro',     target: 5,  label: 'Wygraj 5 treningów PRO',    icon: '🔴', reward: 2, rewardType: 'gems' },
+  { type: 'win_matches', target: 15, label: 'Wygraj 15 meczów',          icon: '🏆', reward: 3, rewardType: 'gems' },
+  { type: 'score_goals', target: 60, label: 'Strzel 60 goli',            icon: '⚽', reward: 2, rewardType: 'gems' },
 ]
 
 function getTodayStr() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function getWeekStr() {
+  const d = new Date()
+  const day = d.getDay() || 7
+  const monday = new Date(d)
+  monday.setDate(d.getDate() - (day - 1))
+  return `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`
 }
 
 function seededRandom(seed) {
@@ -85,6 +116,31 @@ function ensureDailyMissions(profile) {
   return profile
 }
 
+function generateWeeklyMissions(weekStr) {
+  const seed = weekStr.replace(/-/g, '').split('').reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 13)
+  const rand = seededRandom(seed)
+  const shuffledCoins = [...WEEKLY_COIN_POOL].sort(() => rand() - 0.5).slice(0, 5)
+  const gemMission = WEEKLY_GEM_POOL[Math.floor(rand() * WEEKLY_GEM_POOL.length)]
+  const all = [...shuffledCoins, gemMission].sort(() => rand() - 0.5)
+  return all.map((m, i) => ({ ...m, id: `w_${weekStr}_${i}`, progress: 0, claimed: false, locked: i >= 4 }))
+}
+
+function tryUnlockWeeklyMissions(wm) {
+  const visibleAll = wm.missions.filter(m => !m.locked)
+  if (visibleAll.length > 0 && visibleAll.every(m => m.claimed)) {
+    return { ...wm, missions: wm.missions.map(m => ({ ...m, locked: false })) }
+  }
+  return wm
+}
+
+function ensureWeeklyMissions(profile) {
+  const week = getWeekStr()
+  if (!profile.weeklyMissions || profile.weeklyMissions.week !== week) {
+    return { ...profile, weeklyMissions: { week, missions: generateWeeklyMissions(week) } }
+  }
+  return profile
+}
+
 function defaultProfile() {
   return {
     name: 'Gracz',
@@ -105,30 +161,40 @@ function defaultProfile() {
     matchHistory: [],
     injuries: {}, // { instanceId: timestampUntilHealed }
     dailyMissions: { date: '', missions: [] },
+    weeklyMissions: { week: '', missions: [] },
     cardShop: { cardIds: [], refreshedAt: 0 },
     lastTierChange: null, // { from, to, timestamp }
     notifications: [], // [{ id, type, message, timestamp, read }]
+    firstPlayedAt: null, // set on first profile setup
   }
 }
 
 const NEW_STARTER_IDS = ['starter_def4', 'starter_mid4', 'starter_atk4']
 
 function migrateProfile(profile) {
-  const ownedIds = new Set(profile.ownedCards.map(c => c.instanceId))
+  let p = profile
+  const ownedIds = new Set(p.ownedCards.map(c => c.instanceId))
   const missing = NEW_STARTER_IDS.filter(id => !ownedIds.has(id))
-  if (missing.length === 0) return profile
-  const newCards = missing.map(id => ({ cardId: id, instanceId: id, upgradeLevel: 0, isStarter: true }))
-  return { ...profile, ownedCards: [...profile.ownedCards, ...newCards] }
+  if (missing.length > 0) {
+    const newCards = missing.map(id => ({ cardId: id, instanceId: id, upgradeLevel: 0, isStarter: true }))
+    p = { ...p, ownedCards: [...p.ownedCards, ...newCards] }
+  }
+  // backfill firstPlayedAt for existing players who already set up a profile
+  if (!p.firstPlayedAt && p.hasSetupProfile) {
+    p = { ...p, firstPlayedAt: Date.now() }
+  }
+  return p
 }
 
 function loadState() {
+  const ensureAll = p => ensureWeeklyMissions(ensureDailyMissions(p))
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return ensureDailyMissions(defaultProfile())
+    if (!raw) return ensureAll(defaultProfile())
     const parsed = JSON.parse(raw)
-    return ensureDailyMissions(migrateProfile({ ...defaultProfile(), ...parsed }))
+    return ensureAll(migrateProfile({ ...defaultProfile(), ...parsed }))
   } catch {
-    return ensureDailyMissions(defaultProfile())
+    return ensureAll(defaultProfile())
   }
 }
 
@@ -189,7 +255,17 @@ export function usePersistentStore() {
       const dm = (prev.dailyMissions?.date === today)
         ? prev.dailyMissions
         : { date: today, missions: generateDailyMissions(today) }
-      const dailyMissions = { ...dm, missions: applyMissionProgress(dm.missions, result) }
+      const dailyMissions = result.isTutorialMatch
+        ? dm
+        : { ...dm, missions: applyMissionProgress(dm.missions, result) }
+
+      const week = getWeekStr()
+      const wm = (prev.weeklyMissions?.week === week)
+        ? prev.weeklyMissions
+        : { week, missions: generateWeeklyMissions(week) }
+      const weeklyMissions = result.isTutorialMatch
+        ? wm
+        : { ...wm, missions: applyMissionProgress(wm.missions, result) }
 
       return {
         ...prev,
@@ -197,7 +273,9 @@ export function usePersistentStore() {
         coins: prev.coins + result.coinsEarned,
         rating: newRating,
         dailyMissions,
+        weeklyMissions,
         lastTierChange,
+        ...(result.isTutorialMatch ? { hasSeenTutorial: true } : {}),
         matchHistory: [
           { ...result, date: Date.now() },
           ...prev.matchHistory.slice(0, 19),
@@ -221,6 +299,24 @@ export function usePersistentStore() {
         },
       }
     })
+  }, [update])
+
+  const claimWeeklyMission = useCallback((missionId) => {
+    update(prev => {
+      const wm = prev.weeklyMissions
+      if (!wm) return prev
+      const mission = wm.missions.find(m => m.id === missionId)
+      if (!mission || mission.claimed || mission.locked || mission.progress < mission.target) return prev
+      const afterClaim = { ...wm, missions: wm.missions.map(m => m.id === missionId ? { ...m, claimed: true } : m) }
+      const updated = { ...prev, weeklyMissions: tryUnlockWeeklyMissions(afterClaim) }
+      return mission.rewardType === 'gems'
+        ? { ...updated, gems: prev.gems + mission.reward }
+        : { ...updated, coins: prev.coins + mission.reward }
+    })
+  }, [update])
+
+  const clearNotifications = useCallback(() => {
+    update(prev => ({ ...prev, notifications: [] }))
   }, [update])
 
   const buyCard = useCallback((cardDef) => {
@@ -311,12 +407,12 @@ export function usePersistentStore() {
     update(prev => ({
       ...prev,
       hasClaimedFirstWinReward: true,
-      coins: prev.coins + 200,
+      coins: prev.coins + 350,
     }))
   }, [update])
 
   const markProfileSetup = useCallback((name) => {
-    update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true }))
+    update(prev => ({ ...prev, name: name || prev.name, hasSetupProfile: true, firstPlayedAt: prev.firstPlayedAt || Date.now() }))
   }, [update])
 
   const recordAdWatched = useCallback(() => {
@@ -413,6 +509,8 @@ export function usePersistentStore() {
     refreshCardShop,
     buyShopCard,
     clearTierChange,
+    claimWeeklyMission,
+    clearNotifications,
     addNotifications,
     markNotificationsRead,
     dismissNotification,

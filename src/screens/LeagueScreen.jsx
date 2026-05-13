@@ -45,23 +45,33 @@ export default function LeagueScreen() {
 
   const hasPlayedLeague = (profile.matchHistory || []).some(m => m.matchType === 'league')
   const [showFirstLeaguePopup, setShowFirstLeaguePopup] = useState(false)
+  const [showInjuryWarning, setShowInjuryWarning] = useState(false)
+
+  const injuredDeckCount = (() => {
+    const injuries = profile.injuries || {}
+    const now = Date.now()
+    return (profile.activeDeck || []).filter(iid => injuries[iid] && injuries[iid] > now).length
+  })()
+
+  const doStartMatch = () => navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
 
   const handleStartMatch = () => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
+    if (injuredDeckCount > 0) { setShowInjuryWarning(true); return }
     if (!hasPlayedLeague) { setShowFirstLeaguePopup(true); return }
-    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
+    doStartMatch()
   }
 
   const confirmLeagueStart = () => {
     setShowFirstLeaguePopup(false)
-    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
+    doStartMatch()
   }
 
   return (
     <div className="league-screen">
       {/* Header */}
       <div className="league-header">
-        <button className="league-back" onClick={goBack}>←</button>
+        <button className="back-btn" onClick={goBack}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <div className="league-title-block">
           <div className="league-tier-badge" style={{ color: tier.color }}>
             {tier.icon} {tier.label}
@@ -149,8 +159,8 @@ export default function LeagueScreen() {
       {/* CTA */}
       <div className="league-cta">
         <div className="league-cta-info">
-          <span>🏆 Wygrana: +{profile.wins > 0 ? '28' : '20'} pkt ratingu</span>
-          <span>🪙 Nagroda: 50–120 monet</span>
+          <span>◆ Wygrana: +{profile.wins > 0 ? '28' : '20'} pkt ratingu</span>
+          <span>+ Nagroda: 190–250 monet</span>
         </div>
         <button className="league-start-btn" onClick={handleStartMatch}>
           ⚽ Rozpocznij Mecz
@@ -168,7 +178,7 @@ export default function LeagueScreen() {
         return (
           <div className="league-popup-overlay" onClick={dismiss}>
             <div className={`league-popup tier-change-popup ${isPromo ? 'tcp--promo' : 'tcp--relegate'}`} onClick={e => e.stopPropagation()}>
-              <div className="tcp-icon">{isPromo ? '🎉' : '😔'}</div>
+              <div className="tcp-icon">{isPromo ? '★' : '↓'}</div>
               <div className="tcp-tier-icons">
                 <span style={{ color: fromTier?.color }}>{fromTier?.icon} {fromTier?.label}</span>
                 <span className="tcp-arrow">{isPromo ? '→' : '→'}</span>
@@ -181,24 +191,48 @@ export default function LeagueScreen() {
                   : `Spadłeś do ligi ${toTier?.label}. Popraw skład i wróć na wyższy poziom!`}
               </p>
               <button className="tcp-btn" onClick={dismiss}>
-                {isPromo ? '🚀 GRAJ DALEJ' : '💪 SPRÓBUJ PONOWNIE'}
+                {isPromo ? 'GRAJ DALEJ' : 'SPRÓBUJ PONOWNIE'}
               </button>
             </div>
           </div>
         )
       })()}
 
+      {/* Injury warning popup */}
+      {showInjuryWarning && (
+        <div className="league-popup-overlay" onClick={() => setShowInjuryWarning(false)}>
+          <div className="league-popup" onClick={e => e.stopPropagation()}>
+            <div className="league-popup-icon">🩹</div>
+            <h2 className="league-popup-title">Skład niekompletny</h2>
+            <p className="league-popup-body">
+              {injuredDeckCount === 1
+                ? '1 zawodnik w składzie jest kontuzjowany.'
+                : `${injuredDeckCount} zawodników w składzie jest kontuzjowanych.`}
+              {' '}Uzupełnij skład zdrowymi zawodnikami, żeby zagrać.
+            </p>
+            <div className="league-popup-actions">
+              <button className="league-popup-btn league-popup-btn--cancel" onClick={() => setShowInjuryWarning(false)}>
+                Anuluj
+              </button>
+              <button className="league-popup-btn league-popup-btn--confirm" onClick={() => { setShowInjuryWarning(false); navigate('deck_builder') }}>
+                Zmień skład
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* First league match confirmation popup */}
       {showFirstLeaguePopup && (
         <div className="league-popup-overlay" onClick={() => setShowFirstLeaguePopup(false)}>
           <div className="league-popup" onClick={e => e.stopPropagation()}>
-            <div className="league-popup-icon">🏆</div>
+            <div className="league-popup-icon">◆</div>
             <h2 className="league-popup-title">Gry rankingowe</h2>
             <p className="league-popup-body">
               Mecze ligowe wpływają na Twój <strong>ranking</strong> i są trudniejsze niż trening.
             </p>
             <p className="league-popup-hint">
-              💡 Jeśli dopiero zaczynasz — rozegraj najpierw kilka treningów, żeby poznać zasady i zebrać monety na lepsze karty.
+              ▸ Jeśli dopiero zaczynasz — rozegraj najpierw kilka treningów, żeby poznać zasady i zebrać monety na lepsze karty.
             </p>
             <div className="league-popup-actions">
               <button className="league-popup-btn league-popup-btn--cancel" onClick={() => setShowFirstLeaguePopup(false)}>

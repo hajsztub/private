@@ -34,112 +34,157 @@ function CardZoomModal({ card, isPlayerField, canActivate, onActivate, onSubstit
   const baseDef = card.defenseStat ?? 0
   const atkDelta = atkVal - baseAtk
   const defDelta = defVal - baseDef
+
   const TYPE_LABEL = { attack: 'Napastnik', midfield: 'Pomocnik', defense: 'Obrońca', goalkeeper: 'Bramkarz' }
+  const TYPE_SHORT = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'GK' }
+  const TYPE_C     = { attack: '#ef5350', midfield: '#ab47bc', defense: '#448aff', goalkeeper: '#26a69a' }
   const RARITY_LABEL = { common: 'Normalny', rare: 'Rzadki', legendary: 'Legendarny ★', starter: 'Starter' }
   const RARITY_C = { common: '#9e9e9e', rare: '#ff9800', legendary: '#ffd700', starter: '#607d8b' }
+
+  const typeColor = TYPE_C[card.type] || '#9e9e9e'
+  const showActivate = isPlayerField && canActivate && card.abilityType !== 'passive' && !card.isLocked && !card.justPlaced
 
   return (
     <div className="zoom-backdrop" onClick={onClose}>
       <div className="zoom-panel" onClick={e => e.stopPropagation()}>
-        <div className="zoom-avatar" style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #07090e)` }}>
-          <img
-            className="zoom-avatar-img"
-            src={`/avatars/${card.id}.png`}
-            alt=""
-            onError={e => { e.target.style.display = 'none' }}
-            draggable={false}
-          />
-        </div>
 
-        <div className="zoom-meta-row">
-          <div className="zoom-type-badge">{card.typeLabel} — {TYPE_LABEL[card.type] || card.type}</div>
-          <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
-            {RARITY_LABEL[card.rarity] || card.rarity}
+        {/* ── Header: avatar + info ── */}
+        <div className="zoom-header">
+          <div
+            className="zoom-avatar"
+            style={{ background: `linear-gradient(160deg, ${card.color || '#1a2a1a'}, #07090e)` }}
+          >
+            <img
+              className="zoom-avatar-img"
+              src={`/avatars/${card.id}.png`}
+              alt=""
+              onError={e => { e.target.style.display = 'none' }}
+              draggable={false}
+            />
           </div>
-        </div>
 
-        <div className="zoom-name">{card.name}</div>
-
-        <div className="zoom-stats-row">
-          <div className="zoom-stat">
-            <span className="zs-label">ATK</span>
-            <span className="zs-val zs-val--atk">{atkVal}</span>
-            {atkDelta !== 0 && (
-              <span className={`zs-delta ${atkDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
-                {atkDelta > 0 ? '+' : ''}{atkDelta}
+          <div className="zoom-header-info">
+            <div className="zoom-name">{card.name}</div>
+            <div className="zoom-badges">
+              <span className="zoom-type-badge" style={{ background: typeColor }}>
+                {TYPE_SHORT[card.type]} — {TYPE_LABEL[card.type] || card.type}
               </span>
-            )}
-          </div>
-          <div className="zoom-stat">
-            <span className="zs-label">DEF</span>
-            <span className="zs-val zs-val--def">{defVal}</span>
-            {defDelta !== 0 && (
-              <span className={`zs-delta ${defDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
-                {defDelta > 0 ? '+' : ''}{defDelta}
-              </span>
-            )}
-          </div>
-          {card.upgradeLevel > 0 && (
-            <div className="zoom-stat">
-              <span className="zs-label">LVL</span>
-              <span className="zs-val" style={{ color: '#ffd54f' }}>+{card.upgradeLevel}</span>
+              {card.isStarter && <span className="zoom-starter-tag">Starter</span>}
             </div>
-          )}
+            {card.rarity && card.rarity !== 'common' && (
+              <div className="zoom-rarity" style={{ color: RARITY_C[card.rarity] }}>
+                {RARITY_LABEL[card.rarity]}
+              </div>
+            )}
+
+            <div className="zoom-stats-row">
+              <div className="zoom-stat">
+                <span className="zs-label">ATK</span>
+                <span className="zs-val zs-val--atk">{atkVal}</span>
+                {atkDelta !== 0 && (
+                  <span className={`zs-delta ${atkDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                    {atkDelta > 0 ? '+' : ''}{atkDelta}
+                  </span>
+                )}
+              </div>
+              <div className="zoom-stat-sep" />
+              <div className="zoom-stat">
+                <span className="zs-label">DEF</span>
+                <span className="zs-val zs-val--def">{defVal}</span>
+                {defDelta !== 0 && (
+                  <span className={`zs-delta ${defDelta > 0 ? 'zs-delta--up' : 'zs-delta--down'}`}>
+                    {defDelta > 0 ? '+' : ''}{defDelta}
+                  </span>
+                )}
+              </div>
+              {card.upgradeLevel > 0 && (
+                <>
+                  <div className="zoom-stat-sep" />
+                  <div className="zoom-stat">
+                    <span className="zs-label">LVL</span>
+                    <span className="zs-val" style={{ color: '#ffd54f' }}>+{card.upgradeLevel}</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {(atkDelta < 0 || defDelta < 0) && (
+              <div className="zoom-debuff-hint">
+                ⚠ Statystyki obniżone przez efekty kart
+              </div>
+            )}
+          </div>
         </div>
-        {(atkDelta < 0 || defDelta < 0) && (
-          <div className="zoom-debuff-hint">
-            ⚠ Statystyki obniżone przez efekty kart — sprawdź dziennik (ℹ)
-          </div>
-        )}
 
-        <div className="zoom-ability">
-          <div className="zoom-ability-name">{card.abilityName}</div>
-          <div className="zoom-ability-type">
-            {card.abilityType === 'passive' ? '🔵 PASYWNA'
-              : card.abilityType === 'active_coin' ? '🟡 AKTYWNA (rzut żetonem)'
-              : '🟢 AKTYWNA'}
-          </div>
-          <div className="zoom-ability-desc">{card.abilityDescription}</div>
-          {card.abilityType === 'active_coin' && (
-            <div className="zoom-coin-outcomes">
-              <div className="zoom-coin-ball">⚽ <b>Piłka:</b> {card.activationEffect?.ball?.message || '—'}</div>
-              <div className="zoom-coin-glove">🧤 <b>Rękawica:</b> {card.activationEffect?.glove?.message || '—'}</div>
+        {/* ── Ability block ── */}
+        {card.abilityName && (
+          <div className="zoom-ability">
+            <div className="zoom-ability-top-row">
+              <div
+                className="zoom-ability-icon"
+                style={{ background: card.abilityType === 'passive' ? 'rgba(68,138,255,0.25)' : `color-mix(in srgb, ${typeColor} 25%, transparent)` }}
+              >
+                {card.abilityType === 'passive' ? '●' : card.abilityType === 'active_coin' ? '◎' : '▶'}
+              </div>
+              <div className="zoom-ability-title-group">
+                <span className="zoom-ability-header-lbl">
+                  {card.abilityType === 'passive' ? 'UMIEJĘTNOŚĆ PASYWNA'
+                    : card.abilityType === 'active_coin' ? 'UMIEJĘTNOŚĆ (rzut żetonem)'
+                    : 'UMIEJĘTNOŚĆ'}
+                </span>
+                <div className="zoom-ability-name">{card.abilityName}</div>
+              </div>
             </div>
-          )}
-          {card.noActivationDescription && card.abilityType !== 'passive' && (
-            <div className="zoom-noact">
-              <span className="zoom-noact-lbl">Brak aktywacji: </span>
-              {card.noActivationDescription}
-            </div>
-          )}
-        </div>
+            <div className="zoom-ability-desc">{card.abilityDescription}</div>
 
-        {isPlayerField && (
-          <div className="zoom-field-actions">
-            {canActivate && card.abilityType !== 'passive' && !card.isLocked && !card.justPlaced && (
-              <button className="zoom-act-btn zoom-act-btn--activate" onClick={onActivate}>
-                ⚡ Aktywuj umiejętność
-              </button>
+            {card.abilityType === 'active_coin' && (
+              <>
+                <div className="zoom-coin-header">MOŻLIWE WYNIKI RZUTU ŻETONEM:</div>
+                <div className="zoom-coin-outcomes">
+                  <div className="zoom-coin-row zoom-coin-ball">
+                    <span className="zoom-coin-ico">⚽</span>
+                    <span><b>Piłka:</b> {card.activationEffect?.ball?.message || '—'}</span>
+                  </div>
+                  <div className="zoom-coin-row zoom-coin-glove">
+                    <span className="zoom-coin-ico">🧤</span>
+                    <span><b>Rękawica:</b> {card.activationEffect?.glove?.message || '—'}</span>
+                  </div>
+                </div>
+              </>
             )}
-            {onSubstitute && (
-              <button className="zoom-act-btn zoom-act-btn--sub" onClick={onSubstitute}>
-                🔄 Zmiana (wróć na ławkę)
-              </button>
-            )}
-          </div>
-        )}
 
-        {placements && placements.length > 0 && (
-          <div className="zoom-field-actions">
-            {placements.map((p, i) => (
-              <button key={i} className="zoom-act-btn zoom-act-btn--place" onClick={p.onClick}>
+            {card.noActivationDescription && card.abilityType !== 'passive' && (
+              <div className="zoom-noact">
+                <span className="zoom-noact-lbl">Brak aktywacji: </span>
+                {card.noActivationDescription}
+              </div>
+            )}
+
+            {/* Placement buttons (hand cards) */}
+            {placements && placements.length > 0 && placements.map((p, i) => (
+              <button key={i} className="zoom-act-btn zoom-act-btn--place zoom-act-btn--inline" onClick={p.onClick}>
                 {p.label}
               </button>
             ))}
+
+            {/* Activate button */}
+            {showActivate && (
+              <button className="zoom-act-btn zoom-act-btn--activate zoom-act-btn--inline" onClick={onActivate}>
+                {'▶︎'} Aktywuj umiejętność
+              </button>
+            )}
           </div>
         )}
 
-        <button className="zoom-close" onClick={onClose}>✕ Zamknij</button>
+        {/* ── Bottom actions ── */}
+        <div className="zoom-bottom-actions">
+          {isPlayerField && onSubstitute && (
+            <button className="zoom-act-btn zoom-act-btn--sub" onClick={onSubstitute}>
+              ⇄ Zmień zawodnika
+            </button>
+          )}
+          <button className="zoom-close" onClick={onClose}>Zamknij</button>
+        </div>
       </div>
     </div>
   )
@@ -175,7 +220,7 @@ function MatchLogPanel({ log, round, onClose }) {
     <div className="mlog-overlay" onClick={onClose}>
       <div className="mlog-panel" onClick={e => e.stopPropagation()}>
         <div className="mlog-header">
-          <span className="mlog-title">📋 Dziennik meczu</span>
+          <span className="mlog-title">≡ Dziennik meczu</span>
           <button className="mlog-close" onClick={onClose}>✕</button>
         </div>
         <div className="mlog-body">
@@ -229,6 +274,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
   const matchType = matchParams.matchType || 'local'
   const opponentName = matchParams.opponentName || 'BOT'
+  const isTutorialMatch = !!matchParams.isTutorialMatch
 
   const [matchState, dispatch] = useReducer(gameReducer, null, () => {
     const playerDeck = buildPlayerDeck(profile)
@@ -238,10 +284,10 @@ export default function MatchScreen({ matchParams = {} }) {
       matchType === 'training_amateur' ? (amateurMatchesPlayed < 2 ? createStarterAIDeck() : createWeakerAIDeck(playerDeck)) :
       matchType === 'training_pro'     ? createEliteAIDeck() :
                                          createDefaultDeck('B')
-    return createMatchState(matchType, playerDeck, aiDeck)
+    return createMatchState(matchType, playerDeck, aiDeck, isTutorialMatch)
   })
 
-  const [tutStep, setTutStep] = useState(profile.hasSeenTutorial ? null : 0)
+  const [tutStep, setTutStep] = useState(isTutorialMatch ? 0 : null)
   const [firstWinReward, setFirstWinReward] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [goalAnim, setGoalAnim] = useState(null)
@@ -250,15 +296,33 @@ export default function MatchScreen({ matchParams = {} }) {
   const [showLog, setShowLog] = useState(false)
   const [prematchLoading, setPrematchLoading] = useState(false)
   const [incompleteMsg, setIncompleteMsg] = useState(null)
+  const [showReserves, setShowReserves] = useState(false)
   const [notification, setNotification] = useState(null)
   const [showForfeit, setShowForfeit] = useState(false)
   const [showRedrawConfirm, setShowRedrawConfirm] = useState(false)
-  const [goalsCollapsed, setGoalsCollapsed] = useState(false)
+  const [zonePulse, setZonePulse] = useState(false)
+  const [zoneArrow, setZoneArrow] = useState(false)
+  // goalsCollapsed removed — GK areas always visible
   const [handCollapsed, setHandCollapsed] = useState(false)
   const [showDeckPopup, setShowDeckPopup] = useState(false)
   const [turnSecsLeft, setTurnSecsLeft] = useState(45)
   const deckBadgeRef = useRef(null)
   const handleEndTurnRef = useRef(null)
+
+  const handleEndTurn = useCallback(() => {
+    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
+    SFX.endTurn()
+    dispatch({ type: 'END_TURN' })
+    setSelectedCard(null)
+    // Tutorial: after player ends turn in round 1 → move to "waiting for result" step
+    if (isTutorialMatch && matchState.round === 1 && tutStep === 2) setTutStep(3)
+    // Tutorial: after round 3 (AI scored) → prompt ability use in round 4
+    if (isTutorialMatch && matchState.round === 3 && tutStep === 4) setTutStep(5)
+    // Tutorial: after round 4 (player scored with ability) → round 5 hint
+    if (isTutorialMatch && matchState.round === 4 && tutStep === 6) setTutStep(7)
+    // Tutorial: after round 5
+    if (isTutorialMatch && matchState.round === 5 && tutStep === 8) setTutStep(9)
+  }, [matchState, isTutorialMatch, tutStep])
 
   // ── Drag + double-tap state ───────────────────────────────────────────────
   const dragRef = useRef(null)
@@ -304,34 +368,36 @@ export default function MatchScreen({ matchParams = {} }) {
     const playerOfMatch = determinePlayerOfMatch(matchState.goalEvents,
       { offense: matchState.players.A.offenseSector, defense: matchState.players.A.defenseSector }, {})
     if (result === 'win') SFX.matchEnd()
-    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null })
-    // Injury roll: 8% chance per field card
-    const fieldCards = [
-      ...matchState.players.A.offenseSector,
-      ...matchState.players.A.defenseSector,
-    ].filter(c => !c.isDestroyed && c.instanceId)
-    const injuredEntries = fieldCards
-      .filter(() => Math.random() < 0.08)
-      .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
-    if (injuredEntries.length) {
-      addInjuries(injuredEntries)
-      const now = Date.now()
-      addNotifications(injuredEntries.map(e => {
-        const fc = fieldCards.find(c => c.instanceId === e.instanceId)
-        const ms = e.until - now
-        const h = Math.floor(ms / 3600000)
-        const m = Math.floor((ms % 3600000) / 60000)
-        const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
-        return {
-          id: `injury_${e.instanceId}_${e.until}`,
-          type: 'injury',
-          message: `🩹 ${fc?.name || 'Zawodnik'} jest kontuzjowany — niedostępny przez ${timeStr}`,
-          timestamp: now,
-          read: false,
-        }
-      }))
+    addMatchResult({ type: result, matchType, score, coinsEarned: coins, ratingChange, playerGoals: score.player, mvpName: playerOfMatch?.name || null, isTutorialMatch })
+    // Injury roll: skipped in tutorial match
+    if (!isTutorialMatch) {
+      const fieldCards = [
+        ...matchState.players.A.offenseSector,
+        ...matchState.players.A.defenseSector,
+      ].filter(c => !c.isDestroyed && c.instanceId)
+      const injuredEntries = fieldCards
+        .filter(() => Math.random() < 0.08)
+        .map(c => ({ instanceId: c.instanceId, until: Date.now() + (2 + Math.floor(Math.random() * 3)) * 3600000 }))
+      if (injuredEntries.length) {
+        addInjuries(injuredEntries)
+        const now = Date.now()
+        addNotifications(injuredEntries.map(e => {
+          const fc = fieldCards.find(c => c.instanceId === e.instanceId)
+          const ms = e.until - now
+          const h = Math.floor(ms / 3600000)
+          const m = Math.floor((ms % 3600000) / 60000)
+          const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
+          return {
+            id: `injury_${e.instanceId}_${e.until}`,
+            type: 'injury',
+            message: `🩹 ${fc?.name || 'Zawodnik'} jest kontuzjowany — niedostępny przez ${timeStr}`,
+            timestamp: now,
+            read: false,
+          }
+        }))
+      }
     }
-    const isFirstWin = result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
+    const isFirstWin = !isTutorialMatch && result === 'win' && profile.wins === 0 && !profile.hasClaimedFirstWinReward
     if (isFirstWin) {
       claimFirstWinReward()
       setFirstWinReward(true)
@@ -361,21 +427,90 @@ export default function MatchScreen({ matchParams = {} }) {
     prevScoreRef.current = curr
   }, [matchState.displayScore.player, matchState.displayScore.ai])
 
-  // Interactive tutorial: step 0→1 when first card placed, step 1→2 after first end turn
-  const totalFieldCards = matchState.players.A.offenseSector.length + matchState.players.A.defenseSector.length
+  // When visual effects are off, GoalAnimation never renders so onDone never fires — clear immediately
   useEffect(() => {
-    if (tutStep === 0 && totalFieldCards > 0) setTutStep(1)
-  }, [totalFieldCards])
+    if (goalAnim && settings.visualEffects === false) setGoalAnim(null)
+  }, [goalAnim, settings.visualEffects])
 
+  const totalFieldCards = matchState.players.A.offenseSector.length + matchState.players.A.defenseSector.length
+  const hasOffense = matchState.players.A.offenseSector.length > 0
+  const hasDefense = matchState.players.A.defenseSector.length > 0
+
+  // Tutorial step progression
   useEffect(() => {
-    if (tutStep === 1 && matchState.round > 1) {
-      setTutStep(2)
-      setTimeout(() => { setTutStep(null); markTutorialSeen() }, 2800)
+    if (!isTutorialMatch) return
+    // step 0 → 1: placed first card
+    if (tutStep === 0 && totalFieldCards > 0) setTutStep(1)
+    // step 1 → 2: placed both offense and defense
+    if (tutStep === 1 && hasOffense && hasDefense) setTutStep(2)
+  }, [totalFieldCards, hasOffense, hasDefense])
+
+  // ── Round-1 zone placement hints ─────────────────────────────────────────
+  useEffect(() => {
+    if (matchState.phase !== 'playing' || matchState.round !== 1 || matchState.currentPlayer !== 'A') {
+      setZonePulse(false)
+      setZoneArrow(false)
+      return
+    }
+    if (totalFieldCards > 0) {
+      setZonePulse(false)
+      setZoneArrow(false)
+      return
+    }
+    setZonePulse(true)
+    const arrowTimer = setTimeout(() => setZoneArrow(true), 15000)
+    return () => clearTimeout(arrowTimer)
+  }, [matchState.phase, matchState.round, matchState.currentPlayer, totalFieldCards])
+
+  // Auto-hide arrow after 5s
+  useEffect(() => {
+    if (!zoneArrow) return
+    const t = setTimeout(() => setZoneArrow(false), 5000)
+    return () => clearTimeout(t)
+  }, [zoneArrow])
+
+  // Tutorial: advance steps based on round events
+  useEffect(() => {
+    if (!isTutorialMatch) return
+    const r = matchState.round
+    const score = matchState.displayScore
+    // step 3 → 4: after round 2 ends (player scored)
+    if (tutStep === 3 && r >= 3) setTutStep(4)
+    // step 5 → 6: after round 3 ends (AI scored)
+    if (tutStep === 5 && r >= 4) setTutStep(6)
+    // step 7 → 8: after round 4 ends (player scored again)
+    if (tutStep === 7 && r >= 5) setTutStep(8)
+    // step 9 → done: after round 5 ends (player leads 3:1)
+    if (tutStep === 9 && r >= 6) {
+      setTimeout(() => { setTutStep(null); markTutorialSeen() }, 3500)
     }
   }, [matchState.round])
 
   // Keep handleEndTurnRef current so the timer closure always calls the latest version
   useEffect(() => { handleEndTurnRef.current = handleEndTurn }, [handleEndTurn])
+
+  // Auto-place cards ref — used by timer when tutorial round 1 is blocked
+  const autoPlaceRef = useRef(null)
+  useEffect(() => {
+    autoPlaceRef.current = () => {
+      if (!isTutorialMatch || matchState.round !== 1 || matchState.currentPlayer !== 'A') return false
+      const hand = matchState.players.A.hand
+      const hasOff = matchState.players.A.offenseSector.length > 0
+      const hasDef = matchState.players.A.defenseSector.length > 0
+      if (hasOff && hasDef) return false
+      let placed = false
+      let usedId = null
+      if (!hasOff) {
+        const atk = hand.find(c => c.type === 'attack' || c.type === 'midfield')
+        if (atk) { dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: atk.instanceId, sector: 'offense' }); usedId = atk.instanceId; placed = true }
+      }
+      if (!hasDef) {
+        const def = hand.find(c => c.instanceId !== usedId && (c.type === 'defense' || c.type === 'goalkeeper' || c.type === 'midfield'))
+        if (def) { dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: def.instanceId, sector: 'defense' }); placed = true }
+      }
+      return placed
+    }
+  }, [matchState, isTutorialMatch])
 
   // ── Turn timer (45 s) ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -389,7 +524,13 @@ export default function MatchScreen({ matchParams = {} }) {
       setTurnSecsLeft(s => {
         if (s <= 1) {
           clearInterval(id)
-          handleEndTurnRef.current?.()
+          // In tutorial round 1, auto-place missing cards then end turn after a pause
+          const autoPlaced = autoPlaceRef.current?.()
+          if (autoPlaced) {
+            setTimeout(() => handleEndTurnRef.current?.(), 1200)
+          } else {
+            handleEndTurnRef.current?.()
+          }
           return 0
         }
         return s - 1
@@ -425,13 +566,6 @@ export default function MatchScreen({ matchParams = {} }) {
     dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector })
     setSelectedCard(null)
   }, [matchState, selectedCard])
-
-  const handleEndTurn = useCallback(() => {
-    if (matchState.currentPlayer !== 'A' || matchState.coinFlipState?.pending) return
-    SFX.endTurn()
-    dispatch({ type: 'END_TURN' })
-    setSelectedCard(null)
-  }, [matchState])
 
   const handleFirstWinDismiss = useCallback(() => {
     setFirstWinReward(false)
@@ -595,7 +729,7 @@ export default function MatchScreen({ matchParams = {} }) {
 
     const primaryGkId = assignments.gk1
     const primaryGk = playerA.goalkeepers.find(g => g.instanceId === primaryGkId) || playerA.goalkeepers[0]
-    const MATCH_TYPE_LABEL = { league: '🏆 MECZ LIGOWY', training_amateur: '🟢 TRENING AMATOR', training_pro: '🔴 TRENING PRO' }
+    const MATCH_TYPE_LABEL = { league: 'MECZ LIGOWY', training_amateur: 'TRENING AMATOR', training_pro: 'TRENING PRO' }
     const TYPE_C = { attack: '#ef5350', midfield: '#ab47bc', defense: '#42a5f5', goalkeeper: '#ffa000' }
     const TYPE_L = { attack: 'A', midfield: 'M', defense: 'D', goalkeeper: 'G' }
 
@@ -612,7 +746,7 @@ export default function MatchScreen({ matchParams = {} }) {
           <div className="pm-card-name pm-card-name--empty">&nbsp;</div>
         </div>
       )
-      const stat = (isGk || card.type === 'goalkeeper')
+      const stat = (isGk || card.type === 'goalkeeper' || card.type === 'defense')
         ? (card.currentDefenseStat ?? card.defenseStat ?? 0)
         : (card.currentAttackStat ?? card.attackStat ?? 0)
       const tc = TYPE_C[card.type] || '#888'
@@ -689,58 +823,62 @@ export default function MatchScreen({ matchParams = {} }) {
           </div>
         </div>
 
-        {/* ── Pitch ── */}
-        <div className="ms-pm-pitch">
-          {/* Markings */}
-          <div className="pm-pitch-lines" aria-hidden="true">
-            <div className="pm-pitch-box pm-pitch-box--top" />
-            <div className="pm-pitch-box pm-pitch-box--inner-top" />
-            <div className="pm-pitch-line--mid" />
-            <div className="pm-pitch-circle" />
-            <div className="pm-pitch-box pm-pitch-box--inner-bottom" />
-            <div className="pm-pitch-box pm-pitch-box--bottom" />
-          </div>
+        {/* ── Pitch + reserve side panel ── */}
+        <div className="ms-pm-body">
+          <div className="ms-pm-pitch">
+            {/* Markings */}
+            <div className="pm-pitch-lines" aria-hidden="true">
+              <div className="pm-pitch-box pm-pitch-box--top" />
+              <div className="pm-pitch-box pm-pitch-box--inner-top" />
+              <div className="pm-pitch-line--mid" />
+              <div className="pm-pitch-circle" />
+              <div className="pm-pitch-box pm-pitch-box--inner-bottom" />
+              <div className="pm-pitch-box pm-pitch-box--bottom" />
+            </div>
 
-          {/* Formation badge */}
-          <div className="pm-formation-badge">
-            <span className="pm-formation-str">{formationStr}</span>
-            <div className="pm-fdots">
-              {[atkCount, midCount, defCount, 1].map((cnt, ri) => (
-                <div key={ri} className="pm-fdot-row">
-                  {Array.from({ length: maxCols }).map((_, ci) => (
-                    <div key={ci} className={`pm-fdot${ci < cnt ? ' pm-fdot--on' : ''}`} />
-                  ))}
-                </div>
-              ))}
+            {/* Formation badge */}
+            <div className="pm-formation-badge">
+              <span className="pm-formation-str">{formationStr}</span>
+              <div className="pm-fdots">
+                {[atkCount, midCount, defCount, 1].map((cnt, ri) => (
+                  <div key={ri} className="pm-fdot-row">
+                    {Array.from({ length: maxCols }).map((_, ci) => (
+                      <div key={ci} className={`pm-fdot${ci < cnt ? ' pm-fdot--on' : ''}`} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Formation */}
+            <div className="pm-formation">
+              <FormRow slots={['atk1','atk2']} />
+              <FormRow slots={['mid1','mid2','mid3','mid4']} />
+              <FormRow slots={['def1','def2','def3','def4']} />
+              <FormRow slots={['gk1']} isGk />
             </div>
           </div>
 
-          {/* Formation */}
-          <div className="pm-formation">
-            <FormRow slots={['atk1','atk2']} />
-            <FormRow slots={['mid1','mid2','mid3','mid4']} />
-            <FormRow slots={['def1','def2','def3','def4']} />
-            <FormRow slots={['gk1']} isGk />
-          </div>
-
-          {/* Reserves inside pitch */}
+          {/* Reserve side panel / collapsed tab */}
           {resCards.length > 0 && (
-            <div className="ms-pm-reserves">
-              <div className="ms-pm-res-divider">
-                <div className="ms-pm-res-line" />
-                <span className="ms-pm-res-label">REZERWA</span>
-                <div className="ms-pm-res-line" />
-              </div>
-              <div className="pm-row pm-row--res">
+            showReserves ? (
+              <div className="ms-pm-res-side" onClick={() => setShowReserves(false)}>
+                <span className="ms-pm-res-side-label">RES</span>
                 {resCards.map(card => <PlayerCard key={card.instanceId} card={card} small />)}
               </div>
-            </div>
+            ) : (
+              <button className="ms-pm-res-tab" onClick={() => setShowReserves(true)}>
+                <span>R</span><span>E</span><span>S</span>
+              </button>
+            )
           )}
         </div>
 
         {/* ── Bottom controls ── */}
         <div className="ms-pm-bottom">
-          <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>⇄ Zmień skład</button>
+          {!isTutorialMatch && (
+            <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>⇄ Zmień skład</button>
+          )}
           <div className="ms-pm-actions">
             <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← POWRÓT</button>
             <button
@@ -778,7 +916,9 @@ export default function MatchScreen({ matchParams = {} }) {
       {/* ── Scoreboard ──────────────────────────────────────────────────── */}
       <div className="ms-scoreboard">
         <div className="msb-side msb-side--left">
-          <div className="msb-team-icon msb-team-icon--ai">⚡</div>
+          <div className="msb-team-icon msb-team-icon--ai">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"/></svg>
+          </div>
           <span className={`msb-dot ${currentPlayer === 'B' ? 'msb-dot--on' : ''}`} />
           <span className="msb-name">{opponentName}</span>
         </div>
@@ -788,18 +928,28 @@ export default function MatchScreen({ matchParams = {} }) {
             <span className="msb-sep">:</span>
             <span className={`msb-num ${displayScore.player > displayScore.ai ? 'msb-num--win' : ''}`}>{displayScore.player}</span>
           </div>
-          <div className="msb-round-row">
-            <span className="msb-round-badge">R{round}</span>
-            <span className={`msb-round-of${matchState.maxRounds !== 10 ? ' msb-round-of--custom' : ''}`}>
-              /{matchState.maxRounds ?? 10}
+          <div className="msb-segments-row">
+            <div className="msb-seg-group">
+              {[1,2,3,4,5].map(r => (
+                <span key={r} className={`msb-seg${round >= r ? ' msb-seg--on' : ''}${round === r && !isExtraTime && r <= 5 ? ' msb-seg--cur' : ''}`} />
+              ))}
+            </div>
+            <span className={`msb-seg-round${matchState.maxRounds !== 10 ? ' msb-seg-round--custom' : ''}${isExtraTime ? ' msb-seg-round--extra' : ''}`}>
+              R{round}/{matchState.maxRounds ?? 10}
             </span>
+            <div className="msb-seg-group">
+              {[6,7,8,9,10].map(r => (
+                <span key={r} className={`msb-seg${round >= r ? ' msb-seg--on' : ''}${round === r && !isExtraTime ? ' msb-seg--cur' : ''}`} />
+              ))}
+            </div>
           </div>
-          <div className={`msb-half-label${isExtraTime ? ' msb-half-label--extra' : ''}`}>{halfLabel}</div>
         </div>
         <div className="msb-side msb-side--right">
           <span className="msb-name">TY</span>
           <span className={`msb-dot ${currentPlayer === 'A' ? 'msb-dot--on' : ''}`} />
-          <div className="msb-team-icon msb-team-icon--player">🛡</div>
+          <div className="msb-team-icon msb-team-icon--player">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"/></svg>
+          </div>
         </div>
       </div>
 
@@ -808,45 +958,36 @@ export default function MatchScreen({ matchParams = {} }) {
         <div className="ms-field-markings" aria-hidden="true" />
         {!isPlayerTurn && phase === 'playing' && (
           <div className="ms-turn-banner">
-            {aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika'}
+            {aiThinking ? '· · · Przeciwnik myśli' : 'Tura przeciwnika'}
           </div>
         )}
 
         {/* === AI GOAL (top) === */}
-        <div className={`ms-goal ms-goal--ai${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
-          <GoalPosts side="ai" />
+        <div className="ms-goal ms-goal--ai">
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
               <span className="msb-num">{aiTotalAtk}</span>
-              <span className="msb-icon">⚔️</span>
             </div>
             <div className="ms-gk-wrap">
-              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
               <GKCard
                 card={playerB.activeGoalkeeper}
                 side="ai"
                 onTap={() => playerB.activeGoalkeeper && setZoomCard({ card: playerB.activeGoalkeeper, isPlayerField: false })}
               />
-              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
             </div>
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
               <span className="msb-num">{aiTotalDef}</span>
-              <span className="msb-icon">🛡️</span>
             </div>
           </div>
-          {aiThinking && !goalsCollapsed && <div className="ms-thinking">🤔 myśli...</div>}
-          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
-            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▼' : '▲'}</span>
-            <span className="ms-goal-tab-label">{goalsCollapsed ? `BOT ${aiTotalAtk}⚔ ${aiTotalDef}🛡` : 'ZWIŃ'}</span>
-          </div>
+          {aiThinking && <div className="ms-thinking">🤔 myśli...</div>}
         </div>
 
         {/* === AI FIELD === */}
         <div className="ms-half ms-half--ai">
           <Zone
-            label="⚔ ATAK"
+            label="ATAK PRZECIWNIKA"
             cards={playerB.offenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
@@ -854,7 +995,7 @@ export default function MatchScreen({ matchParams = {} }) {
           />
           <div className="ms-zone-sep" />
           <Zone
-            label="🛡 OBRONA"
+            label="OBRONA PRZECIWNIKA"
             cards={playerB.defenseSector}
             side="ai"
             onCardTap={(c) => setZoomCard({ card: c, isPlayerField: false })}
@@ -864,12 +1005,12 @@ export default function MatchScreen({ matchParams = {} }) {
 
         {/* === MIDFIELD LINE === */}
         <div className="ms-midfield">
-          <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">ℹ</button>
+          <button className="ms-log-btn" onClick={() => setShowLog(true)} title="Dziennik meczu">{'ℹ︎'}</button>
           <div className="ms-mid-line" />
           {upcomingSpecial
-            ? <div className="ms-mid-event ms-mid-event--special">🃏 Karta specjalna po rundzie!</div>
+            ? <div className="ms-mid-event ms-mid-event--special">★ Karta specjalna!</div>
             : upcomingDraw
-            ? <div className="ms-mid-event ms-mid-event--draw">📤 Dobierasz kartę po rundzie</div>
+            ? <div className="ms-mid-event ms-mid-event--draw">+ Dobierasz kartę</div>
             : <div className="ms-mid-ball">⚽</div>
           }
           <div className="ms-mid-line" />
@@ -878,7 +1019,7 @@ export default function MatchScreen({ matchParams = {} }) {
         {/* === PLAYER FIELD === */}
         <div className="ms-half ms-half--player">
           <Zone
-            label="🛡 OBRONA"
+            label="TWOJA OBRONA"
             cards={playerA.defenseSector}
             side="player"
             zone="defense"
@@ -889,10 +1030,12 @@ export default function MatchScreen({ matchParams = {} }) {
             dragZoneActive={dragZone === 'defense'}
             fieldSize={true}
             canActivate={canActivate}
+            showPlacementHint={zonePulse}
+            showArrowHint={zonePulse && zoneArrow}
           />
           <div className="ms-zone-sep" />
           <Zone
-            label="⚔ ATAK"
+            label="TWÓJ ATAK"
             cards={playerA.offenseSector}
             side="player"
             zone="offense"
@@ -903,37 +1046,30 @@ export default function MatchScreen({ matchParams = {} }) {
             dragZoneActive={dragZone === 'offense'}
             fieldSize={true}
             canActivate={canActivate}
+            showPlacementHint={zonePulse}
+            showArrowHint={zonePulse && zoneArrow}
           />
         </div>
 
-        {/* === PLAYER GOAL (bottom) — column-reverse: first=bottom, last=top === */}
-        <div className={`ms-goal ms-goal--player${goalsCollapsed ? ' ms-goal--collapsed' : ''}`}>
-          <div className="ms-goal-tab" onClick={() => setGoalsCollapsed(g => !g)}>
-            <span className="ms-goal-tab-arrow">{goalsCollapsed ? '▲' : '▼'}</span>
-            <span className="ms-goal-tab-label">{goalsCollapsed ? `TY ${myTotalDef}🛡 ${myTotalAtk}⚔` : 'ZWIŃ'}</span>
-          </div>
+        {/* === PLAYER GOAL (bottom) === */}
+        <div className="ms-goal ms-goal--player">
           <div className="ms-goal-inner">
             <div className="ms-stat-box ms-stat-box--def">
               <span className="msb-lbl">DEF</span>
               <span className="msb-num">{myTotalDef}</span>
-              <span className="msb-icon">🛡️</span>
             </div>
             <div className="ms-gk-wrap">
-              <span className="ms-gk-glove ms-gk-glove--left">🧤</span>
               <GKCard
                 card={playerA.activeGoalkeeper}
                 side="player"
                 onTap={() => playerA.activeGoalkeeper && setZoomCard({ card: playerA.activeGoalkeeper, isPlayerField: false })}
               />
-              <span className="ms-gk-glove ms-gk-glove--right">🧤</span>
             </div>
             <div className="ms-stat-box ms-stat-box--atk">
               <span className="msb-lbl">ATK</span>
               <span className="msb-num">{myTotalAtk}</span>
-              <span className="msb-icon">⚔️</span>
             </div>
           </div>
-          <GoalPosts side="player" />
         </div>
 
       </div>{/* end ms-field-wrap */}
@@ -947,84 +1083,175 @@ export default function MatchScreen({ matchParams = {} }) {
         />
       )}
 
-      {/* ── Hand ────────────────────────────────────────────────────────── */}
-      <div className={`ms-hand-area${handCollapsed ? ' ms-hand-area--collapsed' : ''}${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
-        <div className="ms-hand-toggle" onClick={() => setHandCollapsed(h => !h)}>
-          <span className="ms-hand-toggle-arrow">{handCollapsed ? '▲' : '▼'}</span>
-          <span className="ms-hand-toggle-label">RĘKA • {playerA.hand.length}</span>
-          <div className="ms-hand-chips" onClick={e => e.stopPropagation()}>
-            {turnActionsUsed.placedOffense  ? <span className="mac done">✓ ATK</span> : isPlayerTurn ? <span className="mac todo">ATK</span> : null}
-            {turnActionsUsed.placedDefense  ? <span className="mac done">✓ DEF</span> : isPlayerTurn ? <span className="mac todo">DEF</span> : null}
-            {turnActionsUsed.activatedAbility && <span className="mac done">✓ Skill</span>}
+      {/* ── Hand + Turn bar (combined two-column section) ─────────────── */}
+      {playerA.hand.length > 0 ? (
+        handCollapsed ? (
+          <div className="ms-hand-area">
+            <div className="ms-hand-main">
+              <div className="ms-turn-bar">
+                <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                  {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+                </span>
+                <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                  {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+                </span>
+                <div className="ms-timer-track">
+                  <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                       style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+                </div>
+              </div>
+              <div className="ms-hand-collapsed-inner">
+                <span className="ms-hand-collapsed-text">☰ Ręka schowana — {playerA.hand.length} {playerA.hand.length === 1 ? 'karta' : 'karty'}</span>
+              </div>
+            </div>
+            <div className="ms-hand-right">
+              <button className="ms-hand-expand-btn-sm" onClick={() => setHandCollapsed(false)}>▲</button>
+            </div>
           </div>
-          <span
-            ref={deckBadgeRef}
-            className="ms-deck-badge-sm ms-deck-badge-sm--tap"
-            onClick={e => { e.stopPropagation(); setShowDeckPopup(p => !p) }}
-          >🃏 {playerA.deck.length}</span>
-        </div>
-        <div className="ms-hand-scroll">
-          {playerA.hand.map(card => (
-            <FieldCard
-              key={card.instanceId}
-              card={card}
-              selected={selectedCard?.instanceId === card.instanceId}
-              onTap={() => {
-                const now = Date.now()
-                const last = lastTapRef.current[`h_${card.instanceId}`] || 0
-                lastTapRef.current[`h_${card.instanceId}`] = now
-                if (isPlayerTurn && now - last < 360) {
-                  // Double tap → auto-place
-                  const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
-                  const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
-                  if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
-                  else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
-                  else showNotif('Brak wolnego miejsca!')
-                  setSelectedCard(null)
-                } else {
-                  // Single tap → zoom stats
-                  SFX.cardSelect()
-                  setZoomCard({ card, isPlayerField: false, fromHand: true })
-                }
-              }}
-              onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
-              onDragStart={handleDragStart}
-            />
-          ))}
-          {playerA.hand.length === 0 && <div className="ms-hand-empty">Brak kart</div>}
-          <div className="ms-deck-badge">🃏 {playerA.deck.length}</div>
-        </div>
-      </div>
-
-      {/* ── Action bar ──────────────────────────────────────────────────── */}
-      <div className="ms-action-bar">
-        {isPlayerTurn && (
-          <div className="ms-timer-bar">
-            <div
-              className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
-              style={{ width: `${(turnSecsLeft / 45) * 100}%` }}
-            />
-            <span className={`ms-timer-text${turnSecsLeft <= 10 ? ' ms-timer-text--urgent' : ''}`}>{turnSecsLeft}s</span>
-          </div>
-        )}
-        <div className="ms-action-row">
-          <div className="ms-action-chips">
-            {matchState.redraws < 2 && (
-              <button className="ms-redraw-btn" onClick={() => setShowRedrawConfirm(true)} title="Przetasuj rękę">
-                🔄 Dobierz 4 ({2 - matchState.redraws}/2)
+        ) : (
+          <div className={`ms-hand-area${!isPlayerTurn && phase === 'playing' ? ' ms-hand-area--waiting' : ''}`}>
+            <div className="ms-hand-main">
+              <div className="ms-turn-bar">
+                <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                  {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+                </span>
+                <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                  {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+                </span>
+                <div className="ms-timer-track">
+                  <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                       style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+                </div>
+              </div>
+              <div className="ms-hand-scroll">
+                {playerA.hand.map((card, idx) => {
+                  const isSelected = selectedCard?.instanceId === card.instanceId
+                  const isLastCard = idx === playerA.hand.length - 1
+                  return (
+                    <div
+                      key={card.instanceId}
+                      className={`ms-hand-card-wrap${isSelected ? ' ms-hand-card-wrap--sel' : ''}`}
+                    >
+                      {zonePulse && zoneArrow && isLastCard && (
+                        <div className="ms-hand-card-arrow">
+                          <div className="ms-hand-card-arrow-line" />
+                          <div className="ms-hand-card-arrow-tip" />
+                        </div>
+                      )}
+                      <FieldCard
+                        card={card}
+                        selected={isSelected}
+                        onTap={() => {
+                          const now = Date.now()
+                          const last = lastTapRef.current[`h_${card.instanceId}`] || 0
+                          lastTapRef.current[`h_${card.instanceId}`] = now
+                          if (isPlayerTurn && now - last < 360) {
+                            const canOff = canPlaceInSector(card, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE
+                            const canDef = canPlaceInSector(card, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE
+                            if (canOff) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'offense' }) }
+                            else if (canDef) { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: card.instanceId, sector: 'defense' }) }
+                            else showNotif('Brak wolnego miejsca!')
+                            setSelectedCard(null)
+                          } else {
+                            SFX.cardSelect()
+                            setZoomCard({ card, isPlayerField: false, fromHand: true })
+                          }
+                        }}
+                        onLongPress={() => setZoomCard({ card, isPlayerField: false, fromHand: true })}
+                        onDragStart={handleDragStart}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="ms-hand-right">
+              <button className="ms-hand-chevron" onClick={() => setHandCollapsed(true)}>
+                <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+                  <path d="M3 5l6 5 6-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 10l6 5 6-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
-            )}
-            {isPlayerTurn && (
-              <button className="ms-forfeit-btn" onClick={() => setShowForfeit(true)}>🏳</button>
-            )}
+              <div
+                ref={deckBadgeRef}
+                className="ms-deck-stack"
+                onClick={() => setShowDeckPopup(p => !p)}
+              >{playerA.deck.length}</div>
+            </div>
           </div>
+        )
+      ) : (
+        <div className="ms-hand-area">
+          <div className="ms-hand-main">
+            <div className="ms-turn-bar">
+              <span className={`ms-turn-label${isPlayerTurn ? ' ms-turn-label--active' : ''}`}>
+                {isPlayerTurn ? 'TWOJA TURA' : 'TURA PRZECIWNIKA'}
+              </span>
+              <span className={`ms-turn-time${turnSecsLeft <= 10 ? ' ms-turn-time--urgent' : ''}`}>
+                {String(Math.floor(turnSecsLeft / 60)).padStart(2, '0')}:{String(turnSecsLeft % 60).padStart(2, '0')}
+              </span>
+              <div className="ms-timer-track">
+                <div className={`ms-timer-fill${turnSecsLeft <= 10 ? ' ms-timer-fill--urgent' : ''}`}
+                     style={{ width: isPlayerTurn ? `${(turnSecsLeft / 45) * 100}%` : '0%' }} />
+              </div>
+            </div>
+            <div className="ms-hand-collapsed-inner ms-hand-collapsed-inner--empty">
+              <span className="ms-hand-collapsed-text">Brak kart na ręce</span>
+            </div>
+          </div>
+          <div className="ms-hand-right">
+            <div
+              className="ms-deck-stack"
+              onClick={() => setShowDeckPopup(p => !p)}
+            >{playerA.deck.length}</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Action bar (buttons only) ────────────────────────────────────── */}
+      <div className="ms-action-bar">
+        <div className="ms-action-row">
           <button
-            className={`ms-end-btn ${!isPlayerTurn ? 'ms-end-btn--wait' : ''}`}
-            onClick={handleEndTurn}
-            disabled={!isPlayerTurn || !!coinFlipState?.pending}
-          >
-            {!isPlayerTurn ? (aiThinking ? '🤔 Przeciwnik myśli...' : '⏳ Tura przeciwnika') : '→ Zakończ turę'}
-          </button>
+            className={`ms-forfeit-btn${!isPlayerTurn ? ' ms-forfeit-btn--dim' : ''}`}
+            onClick={() => isPlayerTurn && setShowForfeit(true)}
+          >✕</button>
+          {matchState.redraws < 1 ? (
+            <button
+              className={`ms-redraw-btn${!isPlayerTurn || round < 3 ? ' ms-redraw-btn--dim' : ''}`}
+              onClick={() => isPlayerTurn && round >= 3 && setShowRedrawConfirm(true)}
+            >
+              <span className="ms-redraw-icon">⇄</span>
+              <span className="ms-redraw-text">
+                <span className="ms-redraw-title">ZMIEŃ RĘKĘ</span>
+                <span className="ms-redraw-sub">{round < 3 ? `od rundy 3` : '4 karty / -5 DEF'}</span>
+              </span>
+            </button>
+          ) : (
+            <button className="ms-redraw-btn ms-redraw-btn--used" disabled>
+              <span className="ms-redraw-icon">⇄</span>
+              <span className="ms-redraw-text">
+                <span className="ms-redraw-title">ZMIEŃ RĘKĘ</span>
+                <span className="ms-redraw-sub">wykorzystano</span>
+              </span>
+            </button>
+          )}
+          {(() => {
+            const tutBlocked = isTutorialMatch && round === 1 && isPlayerTurn && !(hasOffense && hasDefense)
+            return (
+              <button
+                className={`ms-end-btn${!isPlayerTurn ? ' ms-end-btn--wait' : ''}${tutBlocked ? ' ms-end-btn--blocked' : ''}`}
+                onClick={tutBlocked ? undefined : handleEndTurn}
+                disabled={!isPlayerTurn || !!coinFlipState?.pending || tutBlocked}
+                title={tutBlocked ? 'Wystaw napastnika i obrońcę!' : undefined}
+              >
+                {!isPlayerTurn
+                  ? (aiThinking ? '· · ·' : 'Czeka')
+                  : tutBlocked
+                    ? (!hasOffense ? 'Wystaw napastnika!' : 'Wystaw obrońcę!')
+                    : 'ZAKOŃCZ TURĘ'}
+              </button>
+            )
+          })()}
         </div>
       </div>
 
@@ -1032,11 +1259,11 @@ export default function MatchScreen({ matchParams = {} }) {
       {showRedrawConfirm && (
         <div className="ms-forfeit-confirm">
           <div className="ms-forfeit-panel">
-            <div className="ms-forfeit-title">🔄 Przetasować rękę?</div>
-            <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Zostało przetasowań: {2 - matchState.redraws}/2</div>
+            <div className="ms-forfeit-title">⇄ Zmienić rękę?</div>
+            <div className="ms-forfeit-sub">Dobierzesz 4 nowe karty, ale Twoja obrona straci -5 DEF do końca meczu. Możliwe tylko raz w meczu.</div>
             <div className="ms-forfeit-btns">
               <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'REDRAW_HAND' }); setShowRedrawConfirm(false) }}>
-                Tak, przetasuj
+                Tak, zmień
               </button>
               <button className="ms-forfeit-no" onClick={() => setShowRedrawConfirm(false)}>
                 Anuluj
@@ -1050,7 +1277,7 @@ export default function MatchScreen({ matchParams = {} }) {
       {showForfeit && (
         <div className="ms-forfeit-confirm">
           <div className="ms-forfeit-panel">
-            <div className="ms-forfeit-title">🏳 Poddać mecz?</div>
+            <div className="ms-forfeit-title">◈ Poddać mecz?</div>
             <div className="ms-forfeit-sub">Wynik zostanie zapisany jako 0:3</div>
             <div className="ms-forfeit-btns">
               <button className="ms-forfeit-yes" onClick={() => { dispatch({ type: 'FORFEIT' }); setShowForfeit(false) }}>
@@ -1083,7 +1310,7 @@ export default function MatchScreen({ matchParams = {} }) {
           onDismiss={() => dispatch({ type: 'DISMISS_COIN' })}
         />
       )}
-      {!goalAnim && phase === 'special_card' && specialCard && (
+      {phase === 'special_card' && specialCard && !goalAnim && (
         <SpecialCardModal card={specialCard} onDismiss={() => dispatch({ type: 'DISMISS_SPECIAL_CARD' })} />
       )}
       {goalAnim && settings.visualEffects !== false && (
@@ -1094,9 +1321,9 @@ export default function MatchScreen({ matchParams = {} }) {
         const placements = []
         if (zoomCard.fromHand && isPlayerTurn) {
           if (canPlaceInSector(zc, 'offense') && !turnActionsUsed.placedOffense && playerA.offenseSector.length < MAX_SECTOR_SIZE)
-            placements.push({ label: '⚔ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
+            placements.push({ label: '▶ Wystaw w Ataku', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'offense' }); setZoomCard(null) } })
           if (canPlaceInSector(zc, 'defense') && !turnActionsUsed.placedDefense && playerA.defenseSector.length < MAX_SECTOR_SIZE)
-            placements.push({ label: '🛡 Wystaw w Obronie', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'defense' }); setZoomCard(null) } })
+            placements.push({ label: '◈ Wystaw w Obronie', onClick: () => { SFX.cardPlace(); dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: zc.instanceId, sector: 'defense' }); setZoomCard(null) } })
         }
         return (
           <CardZoomModal
@@ -1137,6 +1364,7 @@ export default function MatchScreen({ matchParams = {} }) {
         </div>
       )}
 
+
       {/* ── Tutorial ────────────────────────────────────────────────────── */}
       {tutStep !== null && (
         <InteractiveTutorial step={tutStep} onSkip={() => { setTutStep(null); markTutorialSeen() }} />
@@ -1152,23 +1380,31 @@ export default function MatchScreen({ matchParams = {} }) {
 // ── Interactive tutorial bar ───────────────────────────────────────────────
 
 const TUT_STEPS = [
-  {
-    title: 'Twoje karty są tutaj!',
-    text: 'Dotknij kartę dwa razy szybko → zawodnik trafi na boisko.',
-  },
-  {
-    title: 'Wystawiłeś zawodnika!',
-    text: 'Teraz kliknij "Zakończ turę" → gole liczą się po każdej pełnej rundzie.',
-  },
-  {
-    title: '✓ Wiesz jak grać!',
-    text: 'Aktywuj umiejętności kart, zbieraj gole, wygrywaj mecze. Powodzenia!',
-  },
+  // 0
+  { title: 'Witaj w meczu treningowym!', text: 'To Twoje karty. Dotknij dwa razy szybko → zawodnik trafi na boisko.', arrow: 'hand' },
+  // 1
+  { title: 'Dobra robota!', text: 'Teraz wystaw też obrońcę — każda runda potrzebuje ataku i obrony.', arrow: 'defense' },
+  // 2
+  { title: 'Gotowy do gry!', text: 'Kliknij "Zakończ turę" → zobaczymy wynik tej rundy!', arrow: 'endturn' },
+  // 3 — waiting for round 2 resolution
+  { title: 'Trwa rozliczenie...', text: 'ATK Twoich napastników kontra DEF przeciwnika. Wyższy ATK = większa szansa na gola!', arrow: null },
+  // 4 — after round 2, player scored
+  { title: 'GOL! Strzeliłeś bramkę!', text: 'Twój atak przebił obronę rywala. Kontynuuj — w rundzie 3 rywal też może zdobyć gola.', arrow: null },
+  // 5 — before round 3 ends
+  { title: 'Uwaga — rywal atakuje!', text: 'Zakończ turę i obserwuj — teraz rywal zdobędzie bramkę. Dobra obrona blokuje ataki!', arrow: 'endturn' },
+  // 6 — after round 3, AI scored
+  { title: 'Rywal strzelił!', text: 'Widzisz? Obie strony mogą zdobywać gole. Teraz aktywuj umiejętność karty — ikona ⚡ na karcie na boisku.', arrow: 'ability' },
+  // 7 — before round 4 ends
+  { title: 'Umiejętność aktywowana!', text: 'Bonusy działają przez tę rundę. Zakończ turę!', arrow: 'endturn' },
+  // 8 — after round 4, player scored
+  { title: 'GOL z umiejętnością!', text: 'Aktywacja kart daje przewagę. Jeszcze jedna runda — jesteś blisko wygranej!', arrow: null },
+  // 9 — after round 5, player leads 3:1
+  { title: 'Prowadzisz 3:1 — świetnie!', text: 'Znasz już podstawy. Reszta meczu idzie normalnie. Do dzieła!', arrow: null, done: true },
 ]
 
 function InteractiveTutorial({ step, onSkip }) {
   const s = TUT_STEPS[Math.min(step, TUT_STEPS.length - 1)]
-  const isDone = step >= 2
+  const isDone = !!s.done
   return (
     <div className={`tut-bar${isDone ? ' tut-bar--done' : ''}`}>
       <div className="tut-bar-content">
@@ -1195,7 +1431,7 @@ function FirstWinRewardOverlay({ onDone }) {
         <div className="fwr-reward">
           <div className="fwr-reward-icon">🪙</div>
           <div className="fwr-reward-text">
-            <div className="fwr-reward-amount">+200 monet</div>
+            <div className="fwr-reward-amount">+350 monet</div>
             <div className="fwr-reward-label">Nagroda za debiut</div>
           </div>
         </div>
@@ -1207,7 +1443,7 @@ function FirstWinRewardOverlay({ onDone }) {
 
 // ── Zone sub-component ─────────────────────────────────────────────────────
 
-function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate }) {
+function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, onDrop, dragZoneActive, fieldSize, canActivate, showPlacementHint, showArrowHint }) {
   return (
     <div
       className={[
@@ -1220,6 +1456,17 @@ function Zone({ label, cards, side, zone, onCardTap, goalCounts, isDropTarget, o
       onClick={isDropTarget && !dragZoneActive ? onDrop : undefined}
     >
       <span className="msz-label">{label}</span>
+      {showPlacementHint && cards.length === 0 && !isDropTarget && (
+        <div className="msz-placement-hint">
+          <span className="msz-ph-plus">＋</span>
+        </div>
+      )}
+      {showArrowHint && cards.length === 0 && (
+        <div className={`msz-zone-arrow msz-zone-arrow--${zone}`}>
+          <div className="msz-zone-arrow-tip" />
+          <div className="msz-zone-arrow-line" />
+        </div>
+      )}
       <div className={`msz-cards${cards.length >= 3 ? ' msz-cards--full' : ''}`}>
         {cards.map(card => {
           const canActivateAbility = !!(canActivate && card.abilityType !== 'passive' && !card.isDestroyed && !card.isLocked && !card.justPlaced)

@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: white;
 }
 
@@ -22,17 +22,6 @@
   flex-shrink: 0;
 }
 
-.league-back {
-  background: rgba(255,255,255,0.08);
-  border: none;
-  color: white;
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  flex-shrink: 0;
-}
 
 .league-title-block {
   flex: 1;
@@ -210,7 +199,7 @@
   padding: 14px;
   border: none;
   border-radius: 14px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   font-size: 15px;
   cursor: pointer;
@@ -361,8 +350,7 @@
 
 .league-cta {
   flex-shrink: 0;
-  padding: 12px 16px 16px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding: 12px 16px max(72px, calc(env(safe-area-inset-bottom) + 62px));
   background: rgba(0,0,0,0.5);
   border-top: 1px solid rgba(255,255,255,0.08);
   display: flex;
@@ -385,7 +373,7 @@
   border: none;
   border-radius: 16px;
   padding: 16px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 900;
   font-size: 18px;
   letter-spacing: 1px;
@@ -464,7 +452,7 @@
   padding: 13px 8px;
   border: none;
   border-radius: 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 800;
   font-size: 13px;
   cursor: pointer;

@@ -13,18 +13,17 @@ export function computeGoalChance(attackTotal, defenseTotal) {
   return 0.05 + 0.25 * sigmoid(diff / 15)
 }
 
-export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore) {
-  const playerChance = computeGoalChance(playerAttack, aiDefense)
-  const aiChance = computeGoalChance(aiAttack, playerDefense)
+export function resolveRoundGoals(playerAttack, aiDefense, aiAttack, playerDefense, currentScore, playerHasOffense, aiHasOffense) {
+  const playerChance = playerHasOffense ? computeGoalChance(playerAttack, aiDefense) : 0
+  const aiChance = aiHasOffense ? computeGoalChance(aiAttack, playerDefense) : 0
 
-  let playerGoal = false
-  let aiGoal = false
+  let playerGoal = currentScore.player < MAX_GOALS_PER_TEAM && Math.random() < playerChance
+  let aiGoal     = currentScore.ai    < MAX_GOALS_PER_TEAM && Math.random() < aiChance
 
-  if (currentScore.player < MAX_GOALS_PER_TEAM) {
-    playerGoal = Math.random() < playerChance
-  }
-  if (currentScore.ai < MAX_GOALS_PER_TEAM) {
-    aiGoal = Math.random() < aiChance
+  // Both sides scored — mutual block, neither goal stands
+  if (playerGoal && aiGoal) {
+    playerGoal = false
+    aiGoal = false
   }
 
   return { playerGoal, aiGoal, playerChance, aiChance }
@@ -44,18 +43,20 @@ export function computeMatchStats(state) {
     ai.defenseSector.reduce((s, c) => s + (c.currentDefenseStat ?? 0), 0) +
     (ai.activeGoalkeeper?.currentDefenseStat ?? 0)
 
-  return { playerAttack, playerDefense, aiAttack, aiDefense }
+  const playerHasOffense = p.offenseSector.length > 0
+  const aiHasOffense = ai.offenseSector.length > 0
+  return { playerAttack, playerDefense, aiAttack, aiDefense, playerHasOffense, aiHasOffense }
 }
 
 export function computeRewardCoins(result, matchType, scoreDiff) {
   const base =
-    matchType === 'league'           ? { win: 200, draw: 80,  loss: 40 } :
-    matchType === 'training_amateur' ? { win: 15,  draw: 5,   loss: 2  } :
-    matchType === 'training_pro'     ? { win: 100, draw: 30,  loss: 12 } :
-                                       { win: 40,  draw: 15,  loss: 8  }  // local fallback
+    matchType === 'league'           ? { win: 190, draw: 70,  loss: 65 } :
+    matchType === 'training_amateur' ? { win: 40,  draw: 12,  loss: 5  } :
+    matchType === 'training_pro'     ? { win: 150, draw: 45,  loss: 25 } :
+                                       { win: 60,  draw: 20,  loss: 10 }  // local fallback
 
   let coins = base[result] ?? 0
-  if (result === 'win') coins += Math.min(scoreDiff * 10, 50)
+  if (result === 'win') coins += Math.min(scoreDiff * 15, 60)
   return coins
 }
 

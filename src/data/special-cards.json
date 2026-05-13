@@ -1,0 +1,37 @@
+[
+  {
+    "id": "referee",
+    "name": "SĘDZIA",
+    "description": "Żółta kartka! Jeden losowy zawodnik każdej drużyny nie może być aktywowany przez 1 rundę.",
+    "effect": {
+      "type": "lock_random_card",
+      "rounds": 1
+    }
+  },
+  {
+    "id": "fans",
+    "name": "KIBICE",
+    "description": "Doping tłumów! Drużyna z mniejszą liczbą zawodników zyskuje +5 ataku lub obrony.",
+    "effect": {
+      "type": "underdog_buff",
+      "amount": 5
+    }
+  },
+  {
+    "id": "pitch",
+    "name": "CIĘŻKIE BOISKO",
+    "description": "Błotniste boisko! Wszystkie karty ataku tracą 1 punkt ataku na tę rundę.",
+    "effect": {
+      "type": "global_attack_debuff",
+      "amount": -1
+    }
+  },
+  {
+    "id": "var",
+    "name": "VAR",
+    "description": "Weryfikacja VAR! Każda drużyna z pełnym sektorem (3 zawodników) traci 1 losowego gracza z tego sektora.",
+    "effect": {
+      "type": "var_check"
+    }
+  }
+]

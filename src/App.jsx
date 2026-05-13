@@ -12,6 +12,10 @@ import LeagueScreen from './screens/LeagueScreen'
 import PlayersScreen from './screens/PlayersScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import SplashScreen from './screens/SplashScreen'
+import FloatingDock from './components/FloatingDock'
+import PWAInstallBanner from './components/PWAInstallBanner'
+
+import { hasProfanity, genRandomName } from './utils/nameFilter'
 
 export const ProfileContext = createContext(null)
 export const SettingsContext = createContext(null)
@@ -21,18 +25,23 @@ export function useSettings() { return useContext(SettingsContext) }
 
 function ProfileNamePopup({ onDone }) {
   const [name, setName] = useState('')
+  const [error, setError] = useState('')
   const inputRef = useRef(null)
 
   const handleConfirm = () => {
     const trimmed = name.trim()
-    onDone(trimmed || 'Gracz')
+    if (trimmed && hasProfanity(trimmed)) {
+      setError('Nazwa zawiera niedozwolone słowa.')
+      return
+    }
+    onDone(trimmed || genRandomName())
   }
 
   return (
     <div style={{
       position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 9999, padding: '24px', fontFamily: "'Outfit', sans-serif",
+      zIndex: 9999, padding: '24px', fontFamily: "'Inter', sans-serif",
     }}>
       <div style={{
         background: '#161b2e', border: '1px solid rgba(255,255,255,0.12)',
@@ -50,18 +59,22 @@ function ProfileNamePopup({ onDone }) {
         <input
           ref={inputRef}
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={e => { setName(e.target.value); setError('') }}
           onKeyDown={e => e.key === 'Enter' && handleConfirm()}
           placeholder="Twoja nazwa gracza"
-          maxLength={16}
+          maxLength={10}
           autoFocus
           style={{
             width: '100%', padding: '12px 16px', borderRadius: '12px',
             background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.18)',
-            color: 'white', fontSize: '16px', fontFamily: "'Outfit', sans-serif",
+            color: 'white', fontSize: '16px', fontFamily: "'Inter', sans-serif",
             fontWeight: 700, outline: 'none', boxSizing: 'border-box',
           }}
         />
+        {error && <div style={{ fontSize: '12px', color: '#ff5252', alignSelf: 'flex-start', marginTop: '-8px' }}>{error}</div>}
+        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+          Zostaw puste, aby wygenerować losową nazwę
+        </div>
         <button
           onClick={handleConfirm}
           style={{
@@ -82,23 +95,38 @@ function ProfileNamePopup({ onDone }) {
 function ScreenRouter() {
   const { screen, params } = useRouter()
 
-  switch (screen) {
-    case 'main_menu':   return <MainMenuScreen />
-    case 'match':       return <MatchScreen key={params.matchId} matchParams={params} />
-    case 'post_match':  return <PostMatchScreen result={params} />
-    case 'deck_builder': return <DeckBuilderScreen />
-    case 'market':      return <MarketScreen />
-    case 'league':      return <LeagueScreen />
-    case 'players':     return <PlayersScreen />
-    case 'settings':    return <SettingsScreen />
-    default:            return <MainMenuScreen />
-  }
+  return (
+    <>
+      {screen === 'main_menu'    && <MainMenuScreen    key="main_menu" />}
+      {screen === 'match'        && <MatchScreen        key={params.matchId} matchParams={params} />}
+      {screen === 'post_match'   && <PostMatchScreen    key="post_match" result={params} />}
+      {screen === 'deck_builder' && <DeckBuilderScreen  key="deck_builder" />}
+      {screen === 'market'       && <MarketScreen       key="market" />}
+      {screen === 'league'       && <LeagueScreen       key="league" />}
+      {screen === 'players'      && <PlayersScreen      key="players" />}
+      {screen === 'settings'     && <SettingsScreen     key="settings" />}
+      {!['main_menu','match','post_match','deck_builder','market','league','players','settings'].includes(screen) && <MainMenuScreen key="main_menu" />}
+      <FloatingDock />
+      <PWAInstallBanner hidden={screen === 'match'} />
+    </>
+  )
 }
 
 export default function App() {
   const persistentStore = usePersistentStore()
   const settingsStore = useSettingsStore()
   const [splash, setSplash] = useState(true)
+
+  // Scale phone frame to fit viewport on desktop
+  useEffect(() => {
+    const update = () => {
+      const scale = Math.min(1, window.innerHeight / 900, window.innerWidth / 650)
+      document.documentElement.style.setProperty('--phone-scale', scale)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   // Init music after splash (needs user interaction context)
   const musicInitRef = useRef(false)

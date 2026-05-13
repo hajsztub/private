@@ -31,8 +31,9 @@ const PACKS = [
     id: 'random',
     label: 'Losowa Paczka',
     desc: '3 losowe karty • min. 1 Rzadka',
-    icon: '🎲',
-    cost: 200,
+    icon: '◎',
+    cost: 450,
+    gemCost: 2,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#1565c0,#283593)',
     itemBg: 'linear-gradient(120deg,#0d1b3e 0%,#1a2a5e 100%)',
@@ -42,8 +43,9 @@ const PACKS = [
     id: 'attack',
     label: 'Paczka Ataku',
     desc: '3 karty napastników',
-    icon: '⚔️',
-    cost: 240,
+    icon: '▶',
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#c62828,#7f0000)',
     itemBg: 'linear-gradient(120deg,#2a0a0a 0%,#4a1010 100%)',
@@ -53,8 +55,9 @@ const PACKS = [
     id: 'defense',
     label: 'Paczka Obrony',
     desc: '3 karty obrońców',
-    icon: '🛡️',
-    cost: 240,
+    icon: '◈',
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#0d47a1,#1a237e)',
     itemBg: 'linear-gradient(120deg,#071530 0%,#0d2560 100%)',
@@ -64,8 +67,9 @@ const PACKS = [
     id: 'midfield',
     label: 'Paczka Środka',
     desc: '3 karty pomocników',
-    icon: '🔮',
-    cost: 240,
+    icon: '◉',
+    cost: 550,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#6a1b9a,#4a148c)',
     itemBg: 'linear-gradient(120deg,#1a0830 0%,#2e1060 100%)',
@@ -76,18 +80,31 @@ const PACKS = [
     label: 'Paczka Bramkarzy',
     desc: '3 karty bramkarzy',
     icon: '🧤',
-    cost: 280,
+    cost: 650,
+    gemCost: 3,
     currency: 'coins',
     iconBg: 'linear-gradient(160deg,#00695c,#004d40)',
     itemBg: 'linear-gradient(120deg,#021a16 0%,#063d30 100%)',
     filter: d => d.type === 'goalkeeper' && d.marketPrice > 0,
   },
   {
+    id: 'mega',
+    label: 'Mega Paczka',
+    desc: '5 kart • 15% Legendarny • ~50% Rzadkie',
+    icon: '★',
+    cost: 950,
+    gemCost: 5,
+    currency: 'coins',
+    iconBg: 'linear-gradient(160deg,#e65100,#bf360c)',
+    itemBg: 'linear-gradient(120deg,#2a0e00 0%,#4a1a00 100%)',
+    filter: d => d.marketPrice > 0,
+  },
+  {
     id: 'premium',
     label: 'Paczka Premium',
-    desc: 'Gwarantowana karta Legendarna!',
+    desc: '5 kart • Gwarantowana Legendarny!',
     icon: '💎',
-    cost: 5,
+    cost: 12,
     currency: 'gems',
     iconBg: 'linear-gradient(160deg,#880e4f,#4a0072)',
     itemBg: 'linear-gradient(120deg,#1a0020 0%,#380060 100%)',
@@ -95,21 +112,21 @@ const PACKS = [
   },
 ]
 
-const PACK_REFUND = 60
+const PACK_REFUND = 80
 const AD_COOLDOWN_MS = 60 * 60 * 1000
-const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 12 * 60 * 60 * 1000
 
 const FREE_PACK_META = {
   id: 'free',
   label: 'Darmowa Paczka',
-  desc: '1 losowa karta + 50 monet',
-  icon: '🎁',
+  desc: '1 losowa karta + 30 monet',
+  icon: '★',
   iconBg: 'linear-gradient(160deg, #1a4a10, #2d6e1a)',
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function drawCards(pack, count = 3) {
+function drawCards(pack) {
   const pool = CARD_DEFINITIONS.filter(pack.filter)
   if (pool.length === 0) return []
   const legendaries = pool.filter(c => c.rarity === 'legendary')
@@ -117,8 +134,11 @@ function drawCards(pack, count = 3) {
   const commons = pool.filter(c => c.rarity !== 'legendary' && c.rarity !== 'rare')
 
   const isPremium = pack.id === 'premium'
-  const legChance = isPremium ? 1.0 : 0.05
-  const rareChance = isPremium ? 1.0 : 0.30
+  const isMega = pack.id === 'mega'
+  const count = (isPremium || isMega) ? 5 : 3
+
+  const legChance = isMega ? 0.15 : (isPremium ? 1.0 : 0.05)
+  const rareChance = isMega ? 0.65 : (isPremium ? 1.0 : 0.30)
 
   function pickOne() {
     const roll = Math.random()
@@ -128,7 +148,6 @@ function drawCards(pack, count = 3) {
     return pool[Math.floor(Math.random() * pool.length)]
   }
 
-  // Premium pack: guarantee at least 1 legendary
   const drawn = []
   if (isPremium && legendaries.length) {
     drawn.push(legendaries[Math.floor(Math.random() * legendaries.length)])
@@ -167,6 +186,12 @@ function useCooldown(lastAt, durationMs) {
 }
 
 function fmtCountdown(secs) {
+  if (secs >= 3600) {
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    const s = secs % 60
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
   const m = Math.floor(secs / 60)
   const s = secs % 60
   return `${m}:${String(s).padStart(2, '0')}`
@@ -175,27 +200,35 @@ function fmtCountdown(secs) {
 // ── Pack Opening Overlay ───────────────────────────────────────────────────
 
 function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
-  const [revealed, setRevealed] = useState(0)
+  const [flipped, setFlipped] = useState([])
   const [picked, setPicked] = useState(null)
   const [done, setDone] = useState(false)
   const [legendaryFlash, setLegendaryFlash] = useState(false)
 
+  const allFlipped = flipped.length >= drawnCards.length
+
   useEffect(() => {
-    if (revealed < drawnCards.length) {
-      const delay = drawnCards[revealed]?.rarity === 'legendary' ? 750 : 480
-      const t = setTimeout(() => {
-        if (drawnCards[revealed]?.rarity === 'legendary') setLegendaryFlash(true)
-        setRevealed(r => r + 1)
+    let idx = 0
+    function flipNext() {
+      if (idx >= drawnCards.length) return
+      const isLeg = drawnCards[idx]?.rarity === 'legendary'
+      const delay = isLeg ? 900 : 520
+      const capture = idx
+      setTimeout(() => {
+        if (isLeg) setLegendaryFlash(true)
+        setFlipped(prev => [...prev, capture])
+        idx++
+        flipNext()
       }, delay)
-      return () => clearTimeout(t)
     }
-  }, [revealed, drawnCards.length])
+    flipNext()
+  }, [])
 
   const handlePick = (def) => {
-    if (done) return
+    if (done || !allFlipped) return
     setPicked(def)
     setDone(true)
-    setTimeout(() => onPick(def), 500)
+    setTimeout(() => onPick(def), 600)
   }
 
   const handleCoins = () => {
@@ -207,43 +240,46 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
   return (
     <div className={`pack-overlay ${legendaryFlash ? 'pack-overlay--legendary-flash' : ''}`}>
       <div className="pack-overlay-panel">
-        <div className="pack-overlay-header" style={{ background: pack.iconBg }}>
+        <div className="poh-bar" style={{ background: pack.iconBg }}>
           <span className="poh-icon">{pack.icon}</span>
-          <span className="poh-title">{pack.label}</span>
-          <span className="poh-desc">{pack.desc}</span>
+          <div className="poh-text">
+            <div className="poh-title">{pack.label}</div>
+            <div className="poh-desc">{pack.desc}</div>
+          </div>
         </div>
 
-        <div className="pack-cards-row">
+        <div className="poc-grid">
           {drawnCards.map((def, i) => {
-            const card = defToCard(def)
+            const isFlipped = flipped.includes(i)
             const isSelected = picked === def
-            const isLegendary = def.rarity === 'legendary'
+            const card = defToCard(def)
             return (
               <div
                 key={i}
-                className={`pack-card-slot ${i < revealed ? 'pack-card-slot--shown' : 'pack-card-slot--hidden'} ${isSelected ? 'pack-card-slot--picked' : ''} ${i < revealed && isLegendary ? 'pack-card-slot--legendary' : ''}`}
-                style={{ transitionDelay: `${i * 0.06}s` }}
-                onClick={() => i < revealed && handlePick(def)}
+                className={`poc-slot ${isFlipped ? 'poc-slot--flipped' : ''} ${isSelected ? 'poc-slot--picked' : ''} ${isFlipped && def.rarity === 'legendary' ? 'poc-slot--legendary' : ''}`}
+                onClick={() => handlePick(def)}
               >
-                {i < revealed ? (
-                  <FieldCard card={card} fieldSize />
-                ) : (
-                  <div className="pack-card-back">
-                    <span className="pcb-ball">⚽</span>
-                    <span className="pcb-sub">FC</span>
+                <div className="poc-inner">
+                  <div className="poc-back">
+                    <img className="poc-back-logo" src="/logo.png" alt="GOAL TCG" onError={e => { e.target.style.display = 'none' }} />
                   </div>
-                )}
+                  <div className="poc-front">
+                    <FieldCard card={card} fieldSize />
+                  </div>
+                </div>
               </div>
             )
           })}
         </div>
 
-        {revealed >= drawnCards.length && !done && (
+        {!allFlipped && <div className="poc-hint">Odkrywanie kart...</div>}
+
+        {allFlipped && !done && (
           <div className="pack-actions">
-            <p className="pack-prompt">Wybierz kartę aby dodać do kolekcji</p>
+            <p className="pack-prompt">Dotknij kartę aby dodać do kolekcji</p>
             {onTakeCoins && (
               <button className="pack-coins-btn" onClick={handleCoins}>
-                🪙 +{PACK_REFUND} MONET ZAMIAST KARTY
+                + {PACK_REFUND} MONET ZAMIAST KARTY
               </button>
             )}
           </div>
@@ -251,7 +287,7 @@ function PackOpenOverlay({ pack, drawnCards, onPick, onTakeCoins }) {
 
         {done && (
           <div className="pack-done">
-            {picked ? `✅ Dodano ${picked.name} do kolekcji!` : `🪙 Otrzymano ${PACK_REFUND} monet!`}
+            {picked ? `✓ Dodano ${picked.name} do kolekcji!` : `+ Otrzymano ${PACK_REFUND} monet!`}
           </div>
         )}
       </div>
@@ -267,7 +303,7 @@ function AdRewardOverlay({ reward, onDismiss }) {
     <div className="ar-overlay" onClick={onDismiss}>
       <div className="ar-panel" onClick={e => e.stopPropagation()}>
         <div className="ar-icon-wrap">
-          <span className="ar-icon">{isGem ? '💎' : '🪙'}</span>
+          <span className="ar-icon">{isGem ? '💎' : '+'}</span>
         </div>
         <div className="ar-amount">+{reward.amount}</div>
         <div className="ar-label">{isGem ? 'KLEJNOT' : 'MONET'}</div>
@@ -310,14 +346,14 @@ function SellTab({ profile, sellCard, showNotif }) {
   const SORTS = [
     { id: 'dupes', label: '2× Duplikaty' },
     { id: 'name',  label: 'A–Z Nazwa' },
-    { id: 'price', label: '🪙 Cena' },
+    { id: 'price', label: 'Cena ↓' },
   ]
 
   return (
     <div className="sell-tab">
       {sellableCards.length === 0 ? (
         <div className="market-empty">
-          <div className="market-empty-icon">📤</div>
+          <div className="market-empty-icon">◎</div>
           <p>Brak kart do sprzedania.</p>
           <p>Karty startowe nie mogą być sprzedane.<br/>Otwórz paczki aby zdobyć nowe karty.</p>
         </div>
@@ -356,7 +392,7 @@ function SellTab({ profile, sellCard, showNotif }) {
                       <span className="sr-lvl">+{owned.upgradeLevel}</span>
                     )}
                     <div className="sr-ability">{def.abilityName}</div>
-                    <div className="sr-price">🪙 {def.sellPrice}</div>
+                    <div className="sr-price">+ {def.sellPrice}</div>
                   </div>
                   {isSelected && (
                     <button
@@ -364,7 +400,7 @@ function SellTab({ profile, sellCard, showNotif }) {
                       onClick={e => {
                         e.stopPropagation()
                         sellCard(owned.instanceId)
-                        showNotif(`Sprzedano ${def.name} za ${def.sellPrice} 🪙`, true)
+                        showNotif(`Sprzedano ${def.name} za ${def.sellPrice} monet`, true)
                         setSelected(null)
                       }}
                     >
@@ -398,6 +434,10 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
 
   const secsLeft = useCooldown(shop.refreshedAt, SHOP_REFRESH_MS)
 
+  useEffect(() => {
+    if (secsLeft === 0 && shop.cardIds?.length) refreshCardShop()
+  }, [secsLeft])
+
   const fmtTime = (s) => {
     const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60
     return h > 0 ? `${h}h ${m}m` : `${m}:${String(sec).padStart(2, '0')}`
@@ -412,12 +452,12 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
   return (
     <div className="shop-tab">
       <div className="shop-header">
-        <div className="shop-title">🛒 SKLEP ZAWODNIKÓW</div>
+        <div className="shop-title">SKLEP ZAWODNIKÓW</div>
         <div className="shop-refresh">{secsLeft > 0 ? `Odświeżenie za ${fmtTime(secsLeft)}` : 'Odświeżanie...'}</div>
       </div>
       {shopCards.length === 0 ? (
         <div className="market-empty">
-          <div className="market-empty-icon">🛒</div>
+          <div className="market-empty-icon">◈</div>
           <p>Ładowanie sklepu...</p>
         </div>
       ) : (
@@ -437,11 +477,11 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
                   {alreadyOwned && <div className="shop-row-owned">Już posiadasz ✓</div>}
                 </div>
                 <div className="shop-row-buy">
-                  <div className="shop-row-price">🪙 {price}</div>
+                  <div className="shop-row-price">+ {price}</div>
                   <button
                     className={`shop-buy-btn ${!canAfford ? 'shop-buy-btn--locked' : ''}`}
                     disabled={!canAfford}
-                    onClick={() => { buyShopCard(def.id); showNotif(`🛒 ${def.name} kupiony!`) }}
+                    onClick={() => { buyShopCard(def.id); showNotif(`✓ ${def.name} kupiony!`) }}
                   >
                     KUP
                   </button>
@@ -451,7 +491,7 @@ function ShopTab({ profile, refreshCardShop, buyShopCard, showNotif }) {
           })}
         </div>
       )}
-      <div className="shop-hint">💡 3 zawodników zmienia się co 12h • cena = 2× wartość sprzedaży</div>
+      <div className="shop-hint">▸ 3 zawodników zmienia się co 12h • cena = 2× wartość sprzedaży</div>
     </div>
   )
 }
@@ -474,13 +514,14 @@ export default function MarketScreen() {
     setTimeout(() => setNotification(null), 2800)
   }
 
-  const handleBuyPack = (pack) => {
-    if (pack.currency === 'coins') {
-      if (profile.coins < pack.cost) { showNotif('Za mało monet! 🪙', false); return }
-      spendCoins(pack.cost)
+  const handleBuyPack = (pack, useGems = false) => {
+    if (pack.currency === 'gems' || useGems) {
+      const cost = useGems ? pack.gemCost : pack.cost
+      if (gems < cost) { showNotif('Za mało klejnotów! 💎', false); return }
+      update(prev => ({ ...prev, gems: (prev.gems ?? 0) - cost }))
     } else {
-      if (gems < pack.cost) { showNotif('Za mało klejnotów! 💎', false); return }
-      update(prev => ({ ...prev, gems: (prev.gems ?? 0) - pack.cost }))
+      if (profile.coins < pack.cost) { showNotif('Za mało monet!', false); return }
+      spendCoins(pack.cost)
     }
     const drawn = drawCards(pack)
     setOpeningPack({ pack, cards: drawn })
@@ -490,22 +531,22 @@ export default function MarketScreen() {
     claimPackCard(def)
     const isFree = openingPack?.isFree
     setOpeningPack(null)
-    if (isFree) addCoins(50)
-    showNotif(`🎉 ${def.name}${isFree ? ' + 50 🪙' : ''} dodany do kolekcji!`)
+    if (isFree) addCoins(30)
+    showNotif(`★ ${def.name}${isFree ? ' + 30 monet' : ''} dodany do kolekcji!`)
   }
 
   const handleTakeCoins = () => {
     addCoins(PACK_REFUND)
     setOpeningPack(null)
-    showNotif(`🪙 +${PACK_REFUND} monet!`)
+    showNotif(`+ ${PACK_REFUND} monet!`)
   }
 
   const handleWatchAd = () => {
     if (adSecsLeft > 0) {
-      showNotif(`⏳ Następna reklama za ${fmtCountdown(adSecsLeft)}`, false)
+      showNotif(`○ Następna reklama za ${fmtCountdown(adSecsLeft)}`, false)
       return
     }
-    showNotif('📺 Oglądasz reklamę...', true)
+    showNotif('▶ Oglądasz reklamę...', true)
     recordAdWatched()
     setTimeout(() => {
       if (Math.random() < 0.4) {
@@ -520,7 +561,7 @@ export default function MarketScreen() {
 
   const handleClaimFreePack = () => {
     if (freePackSecsLeft > 0) {
-      showNotif(`⏳ Następna paczka za ${fmtCountdown(freePackSecsLeft)}`, false)
+      showNotif(`○ Następna paczka za ${fmtCountdown(freePackSecsLeft)}`, false)
       return
     }
     const pool = CARD_DEFINITIONS.filter(d => d.marketPrice > 0 && d.rarity !== 'legendary')
@@ -532,20 +573,20 @@ export default function MarketScreen() {
   return (
     <div className="market-screen">
       <div className="market-header">
-        <button className="back-btn" onClick={goBack}>←</button>
+        <button className="back-btn" onClick={goBack}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <h1 className="market-title">MARKET</h1>
         <CurrencyBar onGemsClick={handleWatchAd} />
       </div>
 
       <div className="market-tabs">
         <button className={`market-tab ${tab === 'packs' ? 'market-tab--active' : ''}`} onClick={() => setTab('packs')}>
-          📦 PACZKI
+          PACZKI
         </button>
         <button className={`market-tab ${tab === 'shop' ? 'market-tab--active' : ''}`} onClick={() => setTab('shop')}>
-          🛒 SKLEP
+          SKLEP
         </button>
         <button className={`market-tab ${tab === 'sell' ? 'market-tab--active' : ''}`} onClick={() => setTab('sell')}>
-          💰 SPRZEDAJ
+          SPRZEDAJ
         </button>
       </div>
 
@@ -556,66 +597,145 @@ export default function MarketScreen() {
 
           {/* Ad banner */}
           <div className={`ad-banner ${adSecsLeft > 0 ? 'ad-banner--cooldown' : ''}`} onClick={handleWatchAd}>
-            <div className="ad-text">
-              <div className="ad-title">
-                OBEJRZYJ <span className="ad-kw">REKLAMĘ</span>
+            <div className="ad-play-wrap">
+              <span className="ad-play-icon">▶</span>
+            </div>
+            <div className="ad-body">
+              <div className="ad-title">OBEJRZYJ <span className="ad-kw">REKLAMĘ</span></div>
+              <div className="ad-reward-row">
+                <span className="ad-rew-coin">+50 monet</span>
+                <span className="ad-rew-sep">LUB</span>
+                <span className="ad-rew-gem">+1 💎</span>
               </div>
               <div className="ad-desc">
-                {adSecsLeft > 0
-                  ? `Dostępna za ${fmtCountdown(adSecsLeft)}`
-                  : 'Zdobądź 50 monet lub 💎 klejnoty'}
+                {adSecsLeft > 0 ? `Dostępna za ${fmtCountdown(adSecsLeft)}` : 'Darmowa nagroda czeka!'}
               </div>
             </div>
-            <div className="ad-ball">⚽</div>
-            <div className={`ad-cta ${adSecsLeft > 0 ? 'ad-cta--wait' : ''}`}>
-              {adSecsLeft > 0 ? fmtCountdown(adSecsLeft) : 'OBEJRZYJ →'}
+            <div className="ad-visual">
+              <img className="ad-visual-img" src="/market/ad-reward.png" alt="" onError={e => { e.target.style.display = 'none' }} />
             </div>
           </div>
 
-          {/* Free pack */}
-          <div
-            className={`free-pack ${freePackSecsLeft > 0 ? 'free-pack--cooldown' : ''}`}
-            onClick={handleClaimFreePack}
-          >
-            <div className="fp-icon">🎁</div>
-            <div className="fp-info">
-              <div className="fp-title">DARMOWA PACZKA</div>
-              <div className="fp-desc">1 zawodnik + 50 monet • co 45 minut</div>
+          {/* Featured row: Free Pack + Premium side by side */}
+          <div className="featured-row">
+            <div className={`fp-card ${freePackSecsLeft > 0 ? 'fp-card--cooldown' : ''}`} onClick={handleClaimFreePack}>
+              <div className="fp-top">
+                <img className="fp-bag-img" src="/packs/pack-free.png" alt="Darmowa paczka" onError={e => { e.target.style.display='none' }} />
+                <div className="fp-card-body">
+                  <div className="fp-badge">FREE</div>
+                  <div className="fp-card-title">DARMOWA PACZKA</div>
+                  <div className="fp-card-desc">Codzienna paczka zawodników.</div>
+                </div>
+              </div>
+              {freePackSecsLeft > 0 && <div className="fp-timer">○ {fmtCountdown(freePackSecsLeft)}</div>}
+              <button className={`fp-card-btn ${freePackSecsLeft > 0 ? 'fp-card-btn--wait' : ''}`}>
+                {freePackSecsLeft > 0 ? 'NIEDOSTĘPNA' : 'ODBIERZ'}
+              </button>
             </div>
-            <div className={`fp-cta ${freePackSecsLeft > 0 ? 'fp-cta--wait' : ''}`}>
-              {freePackSecsLeft > 0 ? fmtCountdown(freePackSecsLeft) : 'ODBIERZ'}
+
+            {(() => {
+              const prem = PACKS.find(p => p.id === 'premium')
+              const canAfford = gems >= prem.cost
+              return (
+                <div className="prem-card">
+                  <div className="prem-top">
+                    <img className="prem-bag-img" src="/packs/pack-premium.png" alt="Paczka Premium" onError={e => { e.target.style.display='none' }} />
+                    <div className="prem-card-info">
+                      <div className="prem-card-badge">💎 PREMIUM</div>
+                      <div className="prem-card-name">PACZKA PREMIUM</div>
+                      <div className="prem-card-desc">5 kart • Gwarantowana Legenda!</div>
+                    </div>
+                  </div>
+                  <button
+                    className={`prem-btn prem-btn--gem${!canAfford ? ' prem-btn--locked' : ''}`}
+                    onClick={() => handleBuyPack(prem)}
+                  >
+                    💎 {prem.cost}
+                  </button>
+                </div>
+              )
+            })()}
+          </div>
+
+          {/* Section label */}
+          <div className="packs-section-label">
+            <span className="psl-text">📦 PACZKI ZAWODNIKÓW</span>
+            <div className="psl-line" />
+          </div>
+
+          {/* 3-column pack grid */}
+          <div className="packs-grid">
+            {(() => {
+              const nameMap = { random:'LOSOWA', attack:'ATAK', defense:'OBRONA', midfield:'ŚRODEK', gk:'BRAMKARZ', mega:'MEGA' }
+              const descMap = {
+                random: 'Losowa paczka zawodników.',
+                attack: 'Zawodnicy specjalizujący się w ataku.',
+                defense: 'Zawodnicy wzmacniający obronę.',
+                midfield: 'Kontrola środka pola i rozgrywki.',
+                gk: 'Bramkarze o niezwykłych refleksach.',
+                mega: 'Więcej kart, większe szanse na legendy!',
+              }
+              return PACKS.filter(p => p.currency === 'coins').map(pack => {
+                const canAffordCoins = profile.coins >= pack.cost
+                const canAffordGems = gems >= pack.gemCost
+                const cardCount = pack.id === 'mega' ? '5 kart' : '3 karty'
+                return (
+                  <div key={pack.id} className={`pack-card pack-card--${pack.id}`}>
+                    {pack.id === 'mega' && <div className="pack-card-best-badge">NAJLEPSZA WARTOŚĆ!</div>}
+                    <div className="pc-main">
+                      <div className="pc-img-col">
+                        <img className="pc-bag-img" src={`/packs/pack-${pack.id}.png`} alt={pack.label} onError={e => { e.target.style.display = 'none' }} />
+                      </div>
+                      <div className="pc-text-col">
+                        <div className="pc-name">{nameMap[pack.id] || pack.label}</div>
+                        <div className="pc-karta-count">{cardCount}</div>
+                        <div className="pc-short-desc">{descMap[pack.id]}</div>
+                      </div>
+                    </div>
+                    <div className="pc-actions">
+                      <button className={`pc-buy-coin${!canAffordCoins ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, false)}>
+                        🪙 {pack.cost}
+                      </button>
+                      <button className={`pc-buy-gem${!canAffordGems ? ' pc-buy--locked' : ''}`} onClick={() => handleBuyPack(pack, true)}>
+                        💎 {pack.gemCost}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
+            })()}
+          </div>
+
+          {/* Special offers */}
+          <div className="packs-section-label">
+            <span className="psl-text">★ OFERTY SPECJALNE</span>
+            <div className="psl-line" />
+            <div className="offers-timer-badge">○ KOŃCZY SIĘ ZA: 2D 12H</div>
+          </div>
+          <div className="starter-pack-card">
+            <div className="sp-top-badge">★ JEDNORAZOWA OFERTA</div>
+            <div className="sp-body">
+              <div className="sp-img-col">
+                <img className="sp-bag-img" src="/packs/pack-random.png" alt="Pakiet Startowy" onError={e => { e.target.style.display='none' }} />
+                <div className="sp-x5-badge">×5</div>
+              </div>
+              <div className="sp-content">
+                <div className="sp-name">PAKIET STARTOWY</div>
+                <div className="sp-tagline">Idealny start dla każdego menedżera!</div>
+                <div className="sp-reward-row">
+                  <div className="sp-chip">+ <b>10 000</b> M</div>
+                  <div className="sp-chip sp-chip--gem">💎 <b>200</b></div>
+                  <div className="sp-chip sp-chip--pack">📦 <b>5×</b></div>
+                </div>
+              </div>
+              <button className="sp-price-btn" disabled>
+                <div className="sp-price-amount">19,99 zł</div>
+                <div className="sp-price-label">JEDNORAZOWA OFERTA</div>
+              </button>
             </div>
           </div>
 
-          {/* Pack items */}
-          {PACKS.map(pack => {
-            const canAfford = pack.currency === 'coins'
-              ? profile.coins >= pack.cost
-              : gems >= pack.cost
-            return (
-              <div
-                key={pack.id}
-                className={`pack-item ${!canAfford ? 'pack-item--locked' : ''}`}
-                style={{ background: pack.itemBg }}
-                onClick={() => canAfford && handleBuyPack(pack)}
-              >
-                <div className="pi-stripe" style={{ background: pack.iconBg }}>
-                  <span className="pi-icon">{pack.icon}</span>
-                </div>
-                <div className="pi-info">
-                  <div className="pi-name">{pack.label}</div>
-                  <div className="pi-desc">{pack.desc}</div>
-                </div>
-                <div className="pi-preview">
-                  <img src="/avatars/placeholder.png" className="pi-preview-img" alt="" />
-                </div>
-                <div className="pi-price">
-                  <span className="pi-price-cur">{pack.currency === 'coins' ? '🪙' : '💎'}</span>
-                  <span className="pi-price-val">{pack.cost}</span>
-                </div>
-              </div>
-            )
-          })}
+          <div className="packs-footer">ⓘ Karty są dodawane do Twojej kolekcji od razu po zakupie.</div>
         </div>
       ) : (
         <SellTab profile={profile} sellCard={sellCard} showNotif={showNotif} />

@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from '../router/AppRouter'
 import { useProfile } from '../App'
 import { getTier, getBotName } from '../data/botNames'
 import { CHANGELOG } from '../data/changelog'
 import { CARD_DEFINITIONS } from '../data/cards'
 import { STARTER_CARD_DEFINITIONS } from '../data/starterRoster'
+import FieldCard from '../components/FieldCard'
 import './MainMenuScreen.css'
 
 const ALL_DEFS_MM = [...CARD_DEFINITIONS, ...STARTER_CARD_DEFINITIONS]
-const FREE_PACK_COOLDOWN_MS = 45 * 60 * 1000
+const FREE_PACK_COOLDOWN_MS = 12 * 60 * 60 * 1000
 
 function fmtRelTime(ts) {
   const diff = Date.now() - ts
@@ -18,13 +19,18 @@ function fmtRelTime(ts) {
   return `${Math.floor(diff / 86400000)} dni temu`
 }
 
-function NotificationPanel({ notifications, onDismiss, onClose }) {
+function NotificationPanel({ notifications, onDismiss, onClearAll, onClose }) {
   return (
     <div className="mm-notif-overlay" onClick={onClose}>
       <div className="mm-notif-panel" onClick={e => e.stopPropagation()}>
         <div className="mm-notif-header">
           <span className="mm-notif-title">🔔 Powiadomienia</span>
-          <button className="mm-notif-close" onClick={onClose}>✕</button>
+          <div className="mm-notif-header-actions">
+            {notifications.length > 0 && (
+              <button className="mm-notif-clear-all" onClick={onClearAll}>Wyczyść wszystkie</button>
+            )}
+            <button className="mm-notif-close" onClick={onClose}>✕</button>
+          </div>
         </div>
         {notifications.length === 0 ? (
           <div className="mm-notif-empty">Brak nowych powiadomień</div>
@@ -46,13 +52,85 @@ function NotificationPanel({ notifications, onDismiss, onClose }) {
   )
 }
 
+function SeasonPopup({ onClose }) {
+  const NODES = [
+    { lvl: 5,  free: { icon: '🪙', text: '100 monet' },              prem: { icon: '🪙', text: '300 monet' } },
+    { lvl: 10, free: { icon: '📦', text: 'Paczka kart' },             prem: { icon: '★', text: 'Kontrakt\nsponsorski' } },
+    { lvl: 15, free: { icon: '🪙', text: '300 monet' },               prem: { icon: '💎', text: '2 klejnoty' } },
+    { lvl: 20, free: { icon: '★', text: 'Karta\nspecjalna', sp: true }, prem: { icon: '◈', text: 'Kit\n"Thunder"', sp: true } },
+    { lvl: 25, free: { icon: '💎', text: '1 klejnot' },                prem: { icon: '◈', text: 'Herb\ndrużyny' } },
+    { lvl: 30, free: { icon: '◆', text: 'Tło\nstadionu' },           prem: { icon: '📦', text: 'Mega\nPaczka' } },
+    { lvl: 35, free: { icon: '🪙', text: '500 monet' },               prem: { icon: '💎', text: '5 klejnotów' } },
+    { lvl: 40, free: { icon: '★', text: 'Karta\nlegendarna', sp: true }, prem: { icon: '◆', text: '"El Capitán\nPRO"', sp: true } },
+  ]
+  return (
+    <div className="mm-season-overlay" onClick={onClose}>
+      <div className="mm-season-panel" onClick={e => e.stopPropagation()}>
+        <div className="mm-season-soon-badge">WKRÓTCE</div>
+        <div className="mm-season-title">▶ SEZON 1</div>
+        <div className="mm-season-subtitle">Battle Pass · 40 poziomów</div>
+
+        <div className="mm-season-highlights">
+          <div className="mm-season-hl">
+            <div className="mm-season-hl-lvl">LVL 20</div>
+            <div className="mm-season-hl-icon">★</div>
+            <div className="mm-season-hl-name">Karta specjalna</div>
+            <div className="mm-season-hl-sub">Połowa sezonu</div>
+          </div>
+          <div className="mm-season-hl mm-season-hl--prem">
+            <div className="mm-season-hl-lvl">LVL 20</div>
+            <div className="mm-season-hl-icon">◈</div>
+            <div className="mm-season-hl-name">Kit "Thunder"</div>
+            <div className="mm-season-hl-sub">Tylko Premium</div>
+          </div>
+          <div className="mm-season-hl">
+            <div className="mm-season-hl-lvl">LVL 40</div>
+            <div className="mm-season-hl-icon">☰</div>
+            <div className="mm-season-hl-name">Karta legendarna</div>
+            <div className="mm-season-hl-sub">Koniec sezonu</div>
+          </div>
+          <div className="mm-season-hl mm-season-hl--prem">
+            <div className="mm-season-hl-lvl">LVL 40</div>
+            <div className="mm-season-hl-icon">◆</div>
+            <div className="mm-season-hl-name">El Capitán PRO</div>
+            <div className="mm-season-hl-sub">Tylko Premium</div>
+          </div>
+        </div>
+
+        <div className="mm-season-tracks">
+          <div className="mm-season-track-label mm-season-track-label--free">DARMOWY</div>
+          <div className="mm-season-track">
+            {NODES.map(n => (
+              <div key={n.lvl} className={`mm-season-node${n.free.sp ? ' mm-season-node--sp' : ''}`}>
+                <div className="mm-season-reward mm-season-reward--free">
+                  <span className="mm-snr-icon">{n.free.icon}</span>
+                  <span className="mm-snr-text">{n.free.text}</span>
+                </div>
+                <div className="mm-season-node-circle">{n.lvl}</div>
+                <div className="mm-season-reward mm-season-reward--premium mm-season-reward--locked">
+                  <span className="mm-snr-icon">{n.prem.icon}</span>
+                  <span className="mm-snr-text">{n.prem.text}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mm-season-track-label mm-season-track-label--premium">💎 PREMIUM</div>
+        </div>
+
+        <div className="mm-season-desc">Rozgrywaj mecze, ukończ misje tygodniowe i zdobywaj XP. Odbieraj karty, kity, herby i klejnoty każdego sezonu!</div>
+        <button className="mm-season-close-btn" onClick={onClose}>Zamknij</button>
+      </div>
+    </div>
+  )
+}
+
 const TUTORIAL_SECTIONS = [
-  { icon: '🃏', title: 'Czym jest GOAL TCG?', text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.' },
+  { icon: '☰', title: 'Czym jest GOAL TCG?', text: 'GOAL TCG to gra karciana oparta na piłce nożnej. Zbuduj skład 11 zawodników i walcz przeciwko rywalom w turowych meczach.' },
   { icon: '⚽', title: 'Jak przebiega mecz?', text: 'Mecz trwa 10 rund. Każda runda to wymiana kart — ty i rywal gracie po jednej karcie z ręki. Wyższy Atak pokonuje niższą Obronę. Za każde trafienie dostajesz punkt.' },
-  { icon: '🗂️', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
-  { icon: '✨', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
-  { icon: '🏆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
-  { icon: '📦', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 45 minut!' },
+  { icon: '≡', title: 'Pozycje i strefy', text: 'Masz 3 strefy ataku i 3 strefy obrony. Napastnicy atakują, obrońcy bronią. Bramkarz chroni całą bramkę — jego statystyka DEF dodaje się do każdej obrony.' },
+  { icon: '★', title: 'Zdolności specjalne', text: 'Każda karta może posiadać specjalną zdolność — buff, debuff lub efekt pasywny. Aktywujesz ją klikając kartę na boisku. Czytaj opisy kart w Składzie!' },
+  { icon: '◆', title: 'Mecze i nagrody', text: 'Mecz Ligowy daje punkty rankingowe i większe nagrody. Trening pozwala ćwiczyć bez ryzyka utraty ratingu. Wygrane mecze przynoszą monety do kupowania nowych kart.' },
+  { icon: '⬡', title: 'Paczki i rynek', text: 'W Markecie kupujesz paczki kart za monety lub klejnoty. Możesz też sprzedawać karty, których nie potrzebujesz. Odbierz darmową paczkę raz na 12 godzin!' },
 ]
 
 function TutorialModal({ onClose }) {
@@ -102,7 +180,7 @@ function HistoryModal({ history, onClose }) {
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal hist-modal" onClick={e => e.stopPropagation()}>
         <div className="cl-header">
-          <span className="cl-title">📋 OSTATNIE MECZE</span>
+          <span className="cl-title">≡ OSTATNIE MECZE</span>
           <button className="cl-close" onClick={onClose}>✕</button>
         </div>
         {last3.length === 0 ? (
@@ -112,7 +190,7 @@ function HistoryModal({ history, onClose }) {
             {last3.map((m, i) => (
               <div key={i} className={`hist-entry hist-entry--${m.type}`}>
                 <div className="hist-entry-top">
-                  <span className="hist-result-icon">{m.type === 'win' ? '🏆' : m.type === 'loss' ? '❌' : '🤝'}</span>
+                  <span className="hist-result-icon">{m.type === 'win' ? '◆' : m.type === 'loss' ? '✕' : '—'}</span>
                   <span className="hist-score">{m.score?.player ?? 0} : {m.score?.ai ?? 0}</span>
                   <span className="hist-type">{matchTypeLabel(m.matchType)}</span>
                   <span className="hist-date">{fmtMatchDate(m.date)}</span>
@@ -121,10 +199,10 @@ function HistoryModal({ history, onClose }) {
                   {m.coinsEarned > 0 && <span className="hist-coins">+{m.coinsEarned} 🪙</span>}
                   {m.ratingChange !== 0 && m.matchType === 'league' && (
                     <span className={`hist-rating ${m.ratingChange > 0 ? 'hist-rating--up' : 'hist-rating--down'}`}>
-                      {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ⭐
+                      {m.ratingChange > 0 ? '+' : ''}{m.ratingChange} ★
                     </span>
                   )}
-                  {m.mvpName && <span className="hist-mvp">⭐ MVP: {m.mvpName}</span>}
+                  {m.mvpName && <span className="hist-mvp">★ MVP: {m.mvpName}</span>}
                 </div>
               </div>
             ))}
@@ -136,13 +214,117 @@ function HistoryModal({ history, onClose }) {
 }
 
 function ChangelogModal({ onClose }) {
+  const { addCoins, update } = useProfile()
+  const [showDevInput, setShowDevInput] = useState(false)
+  const [devPassword, setDevPassword] = useState('')
+  const [devUnlocked, setDevUnlocked] = useState(false)
+  const [devMsg, setDevMsg] = useState('')
+
+  const showMsg = (msg) => { setDevMsg(msg); setTimeout(() => setDevMsg(''), 2200) }
+
+  const handleDevBtn = () => {
+    if (devUnlocked) { setDevUnlocked(false); return }
+    setShowDevInput(v => !v)
+    setDevPassword('')
+  }
+
+  const handleDevSubmit = (e) => {
+    e.preventDefault()
+    if (devPassword === 'max') { setDevUnlocked(true); setShowDevInput(false) }
+    setDevPassword('')
+  }
+
+  const devAddGold = () => { addCoins(5000); showMsg('¢ +5 000 monet') }
+
+  const devAddAllPlayers = () => {
+    update(prev => {
+      const existingIds = new Set(prev.ownedCards.map(c => c.cardId))
+      const newCards = CARD_DEFINITIONS
+        .filter(d => !existingIds.has(d.id))
+        .map(d => ({ instanceId: `dev_${d.id}_${Date.now()}_${Math.random().toString(36).slice(2)}`, cardId: d.id, isStarter: false, upgradeLevel: 0 }))
+      return { ...prev, ownedCards: [...prev.ownedCards, ...newCards] }
+    })
+    showMsg('◈ Wszyscy zawodnicy dodani')
+  }
+
+  const devCompleteDailyMissions = () => {
+    update(prev => {
+      if (!prev.dailyMissions) return prev
+      return { ...prev, dailyMissions: { ...prev.dailyMissions, missions: prev.dailyMissions.missions.map(m => ({ ...m, progress: m.target })) } }
+    })
+    showMsg('✓ Misje dzienne ukończone')
+  }
+
+  const devCompleteWeeklyMissions = () => {
+    update(prev => {
+      if (!prev.weeklyMissions) return prev
+      return { ...prev, weeklyMissions: { ...prev.weeklyMissions, missions: prev.weeklyMissions.missions.map(m => ({ ...m, progress: m.target, locked: false })) } }
+    })
+    showMsg('◆ Misje tygodniowe ukończone')
+  }
+
+  const devAddGems = () => {
+    update(prev => ({ ...prev, gems: (prev.gems ?? 0) + 10 }))
+    showMsg('💎 +10 diamentów')
+  }
+
+  const devAdvanceTier = () => {
+    update(prev => {
+      const r = prev.rating ?? 0
+      const NEXT = [1000, 2000, 3000, 4000]
+      const nextMin = NEXT.find(n => r < n)
+      if (!nextMin) { showMsg('💎 Już jesteś w najwyższej lidze!'); return prev }
+      const oldTier = getTier(r)
+      const newTier = getTier(nextMin)
+      return {
+        ...prev,
+        rating: nextMin,
+        lastTierChange: { from: oldTier.id, to: newTier.id, timestamp: Date.now() },
+      }
+    })
+    showMsg('◆ Awans do wyższej ligi!')
+  }
+
   return (
     <div className="cl-overlay" onClick={onClose}>
       <div className="cl-modal" onClick={e => e.stopPropagation()}>
         <div className="cl-header">
-          <span className="cl-title">📋 CO NOWEGO?</span>
-          <button className="cl-close" onClick={onClose}>✕</button>
+          <span className="cl-title">≡ CO NOWEGO?</span>
+          <div className="cl-header-right">
+            <button className={`cl-dev-btn${devUnlocked ? ' cl-dev-btn--on' : ''}`} onClick={handleDevBtn}>DEV</button>
+            <button className="cl-close" onClick={onClose}>✕</button>
+          </div>
         </div>
+
+        {showDevInput && (
+          <form className="cl-dev-form" onSubmit={handleDevSubmit}>
+            <input
+              className="cl-dev-input"
+              type="password"
+              placeholder="Hasło..."
+              value={devPassword}
+              onChange={e => setDevPassword(e.target.value)}
+              autoFocus
+            />
+            <button type="submit" className="cl-dev-submit">OK</button>
+          </form>
+        )}
+
+        {devUnlocked && (
+          <div className="cl-dev-panel">
+            <div className="cl-dev-header">◉ PANEL DEV</div>
+            {devMsg && <div className="cl-dev-msg">{devMsg}</div>}
+            <div className="cl-dev-btns">
+              <button className="cl-dev-action" onClick={devAddGold}>¢ +5 000 monet</button>
+              <button className="cl-dev-action" onClick={devAddAllPlayers}>◈ Wszyscy zawodnicy</button>
+              <button className="cl-dev-action" onClick={devCompleteDailyMissions}>✓ Misje dzienne</button>
+              <button className="cl-dev-action" onClick={devCompleteWeeklyMissions}>◆ Misje tygodniowe</button>
+              <button className="cl-dev-action" onClick={devAddGems}>💎 +10 diamentów</button>
+              <button className="cl-dev-action" onClick={devAdvanceTier}>◆ Awans w lidze</button>
+            </div>
+          </div>
+        )}
+
         <div className="cl-list">
           {CHANGELOG.map(entry => (
             <div key={entry.version} className="cl-entry">
@@ -155,6 +337,138 @@ function ChangelogModal({ onClose }) {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  )
+}
+
+const DAILY_REWARDS = [
+  { day: 1, icon: '🪙', label: '100 monet' },
+  { day: 2, icon: '📦', label: 'Paczka kart' },
+  { day: 3, icon: '🪙', label: '250 monet' },
+  { day: 4, icon: '💎', label: '1 klejnot' },
+  { day: 5, icon: '🪙', label: '500 monet' },
+  { day: 6, icon: '📦', label: 'Mega Paczka' },
+  { day: 7, icon: '💎', label: '3 klejnoty' },
+]
+
+function DailyRewardPopup({ currentDay, onClose }) {
+  return (
+    <div className="dr-overlay" onClick={onClose}>
+      <div className="dr-panel" onClick={e => e.stopPropagation()}>
+        <div className="dr-handle" />
+        <div className="dr-header">
+          <span className="dr-title">🗓️ Nagrody dzienne</span>
+          <button className="dr-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="dr-subtitle">Loguj się codziennie, żeby odbierać nagrody!</div>
+        <div className="dr-grid">
+          {DAILY_REWARDS.map(r => {
+            const isPast   = r.day < currentDay
+            const isCurrent = r.day === currentDay
+            return (
+              <div key={r.day} className={`dr-cell${isCurrent ? ' dr-cell--current' : ''}${isPast ? ' dr-cell--past' : ''}`}>
+                <span className="dr-day-label">Dzień {r.day}</span>
+                <span className="dr-reward-icon">{isPast ? '✓' : r.icon}</span>
+                <span className="dr-reward-label">{r.label}</span>
+              </div>
+            )
+          })}
+        </div>
+        <div className="dr-soon-badge">WKRÓTCE</div>
+      </div>
+    </div>
+  )
+}
+
+// ── Card Anatomy Popup ────────────────────────────────────────────────────
+
+const HUGO_CARD = (() => {
+  const def = CARD_DEFINITIONS.find(c => c.id === 'hugo')
+  return def ? { ...def, instanceId: 'anatomy_hugo', currentAttackStat: def.attackStat, currentDefenseStat: def.defenseStat, upgradeLevel: 0 } : null
+})()
+
+// Dots calibrated for FieldCard fc--field size (100×140px) scaled 1.6× → 160×224px
+const ANATOMY_LABELS = [
+  {
+    id: 'position',
+    num: '1',
+    title: 'Pozycja (ATK/MID/DEF/GK)',
+    desc: 'Typ zawodnika — ATK to napastnik. MID gra i w ataku i w obronie.',
+    dotStyle: { top: '14%', left: '4%' },
+  },
+  {
+    id: 'rating',
+    num: '2',
+    title: 'Ocena',
+    desc: 'Główna statystyka karty. Im wyższa, tym silniejszy zawodnik.',
+    dotStyle: { top: '14%', right: '4%' },
+  },
+  {
+    id: 'atk',
+    num: '3',
+    title: 'Atak (ATK)',
+    desc: 'Im wyższy ATK, tym większa szansa na zdobycie gola w tej rundzie.',
+    dotStyle: { bottom: '8%', left: '8%' },
+  },
+  {
+    id: 'def',
+    num: '4',
+    title: 'Obrona (DEF)',
+    desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF do całego zespołu.',
+    dotStyle: { bottom: '8%', left: '28%' },
+  },
+]
+
+function CardAnatomyPopup({ onStart }) {
+  const [step, setStep] = useState(0)
+  const current = ANATOMY_LABELS[step]
+  const isLast = step === ANATOMY_LABELS.length - 1
+
+  if (!HUGO_CARD) return null
+
+  return (
+    <div className="ca-overlay">
+      <div className="ca-panel">
+        <div className="ca-title">Jak czytać kartę?</div>
+        <div className="ca-sub">Dotknij każdy element żeby poznać jego znaczenie.</div>
+
+        <div className="ca-card-wrap">
+          <div className="ca-card-container">
+            <FieldCard card={HUGO_CARD} fieldSize />
+            {ANATOMY_LABELS.map((lbl, i) => (
+              <div
+                key={lbl.id}
+                className={`ca-dot${i === step ? ' ca-dot--active' : ''}`}
+                style={lbl.dotStyle}
+                onClick={() => setStep(i)}
+              >
+                <span className="ca-dot-num">{lbl.num}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Explanation */}
+        <div className="ca-explanation">
+          <div className="ca-explanation-num">{current.num}</div>
+          <div className="ca-explanation-body">
+            <div className="ca-explanation-title">{current.title}</div>
+            <div className="ca-explanation-desc">{current.desc}</div>
+          </div>
+        </div>
+
+        {/* Step indicator */}
+        <div className="ca-steps">
+          {ANATOMY_LABELS.map((_, i) => (
+            <div key={i} className={`ca-step-dot${i === step ? ' ca-step-dot--active' : ''}`} onClick={() => setStep(i)} />
+          ))}
+        </div>
+
+        <button className="ca-next-btn" onClick={() => isLast ? onStart() : setStep(s => s + 1)}>
+          {isLast ? 'Rozumiem, gramy! ⚽' : 'Następny →'}
+        </button>
+        <button className="ca-skip-btn" onClick={onStart}>Pomiń</button>
       </div>
     </div>
   )
@@ -195,19 +509,30 @@ function ProfileAvatar({ name }) {
 
 export default function MainMenuScreen() {
   const { navigate } = useRouter()
-  const { profile, claimMission, addNotifications, markNotificationsRead, dismissNotification } = useProfile()
+  const { profile, claimMission, claimWeeklyMission, addNotifications, markNotificationsRead, dismissNotification, clearNotifications } = useProfile()
 
-  const [showTutorial, setShowTutorial]   = useState(false)
-  const [showChangelog, setShowChangelog] = useState(false)
-  const [showHistory, setShowHistory]     = useState(false)
-  const [showNotifs, setShowNotifs]       = useState(false)
-  const [showMissions, setShowMissions]   = useState(false)
-  const [showStadion, setShowStadion]     = useState(false)
-  const [showWeeklyPopup, setShowWeeklyPopup] = useState(false)
-  const [trainingOpen, setTrainingOpen]   = useState(false)
+  const [showTutorial, setShowTutorial]       = useState(false)
+  const [showChangelog, setShowChangelog]     = useState(false)
+  const [showHistory, setShowHistory]         = useState(false)
+  const [showNotifs, setShowNotifs]           = useState(false)
+  const [showMissions, setShowMissions]       = useState(false)
+  const [showStadion, setShowStadion]         = useState(false)
+  const [showSeasonPopup, setShowSeasonPopup] = useState(false)
+  const [showDailyReward, setShowDailyReward] = useState(false)
+  const [trainingOpen, setTrainingOpen]       = useState(false)
+  const isNewPlayer = !profile.hasSeenTutorial
+  const [showWelcomePopup, setShowWelcomePopup] = useState(isNewPlayer)
+  const [showCardAnatomy, setShowCardAnatomy] = useState(false)
+  const [injuryWarning, setInjuryWarning] = useState(null)
+
+  const playDay = profile.firstPlayedAt
+    ? Math.min(7, Math.floor((Date.now() - profile.firstPlayedAt) / 86400000) + 1)
+    : 1
   const [resetIn, setResetIn]             = useState('')
+  const [missionTab, setMissionTab]       = useState('daily')
 
   const missions = profile.dailyMissions?.missions || []
+  const weeklyMissions = profile.weeklyMissions?.missions || []
   const allMissionsDone = missions.length > 0 && missions.every(m => m.claimed)
   const [missionsExpanded, setMissionsExpanded] = useState(!allMissionsDone)
 
@@ -216,7 +541,7 @@ export default function MainMenuScreen() {
     if (allMissionsDone) setMissionsExpanded(false)
   }, [allMissionsDone])
 
-  const isNewPlayer   = (profile.matchHistory || []).length === 0
+  const noHistory = (profile.matchHistory || []).length === 0
   const notifications = profile.notifications || []
   const unreadCount   = notifications.filter(n => !n.read).length
   const didCheckRef   = useRef(false)
@@ -235,7 +560,7 @@ export default function MainMenuScreen() {
           const owned = profile.ownedCards.find(c => c.instanceId === instanceId)
           if (owned) {
             const def = ALL_DEFS_MM.find(d => d.id === owned.cardId)
-            newNotifs.push({ id: notifId, type: 'recovery', message: `💪 ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`, timestamp: now, read: false })
+            newNotifs.push({ id: notifId, type: 'recovery', message: `+ ${def?.name || 'Zawodnik'} wyleczył się z kontuzji i jest gotowy do gry!`, timestamp: now, read: false })
           }
         }
       }
@@ -245,7 +570,7 @@ export default function MainMenuScreen() {
     if (freePackAvailable) {
       const notifId = `free_pack_${Math.floor((profile.lastFreePackAt || 0) / 1000)}`
       if (!notifications.some(n => n.id === notifId)) {
-        newNotifs.push({ id: notifId, type: 'free_pack', message: '📦 Darmowa paczka jest dostępna w Markecie!', timestamp: now, read: false })
+        newNotifs.push({ id: notifId, type: 'free_pack', message: '⬡ Darmowa paczka jest dostępna w Markecie!', timestamp: now, read: false })
       }
     }
 
@@ -270,11 +595,27 @@ export default function MainMenuScreen() {
 
   const openNotifs = () => { setShowNotifs(true); markNotificationsRead() }
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
+  const weeklyClaimableCount = weeklyMissions.filter(m => !m.locked && !m.claimed && m.progress >= m.target).length
+
+  const getInjuredDeckCount = () => {
+    const injuries = profile.injuries || {}
+    const now = Date.now()
+    return (profile.activeDeck || []).filter(iid => injuries[iid] && injuries[iid] > now).length
+  }
 
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
-    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training') })
+    const isTutorial = type === 'training_amateur' && !profile.hasSeenTutorial
+    if (isTutorial) { setShowCardAnatomy(true); return }
+    const injCount = getInjuredDeckCount()
+    if (injCount > 0) { setInjuryWarning(injCount); return }
+    navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false })
   }
+
+  const startTutorialMatch = useCallback(() => {
+    setShowCardAnatomy(false)
+    navigate('match', { matchType: 'training_amateur', matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: true })
+  }, [navigate])
 
   const tier = getTier(profile.rating)
   const gems = profile.gems ?? 0
@@ -291,13 +632,18 @@ export default function MainMenuScreen() {
         <div className="mm-topbar">
           <div className="mm-tp-profile">
             <ProfileAvatar name={profile.name} />
-            <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+            <div className="mm-tp-name-group">
+              <span className="mm-tp-name">{profile.name || 'Gracz'}</span>
+              <button className="mm-tp-day-badge" onClick={() => setShowDailyReward(true)}>
+                Dzień {playDay}
+              </button>
+            </div>
           </div>
 
           <div className="mm-tp-currencies">
             <div className="mm-tp-cur">
               <span className="mm-tp-cur-icon">🪙</span>
-              <span className="mm-tp-cur-val">{profile.coins}</span>
+              <span className="mm-tp-cur-val">{profile.coins.toLocaleString()}</span>
             </div>
             <div className="mm-tp-cur">
               <span className="mm-tp-cur-icon">💎</span>
@@ -327,7 +673,7 @@ export default function MainMenuScreen() {
           </div>
           <div className="mm-stats-sep" />
           <button className="mm-stats-rank" onClick={() => setShowHistory(true)}>
-            📊 RANK #{profile.rating}
+            ≡ RANK #{profile.rating}
           </button>
         </div>
       </div>
@@ -336,11 +682,15 @@ export default function MainMenuScreen() {
       <div className="mm-play-row">
 
         {/* League */}
-        <button className="mm-play-card mm-play-card--league" onClick={() => navigate('league')}>
+        <button
+          className={`mm-play-card mm-play-card--league${isNewPlayer ? ' mm-play-card--locked' : ''}`}
+          onClick={() => !isNewPlayer && navigate('league')}
+        >
           <div className="mm-play-card-bg mm-play-card-bg--league" />
           <div className="mm-play-card-body">
             <span className="mm-play-card-title">LIGA</span>
             <span className="mm-play-card-desc">Zagraj mecz rankingowy PvP!</span>
+            {isNewPlayer && <span className="mm-locked-badge">🔒 Ukończ trening</span>}
           </div>
         </button>
 
@@ -360,22 +710,24 @@ export default function MainMenuScreen() {
             <div className="mm-training-inline" onClick={e => e.stopPropagation()}>
               <div className="mm-training-inline-hdr">
                 <span className="mm-training-inline-title">TRENING</span>
-                <button className="mm-training-inline-close" onClick={e => { e.stopPropagation(); setTrainingOpen(false) }}>✕</button>
+                {!isNewPlayer && <button className="mm-training-inline-close" onClick={e => { e.stopPropagation(); setTrainingOpen(false) }}>✕</button>}
               </div>
               <button className="mm-tmode-inline mm-tmode-inline--amateur" onClick={() => startTraining('training_amateur')}>
                 <div className="mm-tmode-inline-body">
-                  <span className="mm-tmode-inline-name">🟢 AMATOR</span>
-                  <span className="mm-tmode-inline-desc">Łatwa wygrana</span>
+                  <span className="mm-tmode-inline-name">● AMATOR</span>
+                  <span className="mm-tmode-inline-desc">{isNewPlayer ? 'Twój pierwszy mecz!' : 'Łatwa wygrana'}</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+15🪙</span>
+                <span className="mm-tmode-inline-reward">+40🪙</span>
               </button>
-              <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
-                <div className="mm-tmode-inline-body">
-                  <span className="mm-tmode-inline-name">🔴 PRO</span>
-                  <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
-                </div>
-                <span className="mm-tmode-inline-reward">+100🪙</span>
-              </button>
+              {!isNewPlayer && (
+                <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
+                  <div className="mm-tmode-inline-body">
+                    <span className="mm-tmode-inline-name">● PRO</span>
+                    <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
+                  </div>
+                  <span className="mm-tmode-inline-reward">+150🪙</span>
+                </button>
+              )}
             </div>
           )}
         </button>
@@ -385,58 +737,98 @@ export default function MainMenuScreen() {
       <div className="mm-separator" />
 
       {/* ── Missions ── */}
-      {allMissionsDone && !missionsExpanded ? (
+      {isNewPlayer ? (
+        <div className="mm-missions-locked">
+          <span className="mm-missions-locked-icon">🔒</span>
+          <span className="mm-missions-locked-text">Misje odblokują się po ukończeniu treningu</span>
+        </div>
+      ) : allMissionsDone && !missionsExpanded ? (
         <button className="mm-missions-done-bar" onClick={() => setMissionsExpanded(true)}>
-          <span>✅ Misje dzienne ukończone</span>
+          <span>✓ Misje dzienne ukończone</span>
           <span className="mm-missions-done-bar-arrow">›</span>
         </button>
       ) : (
         <div className="mm-missions-section">
           <div className="mm-missions-hdr">
-            <span className="mm-missions-hdr-title">🎯 MISJE</span>
+            <span className="mm-missions-hdr-title">◆ MISJE</span>
             <div className="mm-missions-tabs">
-              <span className="mm-mtab mm-mtab--active">
+              <button className={`mm-mtab ${missionTab === 'daily' ? 'mm-mtab--active' : ''}`} onClick={() => setMissionTab('daily')}>
                 DZIENNE {claimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
-              </span>
-              <button className="mm-mtab" onClick={() => setShowWeeklyPopup(true)}>TYGODNIOWE 🔒</button>
+              </button>
+              <button className={`mm-mtab ${missionTab === 'weekly' ? 'mm-mtab--active' : ''}`} onClick={() => setMissionTab('weekly')}>
+                TYGODN. {weeklyClaimableCount > 0 && <span className="mm-mtab-dot mm-mtab-dot--ready" />}
+              </button>
+              <button className="mm-mtab mm-mtab--season" onClick={() => setShowSeasonPopup(true)}>SEZON ●</button>
             </div>
           </div>
-          <div className="mm-missions-cards">
-            {missions.length === 0 && (
-              <div className="mm-mc mm-mc--empty">Brak misji</div>
-            )}
-            {missions.slice(0, 3).map(m => {
-              const pct = Math.min(100, (m.progress / m.target) * 100)
-              const ready = !m.claimed && m.progress >= m.target
-              return (
-                <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
-                  <div className="mm-mc-header">
-                    <span className="mm-mc-label">
-                      <span className="mm-mc-icon">{m.icon}</span>{m.label}
-                    </span>
+          {missionTab === 'daily' && (
+            <div className="mm-missions-cards">
+              {missions.length === 0 && <div className="mm-mc mm-mc--empty">Brak misji</div>}
+              {missions.slice(0, 3).map(m => {
+                const pct = Math.min(100, (m.progress / m.target) * 100)
+                const ready = !m.claimed && m.progress >= m.target
+                return (
+                  <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''}`}>
+                    <div className="mm-mc-header">
+                      <span className="mm-mc-label"><span className="mm-mc-icon">{m.icon}</span>{m.label}</span>
+                    </div>
+                    <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
+                    <div className="mm-mc-footer">
+                      <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                      {m.claimed
+                        ? <span className="mm-mc-check">✓</span>
+                        : <button className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`} onClick={() => ready && claimMission(m.id)} disabled={!ready}>
+                            +{m.reward}
+                          </button>
+                      }
+                    </div>
                   </div>
-                  <div className="mm-mc-bar"><div className="mm-mc-fill" style={{ width: `${pct}%` }} /></div>
-                  <div className="mm-mc-footer">
-                    <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
-                    {m.claimed
-                      ? <span className="mm-mc-check">✓</span>
-                      : <button
-                          className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''}`}
-                          onClick={() => ready && claimMission(m.id)}
-                          disabled={!ready}
-                        >+{m.reward}🪙</button>
-                    }
+                )
+              })}
+              {missions.length > 3 && (
+                <button className="mm-mc mm-mc-see-more" onClick={() => setShowMissions(true)}>
+                  <span className="mm-mc-see-more-icon">+</span>
+                  <span>{missions.length - 3} więcej</span>
+                </button>
+              )}
+            </div>
+          )}
+          {missionTab === 'weekly' && (
+            <div className="mm-missions-cards">
+              {weeklyMissions.length === 0 && <div className="mm-mc mm-mc--empty">Brak misji</div>}
+              {weeklyMissions.map(m => {
+                if (m.locked) {
+                  return (
+                    <div key={m.id} className="mm-mc mm-mc--locked-mystery">
+                      <div className="mm-mc-mystery-icon">●</div>
+                      <div className="mm-mc-mystery-label">Ukończ pozostałe misje</div>
+                    </div>
+                  )
+                }
+                const pct = Math.min(100, (m.progress / m.target) * 100)
+                const ready = !m.claimed && m.progress >= m.target
+                const isGem = m.rewardType === 'gems'
+                return (
+                  <div key={m.id} className={`mm-mc ${m.claimed ? 'mm-mc--done' : ready ? 'mm-mc--ready' : ''} ${isGem ? 'mm-mc--gem' : ''}`}>
+                    <div className="mm-mc-header">
+                      <span className="mm-mc-label"><span className="mm-mc-icon">{m.icon}</span>{m.label}</span>
+                      {isGem && <span className="mm-mc-gem-badge">💎</span>}
+                    </div>
+                    <div className="mm-mc-bar"><div className={`mm-mc-fill ${isGem ? 'mm-mc-fill--gem' : ''}`} style={{ width: `${pct}%` }} /></div>
+                    <div className="mm-mc-footer">
+                      <span className="mm-mc-count">{Math.min(m.progress, m.target)}/{m.target}</span>
+                      {m.claimed
+                        ? <span className="mm-mc-check">✓</span>
+                        : <button className={`mm-mc-claim ${ready ? 'mm-mc-claim--ready' : ''} ${isGem ? 'mm-mc-claim--gem' : ''}`} onClick={() => ready && claimWeeklyMission(m.id)} disabled={!ready}>
+                            +{m.reward}{isGem ? ' 💎' : ''}
+                          </button>
+                      }
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-            {missions.length > 3 && (
-              <button className="mm-mc mm-mc-see-more" onClick={() => setShowMissions(true)}>
-                <span className="mm-mc-see-more-icon">+</span>
-                <span>{missions.length - 3} więcej</span>
-              </button>
-            )}
-          </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -445,30 +837,34 @@ export default function MainMenuScreen() {
 
       {/* ── Grid navigation ── */}
       <div className="mm-grid">
-        <button className="mm-grid-btn" onClick={() => navigate('deck_builder')}>
-          <span className="mm-grid-icon">🃏</span>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && navigate('deck_builder')}>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
           <span className="mm-grid-label">SKŁAD</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
-        <button className="mm-grid-btn" onClick={() => navigate('players')}>
-          <span className="mm-grid-icon">👥</span>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && navigate('players')}>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></span>
           <span className="mm-grid-label">ZAWODNICY</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
-        <button className="mm-grid-btn" onClick={() => navigate('market')}>
-          <span className="mm-grid-icon">🛒</span>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && navigate('market')}>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.2 14.8l.03-.12.9-1.68h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20.03 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5 16.18 5 17h15v-2H7.42c-.14 0-.22-.08-.22-.2z"/></svg></span>
           <span className="mm-grid-label">MARKET</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
         <button className="mm-grid-btn mm-grid-btn--soon" onClick={() => setShowStadion(true)}>
-          <span className="mm-grid-icon">🏟️</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></span>
           <span className="mm-grid-label">STADION</span>
           <span className="mm-grid-soon-badge">wkrótce</span>
         </button>
         <button className="mm-grid-btn" onClick={() => navigate('settings')}>
-          <span className="mm-grid-icon">⚙️</span>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></span>
           <span className="mm-grid-label">USTAWIENIA</span>
         </button>
-        <button className="mm-grid-btn" onClick={() => setShowTutorial(true)}>
-          <span className="mm-grid-icon">❓</span>
+        <button className={`mm-grid-btn${isNewPlayer ? ' mm-grid-btn--locked' : ''}`} onClick={() => !isNewPlayer && setShowTutorial(true)}>
+          <span className="mm-grid-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
           <span className="mm-grid-label">JAK GRAĆ?</span>
+          {isNewPlayer && <span className="mm-grid-lock">🔒</span>}
         </button>
       </div>
 
@@ -481,30 +877,81 @@ export default function MainMenuScreen() {
         <span className="mm-version-powered">Powered by AppHill.Agency</span>
       </div>
 
-      {/* ── Modals ── */}
-      {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+      {/* ── Card anatomy popup ── */}
+      {showCardAnatomy && (
+        <CardAnatomyPopup
+          profile={profile}
+          onStart={startTutorialMatch}
+          onSkip={startTutorialMatch}
+        />
+      )}
 
-      {showWeeklyPopup && (
-        <div className="mm-weekly-overlay" onClick={() => setShowWeeklyPopup(false)}>
-          <div className="mm-weekly-panel" onClick={e => e.stopPropagation()}>
-            <div className="mm-weekly-icon">📅</div>
-            <div className="mm-weekly-title">Misje tygodniowe</div>
-            <div className="mm-weekly-msg">wkrótce!</div>
-            <button className="mm-weekly-close-btn" onClick={() => setShowWeeklyPopup(false)}>Zamknij</button>
+      {/* ── Injury warning popup ── */}
+      {injuryWarning && (
+        <div className="mm-welcome-overlay">
+          <div className="mm-welcome-panel">
+            <div className="mm-welcome-title">🩹 Skład niekompletny</div>
+            <div className="mm-welcome-sub">
+              {injuryWarning === 1
+                ? '1 zawodnik w składzie jest kontuzjowany.'
+                : `${injuryWarning} zawodników w składzie jest kontuzjowanych.`}
+              {' '}Uzupełnij skład zdrowymi zawodnikami, żeby zagrać.
+            </div>
+            <button className="mm-welcome-cta" onClick={() => { setInjuryWarning(null); navigate('deck_builder') }}>Zmień skład</button>
+            <button className="mm-welcome-skip" onClick={() => setInjuryWarning(null)}>Anuluj</button>
           </div>
         </div>
       )}
 
+      {/* ── Welcome popup (new players only) ── */}
+      {showWelcomePopup && (
+        <div className="mm-welcome-overlay">
+          <div className="mm-welcome-panel">
+            <div className="mm-welcome-logo"><Logo /></div>
+            <div className="mm-welcome-title">Witaj, {profile.name}!</div>
+            <div className="mm-welcome-sub">Zanim zaczniesz — jeden szybki mecz treningowy, żebyś wiedział jak grać.</div>
+            <div className="mm-welcome-steps">
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">⚽</span>
+                <span className="mm-welcome-step-text">Wystaw napastników i obrońców</span>
+              </div>
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">⚡</span>
+                <span className="mm-welcome-step-text">Aktywuj umiejętności kart</span>
+              </div>
+              <div className="mm-welcome-step">
+                <span className="mm-welcome-step-icon">🏆</span>
+                <span className="mm-welcome-step-text">Strzel więcej goli niż rywal</span>
+              </div>
+            </div>
+            <button className="mm-welcome-cta" onClick={() => {
+              setShowWelcomePopup(false)
+              setTrainingOpen(true)
+            }}>
+              Zacznij trening!
+            </button>
+            <button className="mm-welcome-skip" onClick={() => setShowWelcomePopup(false)}>
+              Pomiń — sam to odkryję
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modals ── */}
+      {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+
+      {showSeasonPopup && <SeasonPopup onClose={() => setShowSeasonPopup(false)} />}
+
       {showStadion && (
         <div className="mm-stadion-overlay" onClick={() => setShowStadion(false)}>
           <div className="mm-stadion-panel" onClick={e => e.stopPropagation()}>
-            <div className="mm-stadion-icon">🏟️</div>
+            <div className="mm-stadion-icon">◆</div>
             <div className="mm-stadion-title">STADION</div>
             <div className="mm-stadion-features">
-              <div className="mm-stadion-feat">🎽 Edytor strojów</div>
-              <div className="mm-stadion-feat">🛡️ Herb i kolory klubu</div>
-              <div className="mm-stadion-feat">🏗️ Ulepszenia stadionu</div>
-              <div className="mm-stadion-feat">🤝 Kontrakty sponsorów</div>
+              <div className="mm-stadion-feat">▸ Edytor strojów</div>
+              <div className="mm-stadion-feat">▸ Herb i kolory klubu</div>
+              <div className="mm-stadion-feat">▸ Ulepszenia stadionu</div>
+              <div className="mm-stadion-feat">▸ Kontrakty sponsorów</div>
             </div>
             <div className="mm-stadion-soon-msg">wkrótce!</div>
             <button className="mm-weekly-close-btn" onClick={() => setShowStadion(false)}>Zamknij</button>
@@ -516,7 +963,7 @@ export default function MainMenuScreen() {
         <div className="mm-missions-overlay" onClick={() => setShowMissions(false)}>
           <div className="mm-missions-panel" onClick={e => e.stopPropagation()}>
             <div className="mm-missions-header">
-              <span className="mm-missions-title">⚡ MISJE DZIENNE</span>
+              <span className="mm-missions-title">▶ MISJE DZIENNE</span>
               <span className="mm-missions-reset">Reset za {resetIn}</span>
               <button className="mm-missions-close" onClick={() => setShowMissions(false)}>✕</button>
             </div>
@@ -542,7 +989,7 @@ export default function MainMenuScreen() {
                           className={`mm-mission-claim ${ready ? 'mm-mission-claim--ready' : ''}`}
                           onClick={() => ready && claimMission(m.id)}
                           disabled={!ready}
-                        >+{m.reward} 🪙</button>
+                        >+{m.reward}</button>
                       )}
                     </div>
                   </div>
@@ -553,12 +1000,14 @@ export default function MainMenuScreen() {
         </div>
       )}
 
+      {showDailyReward && <DailyRewardPopup currentDay={playDay} onClose={() => setShowDailyReward(false)} />}
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
       {showHistory && <HistoryModal history={profile.matchHistory} onClose={() => setShowHistory(false)} />}
       {showNotifs && (
         <NotificationPanel
           notifications={notifications}
           onDismiss={dismissNotification}
+          onClearAll={() => { clearNotifications(); setShowNotifs(false) }}
           onClose={() => setShowNotifs(false)}
         />
       )}

@@ -12,7 +12,6 @@ export default function CurrencyBar({ onGemsClick }) {
         <span className="cb-icon">🪙</span>
         <span className="cb-val">{profile.coins.toLocaleString()}</span>
       </div>
-      <div className="cb-divider" />
       <div className="cb-item cb-item--gems" onClick={onGemsClick}>
         <span className="cb-icon">💎</span>
         <span className="cb-val">{gems}</span>

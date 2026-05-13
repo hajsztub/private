@@ -489,6 +489,29 @@ export default function MatchScreen({ matchParams = {} }) {
   // Keep handleEndTurnRef current so the timer closure always calls the latest version
   useEffect(() => { handleEndTurnRef.current = handleEndTurn }, [handleEndTurn])
 
+  // Auto-place cards ref — used by timer when tutorial round 1 is blocked
+  const autoPlaceRef = useRef(null)
+  useEffect(() => {
+    autoPlaceRef.current = () => {
+      if (!isTutorialMatch || matchState.round !== 1 || matchState.currentPlayer !== 'A') return false
+      const hand = matchState.players.A.hand
+      const hasOff = matchState.players.A.offenseSector.length > 0
+      const hasDef = matchState.players.A.defenseSector.length > 0
+      if (hasOff && hasDef) return false
+      let placed = false
+      let usedId = null
+      if (!hasOff) {
+        const atk = hand.find(c => c.type === 'attack' || c.type === 'midfield')
+        if (atk) { dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: atk.instanceId, sector: 'offense' }); usedId = atk.instanceId; placed = true }
+      }
+      if (!hasDef) {
+        const def = hand.find(c => c.instanceId !== usedId && (c.type === 'defense' || c.type === 'goalkeeper' || c.type === 'midfield'))
+        if (def) { dispatch({ type: 'PLACE_CARD', playerId: 'A', cardInstanceId: def.instanceId, sector: 'defense' }); placed = true }
+      }
+      return placed
+    }
+  }, [matchState, isTutorialMatch])
+
   // ── Turn timer (45 s) ─────────────────────────────────────────────────────
   useEffect(() => {
     const active = matchState.currentPlayer === 'A' && matchState.phase === 'playing'
@@ -501,7 +524,13 @@ export default function MatchScreen({ matchParams = {} }) {
       setTurnSecsLeft(s => {
         if (s <= 1) {
           clearInterval(id)
-          handleEndTurnRef.current?.()
+          // In tutorial round 1, auto-place missing cards then end turn after a pause
+          const autoPlaced = autoPlaceRef.current?.()
+          if (autoPlaced) {
+            setTimeout(() => handleEndTurnRef.current?.(), 1200)
+          } else {
+            handleEndTurnRef.current?.()
+          }
           return 0
         }
         return s - 1

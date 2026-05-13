@@ -648,12 +648,15 @@ export function endTurn(state) {
   const nextPlayer = state.currentPlayer === 'A' ? 'B' : 'A'
   const nextRound = state.currentPlayer === 'B' ? state.round + 1 : state.round
 
-  // Special card after round 5
-  if (nextRound === 6 && !newState.specialCardRevealed) {
+  // Special card after round 5 (skip in tutorial match to avoid UI deadlock)
+  if (nextRound === 6 && !newState.specialCardRevealed && !newState.isTutorialMatch) {
     const drawn = shuffleDeck([...SPECIAL_CARDS])[0]
     newState = { ...newState, specialCard: drawn, specialCardRevealed: true, phase: 'special_card' }
     newState = applySpecialCardEffect(newState, drawn)
     newState = addLog(newState, `🃏 Karta specjalna: ${drawn.name}! ${drawn.description}`, 'special')
+  }
+  if (nextRound === 6 && !newState.specialCardRevealed && newState.isTutorialMatch) {
+    newState = { ...newState, specialCardRevealed: true }
   }
 
   const effectiveMax = newState.maxRounds ?? MAX_ROUNDS

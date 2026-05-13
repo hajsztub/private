@@ -717,7 +717,7 @@ export default function MainMenuScreen() {
                   <span className="mm-tmode-inline-name">● AMATOR</span>
                   <span className="mm-tmode-inline-desc">{isNewPlayer ? 'Twój pierwszy mecz!' : 'Łatwa wygrana'}</span>
                 </div>
-                <span className="mm-tmode-inline-reward">+40¢</span>
+                <span className="mm-tmode-inline-reward">+40🪙</span>
               </button>
               {!isNewPlayer && (
                 <button className="mm-tmode-inline mm-tmode-inline--pro" onClick={() => startTraining('training_pro')}>
@@ -725,7 +725,7 @@ export default function MainMenuScreen() {
                     <span className="mm-tmode-inline-name">● PRO</span>
                     <span className="mm-tmode-inline-desc">10% szans na wygraną</span>
                   </div>
-                  <span className="mm-tmode-inline-reward">+150¢</span>
+                  <span className="mm-tmode-inline-reward">+150🪙</span>
                 </button>
               )}
             </div>

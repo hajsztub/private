@@ -840,7 +840,9 @@ export default function MatchScreen({ matchParams = {} }) {
 
         {/* ── Bottom controls ── */}
         <div className="ms-pm-bottom">
-          <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>⇄ Zmień skład</button>
+          {!isTutorialMatch && (
+            <button className="ms-pm-lineup" onClick={() => navigate('deck_builder')}>⇄ Zmień skład</button>
+          )}
           <div className="ms-pm-actions">
             <button className="ms-pm-back" onClick={() => replace('main_menu', {})}>← POWRÓT</button>
             <button

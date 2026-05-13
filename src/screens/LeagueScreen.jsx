@@ -45,16 +45,26 @@ export default function LeagueScreen() {
 
   const hasPlayedLeague = (profile.matchHistory || []).some(m => m.matchType === 'league')
   const [showFirstLeaguePopup, setShowFirstLeaguePopup] = useState(false)
+  const [showInjuryWarning, setShowInjuryWarning] = useState(false)
+
+  const injuredDeckCount = (() => {
+    const injuries = profile.injuries || {}
+    const now = Date.now()
+    return (profile.activeDeck || []).filter(iid => injuries[iid] && injuries[iid] > now).length
+  })()
+
+  const doStartMatch = () => navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
 
   const handleStartMatch = () => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
+    if (injuredDeckCount > 0) { setShowInjuryWarning(true); return }
     if (!hasPlayedLeague) { setShowFirstLeaguePopup(true); return }
-    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
+    doStartMatch()
   }
 
   const confirmLeagueStart = () => {
     setShowFirstLeaguePopup(false)
-    navigate('match', { matchType: 'league', matchId: Date.now(), opponentName })
+    doStartMatch()
   }
 
   return (
@@ -187,6 +197,30 @@ export default function LeagueScreen() {
           </div>
         )
       })()}
+
+      {/* Injury warning popup */}
+      {showInjuryWarning && (
+        <div className="league-popup-overlay" onClick={() => setShowInjuryWarning(false)}>
+          <div className="league-popup" onClick={e => e.stopPropagation()}>
+            <div className="league-popup-icon">🩹</div>
+            <h2 className="league-popup-title">Kontuzjowani zawodnicy</h2>
+            <p className="league-popup-body">
+              {injuredDeckCount === 1
+                ? '1 zawodnik w składzie jest kontuzjowany.'
+                : `${injuredDeckCount} zawodników w składzie jest kontuzjowanych.`}
+              {' '}Zagra osłabiony, co może wpłynąć na wynik meczu.
+            </p>
+            <div className="league-popup-actions">
+              <button className="league-popup-btn league-popup-btn--cancel" onClick={() => { setShowInjuryWarning(false); navigate('deck_builder') }}>
+                Zmień skład
+              </button>
+              <button className="league-popup-btn league-popup-btn--confirm" style={{ background: '#f44336' }} onClick={() => { setShowInjuryWarning(false); if (!hasPlayedLeague) { setShowFirstLeaguePopup(true) } else { doStartMatch() } }}>
+                Graj mimo to
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* First league match confirmation popup */}
       {showFirstLeaguePopup && (

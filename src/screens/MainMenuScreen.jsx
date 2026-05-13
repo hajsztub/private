@@ -416,7 +416,7 @@ const ANATOMY_LABELS = [
     num: '4',
     title: 'Obrona (DEF)',
     desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF do całego zespołu.',
-    dotStyle: { bottom: '8%', right: '8%' },
+    dotStyle: { bottom: '8%', left: '38%' },
   },
 ]
 
@@ -523,6 +523,7 @@ export default function MainMenuScreen() {
   const isNewPlayer = !profile.hasSeenTutorial
   const [showWelcomePopup, setShowWelcomePopup] = useState(isNewPlayer)
   const [showCardAnatomy, setShowCardAnatomy] = useState(false)
+  const [injuryWarning, setInjuryWarning] = useState(null)
 
   const playDay = profile.firstPlayedAt
     ? Math.min(7, Math.floor((Date.now() - profile.firstPlayedAt) / 86400000) + 1)
@@ -596,10 +597,18 @@ export default function MainMenuScreen() {
   const claimableCount = missions.filter(m => !m.claimed && m.progress >= m.target).length
   const weeklyClaimableCount = weeklyMissions.filter(m => !m.locked && !m.claimed && m.progress >= m.target).length
 
+  const getInjuredDeckCount = () => {
+    const injuries = profile.injuries || {}
+    const now = Date.now()
+    return (profile.activeDeck || []).filter(iid => injuries[iid] && injuries[iid] > now).length
+  }
+
   const startTraining = (type) => {
     if ((profile.activeDeck || []).length < 11) { navigate('deck_builder'); return }
     const isTutorial = type === 'training_amateur' && !profile.hasSeenTutorial
     if (isTutorial) { setShowCardAnatomy(true); return }
+    const injCount = getInjuredDeckCount()
+    if (injCount > 0) { setInjuryWarning({ count: injCount, onConfirm: () => { setInjuryWarning(null); navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false }) } }); return }
     navigate('match', { matchType: type, matchId: Date.now(), opponentName: getBotName(Date.now(), 'training'), isTutorialMatch: false })
   }
 
@@ -870,6 +879,23 @@ export default function MainMenuScreen() {
           onStart={startTutorialMatch}
           onSkip={startTutorialMatch}
         />
+      )}
+
+      {/* ── Injury warning popup ── */}
+      {injuryWarning && (
+        <div className="mm-welcome-overlay">
+          <div className="mm-welcome-panel">
+            <div className="mm-welcome-title">⚠ Kontuzjowani zawodnicy</div>
+            <div className="mm-welcome-sub">
+              {injuryWarning.count === 1
+                ? '1 zawodnik w składzie jest kontuzjowany i zagra osłabiony.'
+                : `${injuryWarning.count} zawodników w składzie jest kontuzjowanych i zagra osłabionych.`}
+              {' '}Możesz zmienić skład przed meczem.
+            </div>
+            <button className="mm-welcome-cta" style={{ background: '#f44336' }} onClick={injuryWarning.onConfirm}>Graj mimo to</button>
+            <button className="mm-welcome-skip" onClick={() => { setInjuryWarning(null); navigate('deck_builder') }}>Zmień skład</button>
+          </div>
+        </div>
       )}
 
       {/* ── Welcome popup (new players only) ── */}

@@ -508,3 +508,39 @@
   text-align: center;
   margin: 0;
 }
+
+/* ── Injury indicators ───────────────────────────────────────────────────────── */
+.ps-cell {
+  position: relative;
+}
+
+.ps-injury-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 5;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
+}
+
+.ps-cell--injured .ps-injury-badge {
+  animation: ps-injury-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes ps-injury-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.ps-injury-banner {
+  background: rgba(244, 67, 54, 0.18);
+  border: 1px solid rgba(244, 67, 54, 0.45);
+  border-radius: 8px;
+  color: #ef9a9a;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 12px;
+  margin: 0 0 10px 0;
+}

@@ -44,6 +44,14 @@ function buildDisplayCard(owned, def) {
   }
 }
 
+function injuryTimeLeft(until) {
+  const ms = until - Date.now()
+  if (ms <= 0) return null
+  const h = Math.floor(ms / 3600000)
+  const m = Math.floor((ms % 3600000) / 60000)
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
+}
+
 export default function PlayersScreen() {
   const router = useRouter()
   const { profile, upgradeCard } = useProfile()
@@ -52,6 +60,8 @@ export default function PlayersScreen() {
   const [selected, setSelected] = useState(null)
 
   const sort = SORTS[sortIdx].id
+  const injuries = profile.injuries || {}
+  const now = Date.now()
 
   const allCards = useMemo(() => (
     profile.ownedCards
@@ -152,34 +162,49 @@ export default function PlayersScreen() {
 
       {/* Grid */}
       <div className="ps-grid">
-        {displayed.map(({ owned, card }) => (
-          <div
-            key={owned.instanceId}
-            className={`ps-cell ${selected === owned.instanceId ? 'ps-cell--on' : ''}`}
-            onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
-          >
-            <FieldCard card={card} selected={selected === owned.instanceId} />
-          </div>
-        ))}
+        {displayed.map(({ owned, card }) => {
+          const injuredUntil = injuries[owned.instanceId]
+          const isInjured = !!(injuredUntil && injuredUntil > now)
+          return (
+            <div
+              key={owned.instanceId}
+              className={`ps-cell ${selected === owned.instanceId ? 'ps-cell--on' : ''} ${isInjured ? 'ps-cell--injured' : ''}`}
+              onClick={() => setSelected(p => p === owned.instanceId ? null : owned.instanceId)}
+            >
+              <FieldCard card={card} selected={selected === owned.instanceId} dimmed={isInjured} />
+              {isInjured && <div className="ps-injury-badge">🩹</div>}
+            </div>
+          )
+        })}
         {displayed.length === 0 && (
           <div className="ps-empty">Brak kart w tej kategorii</div>
         )}
       </div>
 
       {/* Detail bottom sheet */}
-      {selCard && selDef && (
+      {selCard && selDef && (() => {
+        const selInjuredUntil = injuries[selOwned.instanceId]
+        const selIsInjured = !!(selInjuredUntil && selInjuredUntil > now)
+        const selInjuryLeft = selIsInjured ? injuryTimeLeft(selInjuredUntil) : null
+        return (
         <div className="ps-sheet" onClick={e => e.target === e.currentTarget && setSelected(null)}>
           <div className="ps-sheet-panel">
             <div className="ps-sheet-handle" />
+
+            {selIsInjured && (
+              <div className="ps-injury-banner">
+                🩹 Kontuzja — wraca za {selInjuryLeft || 'chwilę'}
+              </div>
+            )}
 
             <div className="ps-sheet-top">
               {/* Card with glow */}
               <div className="ps-sheet-card-wrap">
                 <div
                   className="ps-card-glow"
-                  style={{ background: selCard.color || 'rgba(0,230,118,0.3)' }}
+                  style={{ background: selIsInjured ? 'rgba(244,67,54,0.3)' : selCard.color || 'rgba(0,230,118,0.3)' }}
                 />
-                <FieldCard card={selCard} />
+                <FieldCard card={selCard} dimmed={selIsInjured} />
               </div>
 
               {/* Right column */}
@@ -273,7 +298,8 @@ export default function PlayersScreen() {
             )}
           </div>
         </div>
-      )}
+      )
+      })()}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useRouter } from '../router/AppRouter'
+import { useProfile } from '../App'
 import './FloatingDock.css'
 
 export const DOCK_SCREENS = new Set([
@@ -33,12 +34,18 @@ const NAV = [
   { id: 'market',       Icon: IconMarket, label: 'MARKET' },
 ]
 
+const LOCKED_FOR_NEW = new Set(['deck_builder', 'market'])
+
 export default function FloatingDock() {
   const { screen, navigate } = useRouter()
+  const { profile } = useProfile()
   if (!DOCK_SCREENS.has(screen)) return null
+
+  const isNewPlayer = !profile.hasSeenTutorial
 
   const go = (id) => {
     if (id === screen) return
+    if (isNewPlayer && LOCKED_FOR_NEW.has(id)) return
     if (navigator.vibrate) navigator.vibrate(6)
     navigate(id)
   }
@@ -48,16 +55,18 @@ export default function FloatingDock() {
       <div className="fdock-inner">
         {NAV.map(({ id, Icon, label }) => {
           const active = screen === id
+          const locked = isNewPlayer && LOCKED_FOR_NEW.has(id)
           return (
             <button
               key={id}
-              className={`fdock-btn ${active ? 'fdock-btn--active' : ''}`}
+              className={`fdock-btn ${active ? 'fdock-btn--active' : ''} ${locked ? 'fdock-btn--locked' : ''}`}
               onClick={() => go(id)}
               aria-label={label}
             >
               <Icon />
               <span className="fdock-lbl">{label}</span>
               {active && <span className="fdock-pip" />}
+              {locked && <span className="fdock-lock">🔒</span>}
             </button>
           )
         })}

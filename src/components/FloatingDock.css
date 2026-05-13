@@ -85,3 +85,17 @@
   background: #00e676;
   box-shadow: 0 0 6px rgba(0, 230, 118, 0.9);
 }
+
+.fdock-btn--locked {
+  opacity: 0.35;
+  cursor: default;
+  position: relative;
+}
+
+.fdock-lock {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 8px;
+  opacity: 0.8;
+}

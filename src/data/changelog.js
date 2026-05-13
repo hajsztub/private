@@ -1,5 +1,13 @@
 export const CHANGELOG = [
   {
+    version: '6.3',
+    date: '2026-05-13',
+    changes: [
+      'Dane kart przeniesione do JSON (cards.json, special-cards.json, starter-cards.json) — łatwiejsza edycja i balansowanie bez dotykania kodu',
+      'Desktop — naprawiono przycinanie ramki gry na małych rozdzielczościach i fullscreenie: ramka skaluje się proporcjonalnie do okna zamiast wystawać poza ekran',
+    ],
+  },
+  {
     version: '6.2',
     date: '2026-05-12',
     changes: [

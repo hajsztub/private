@@ -395,14 +395,14 @@ const ANATOMY_LABELS = [
     num: '1',
     title: 'Pozycja (ATK/MID/DEF/GK)',
     desc: 'Typ zawodnika — ATK to napastnik. MID gra i w ataku i w obronie.',
-    dotStyle: { top: '5%', left: '4%' },
+    dotStyle: { top: '14%', left: '4%' },
   },
   {
     id: 'rating',
     num: '2',
     title: 'Ocena',
     desc: 'Główna statystyka karty. Im wyższa, tym silniejszy zawodnik.',
-    dotStyle: { top: '5%', right: '4%' },
+    dotStyle: { top: '14%', right: '4%' },
   },
   {
     id: 'atk',
@@ -416,7 +416,7 @@ const ANATOMY_LABELS = [
     num: '4',
     title: 'Obrona (DEF)',
     desc: 'Obrona blokuje ataki rywala. Bramkarz też dodaje DEF do całego zespołu.',
-    dotStyle: { bottom: '8%', left: '38%' },
+    dotStyle: { bottom: '8%', left: '28%' },
   },
 ]
 

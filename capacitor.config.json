@@ -1,0 +1,17 @@
+{
+  "appId": "com.apphill.goaltcg",
+  "appName": "GOAL TCG",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "releaseType": "AAB"
+    }
+  },
+  "ios": {
+    "contentInset": "automatic"
+  }
+}

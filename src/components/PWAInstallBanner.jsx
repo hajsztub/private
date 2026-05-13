@@ -8,6 +8,10 @@ function isStandalone() {
   )
 }
 
+function isNativeApp() {
+  return window.Capacitor?.isNativePlatform?.() === true
+}
+
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
 }
@@ -79,7 +83,7 @@ export default function PWAInstallBanner({ hidden }) {
   const needsManual                   = browser !== 'android'
 
   useEffect(() => {
-    if (isStandalone() || !isMobile()) return
+    if (isNativeApp() || isStandalone() || !isMobile()) return
 
     if (needsManual) {
       const t = setTimeout(() => setVisible(true), 1000)
